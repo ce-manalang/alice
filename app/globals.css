@@ -1,0 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
+@import url("../public/assets/css/normalize.css");
+@import url('../public/assets/css/skeleton.css');
+@import url('../public/assets/css/custom.css');
+
+.docs-share {
+	a {
+		margin: 0 0.25rem;
+	}
+}
