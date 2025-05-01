@@ -55,7 +55,7 @@ export default function About() {
 			</nav>
 			<div className="docs-section">
         <h2><u>about centimentalcomics</u></h2>
-        <p>some sentimental some just mental comics about art and internet.</p>
+        <p>some sentimental some just mental comics about art and the internet.</p>
         <p>doing a spring cleaning of the website.</p>
         {/* <p>doing a spring cleaning of the website. i used to organize by these tags but might do away with them. here for now.</p> */}
         {/* <ul className="bullets"> */}
@@ -71,7 +71,7 @@ export default function About() {
           i'm ce manalang. i love human and computer language. reading, sometimes writing.
         </p>
         <p>
-          if you wish to have a chat with me about these comics and or about not these comics please send me a message at <a href="mailto:cm@centimentalcomics.com">cm@centimentalcomics.com</a>.
+          chat me at <a href="mailto:cm@centimentalcomics.com">cm@centimentalcomics.com</a>.
         </p>
         <p>
           everything else are here <a href="https://cv.centimentalcomics.com">cv.centimentalcomics.com</a>.
