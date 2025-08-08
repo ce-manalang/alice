@@ -6,6 +6,15 @@ import { Pagination } from "./components/pagination";
 import { LoadingSkeleton } from "./components/loading-skeleton";
 import type { Metadata } from "next"
 
+// Function to format date as "Month Day, Year"
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const day = date.getDate(); // This gives us the day without leading zero
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+}
+
 export const metadata: Metadata = {
   title: "centimentalcomics",
   alternates: {
@@ -89,7 +98,7 @@ export default async function Home({ searchParams }: HomeProps) {
       {/* </section> */}
 
       <section className="footer">
-        <h3 className="u-text-center">© 2023 | made in ph 💘</h3>
+        <h3 className="u-text-center">© 2025 | made in ph 💘</h3>
       </section>
     </div>
   );
@@ -120,14 +129,12 @@ async function ComicsList({ page }: { page: number }) {
 						))
           }
           <h3 className="u-pull-right">
-            <strong>{post.date}</strong>
+            <strong>{formatDate(post.date)}</strong>
           </h3>
           <h2 className="docs-header">
             <Link href={`/${post.slug}`}>{post.title}</Link>
           </h2>
-          <p>
-            {post.blurb} <Link href={`/${post.slug}`}>read more</Link>
-          </p>
+          <div dangerouslySetInnerHTML={{ __html: post.blurb.replace('</p>', ' <a href="/' + post.slug + '">read more</a></p>') }} />
         </article>
       ))}
 

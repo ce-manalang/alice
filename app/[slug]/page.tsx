@@ -1,7 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 import { getPost } from "@/app/lib/posts"
-import { markdownToHtml } from "@/app/lib/markdown"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { LoadingSkeleton } from "@/app/components/loading-skeleton"
@@ -62,7 +61,8 @@ export default async function ComicPage(props: PageProps) {
     notFound()
   }
 
-  const contentHtml = await markdownToHtml(comic.body)
+  // The HTML entities are now decoded in the posts.ts file
+  const contentHtml = comic.body
 
   return (
     <div className="container">
