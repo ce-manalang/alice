@@ -1,3 +1,6 @@
+import { datocmsRequest } from "@/app/lib/datocms"
+import { ALL_COMICS_QUERY } from "@/app/lib/datocms-queries"
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
 export interface Post {
@@ -12,25 +15,142 @@ export interface Post {
   id?: string
 }
 
-// Cache the posts data to avoid unnecessary API calls
-let cachedPosts: Post[] | null = null
+// Cache disabled for debugging
+// let cachedPosts: Post[] | null = null
 
-// Helper function to fetch all posts from the API
+// Function to clear the cache (useful for debugging)
+export function clearPostsCache() {
+  // cachedPosts = null
+  console.log("Posts cache cleared (disabled)")
+}
+
+// Helper to convert DatoCMS comic records to Post shape used by the app
+function mapDatoComicToPost(comic: {
+  id: string
+  title: string
+  image: { alt: string | null; url: string }[] | { alt: string | null; url: string } | null
+  nextComic?: { slug: string } | null
+  prevComic?: { slug: string } | null
+  slug: string
+  blurb?: string | null
+  body?: string | null
+  date?: string | null
+}): Post {
+  const imageArray = Array.isArray(comic.image) ? comic.image : comic.image ? [comic.image] : []
+  
+  // Decode HTML entities in body and blurb
+  let decodedBody = comic.body || ""
+  let decodedBlurb = comic.blurb || ""
+  
+  if (decodedBody) {
+    decodedBody = decodedBody
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&#x27;/g, "'")
+      .replace(/&#x2F;/g, '/')
+      .replace(/&#x60;/g, '`')
+      .replace(/&#x3D;/g, '=')
+      .replace(/&#x2B;/g, '+')
+      .replace(/&#x23;/g, '#')
+      .replace(/&#x25;/g, '%')
+      .replace(/&#x40;/g, '@')
+      .replace(/&#x5B;/g, '[')
+      .replace(/&#x5D;/g, ']')
+      .replace(/&#x5E;/g, '^')
+      .replace(/&#x7B;/g, '{')
+      .replace(/&#x7D;/g, '}')
+      .replace(/&#x7C;/g, '|')
+      .replace(/&#x7E;/g, '~')
+      .replace(/&#x3C;/g, '<')
+      .replace(/&#x3E;/g, '>')
+    
+    // Handle numeric HTML entities
+    decodedBody = decodedBody.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(dec)
+    })
+    
+    // Handle hex HTML entities
+    decodedBody = decodedBody.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
+      return String.fromCharCode(parseInt(hex, 16))
+    })
+  }
+  
+  if (decodedBlurb) {
+    decodedBlurb = decodedBlurb
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&#x27;/g, "'")
+      .replace(/&#x2F;/g, '/')
+      .replace(/&#x60;/g, '`')
+      .replace(/&#x3D;/g, '=')
+      .replace(/&#x2B;/g, '+')
+      .replace(/&#x23;/g, '#')
+      .replace(/&#x25;/g, '%')
+      .replace(/&#x40;/g, '@')
+      .replace(/&#x5B;/g, '[')
+      .replace(/&#x5D;/g, ']')
+      .replace(/&#x5E;/g, '^')
+      .replace(/&#x7B;/g, '{')
+      .replace(/&#x7D;/g, '}')
+      .replace(/&#x7C;/g, '|')
+      .replace(/&#x7E;/g, '~')
+      .replace(/&#x3C;/g, '<')
+      .replace(/&#x3E;/g, '>')
+    
+    // Handle numeric HTML entities
+    decodedBlurb = decodedBlurb.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(dec)
+    })
+    
+    // Handle hex HTML entities
+    decodedBlurb = decodedBlurb.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
+      return String.fromCharCode(parseInt(hex, 16))
+    })
+  }
+  
+  return {
+    id: comic.id,
+    slug: comic.slug,
+    title: comic.title,
+    image_urls: imageArray.map((img) => img.url),
+    date: comic.date || "",
+    blurb: decodedBlurb,
+    body: decodedBody,
+    prev_comic_slug: comic.prevComic?.slug || "",
+    next_comic_slug: comic.nextComic?.slug || undefined,
+  }
+}
+
+// Fetch all comics from DatoCMS (no caching)
 async function fetchAllPosts(): Promise<Post[]> {
-  if (cachedPosts) return cachedPosts
-
   try {
-    const response = await fetch(`${API_URL}/comics`)
+    const data = await datocmsRequest<{
+      allComics: Array<{
+        id: string
+        title: string
+        image: { alt: string | null; url: string }[] | { alt: string | null; url: string } | null
+        nextComic?: { slug: string } | null
+        prevComic?: { slug: string } | null
+        slug: string
+        blurb?: string | null
+        body?: string | null
+        date?: string | null
+      }>
+      _allComicsMeta: { count: number }
+    }>(ALL_COMICS_QUERY)
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch posts: ${response.status}`)
-    }
-
-    const data = await response.json()
-    cachedPosts = data.posts || []
-    return cachedPosts as Post[]
+    return data.allComics.map(mapDatoComicToPost)
   } catch (error) {
-    console.error("Error fetching posts:", error)
+    console.error("Error fetching posts from DatoCMS:", error)
+    console.error("Error details:", error)
     return []
   }
 }
@@ -43,49 +163,21 @@ export async function getPosts(page = 1): Promise<{
   totalPages: number
   currentPage: number
 }> {
-  try {
-    const response = await fetch(`${API_URL}/comics?page=${page}?per_page=${ITEMS_PER_PAGE}`)
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch posts: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    return {
-      posts: data.posts || [],
-      totalPages: data.pagination?.total_pages || 1,
-      currentPage: data.pagination?.current_page || 1,
-    }
-  } catch (error) {
-    console.error("Error fetching posts:", error)
-    return {
-      posts: [],
-      totalPages: 1,
-      currentPage: 1,
-    }
-  }
+  const all = await fetchAllPosts()
+  
+  const start = (page - 1) * ITEMS_PER_PAGE
+  const end = start + ITEMS_PER_PAGE
+  const slice = all.slice(start, end)
+  
+  const totalPages = Math.max(1, Math.ceil(all.length / ITEMS_PER_PAGE))
+  
+  return { posts: slice, totalPages, currentPage: page }
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
-  try {
-    // Make a direct API call to get the specific post
-    const response = await fetch(`${API_URL}/comics/${slug}`)
-
-    if (!response.ok) {
-      // If the response is not OK (e.g., 404), return null
-      if (response.status === 404) {
-        return null
-      }
-      throw new Error(`Failed to fetch post: ${response.status}`)
-    }
-
-    const post = await response.json()
-    return post
-  } catch (error) {
-    console.error(`Error fetching post with slug "${slug}":`, error)
-    return null
-  }
+  const all = await fetchAllPosts()
+  const found = all.find((p) => p.slug === slug)
+  return found || null
 }
 
 export async function getNextPrevPosts(slug: string): Promise<{
