@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { LoadingSkeleton } from "@/app/components/loading-skeleton"
 import { Suspense } from "react"
+import { formatDate } from "@/app/lib/utils"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -124,7 +125,7 @@ export default async function ComicPage(props: PageProps) {
             </div>
           ))}
           <h3 className="u-pull-right">
-            <strong>{comic.date}</strong>
+						<strong>{formatDate(comic.date)}</strong>
           </h3>
           <h2 className="docs-header">
             <Link href={`/${comic.slug}`}>{comic.title}</Link>
@@ -150,7 +151,7 @@ export default async function ComicPage(props: PageProps) {
       </div>
 
       <footer className="footer">
-        <h3 className="u-text-center">© 2023 | made in ph 💘</h3>
+        <h3 className="u-text-center">© 2025 | made in ph 💘</h3>
       </footer>
     </div>
   )
