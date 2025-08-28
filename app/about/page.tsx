@@ -32,7 +32,7 @@ export default function About() {
 							<a className="navbar-link" href="/">home</a>
 						</li>
 						<li className="navbar-item">
-              <a className="navbar-link" href="https://www.instagram.com/centimentalcomics?utm_source=shop">
+              <a className="navbar-link" href="/shop">
                 shop
               </a>
             </li>

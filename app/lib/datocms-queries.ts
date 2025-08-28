@@ -24,4 +24,20 @@ export const ALL_COMICS_QUERY = `
   }
 ` as const
 
+export const SINGLE_PRODUCT_QUERY = `
+  query SingleProduct($id: ItemId!) {
+    product(filter: { id: { eq: $id } }) {
+      id
+      name
+      price
+      alt(markdown: false)
+      images {
+        url
+        alt
+      }
+      description(markdown: true)
+    }
+  }
+` as const
+
 
