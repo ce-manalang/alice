@@ -83,6 +83,11 @@ export default async function ComicPage(props: PageProps) {
                 home
               </a>
             </li>
+						<li className="navbar-item">
+              <a className="navbar-link" href="https://www.instagram.com/centimentalcomics?utm_source=shop">
+                shop
+              </a>
+            </li>
             <li className="navbar-item">
               <a className="navbar-link" href="about">
                 about
