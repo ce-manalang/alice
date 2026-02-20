@@ -1,0 +1,156 @@
+# Project State: Centimentalcomics Shop
+
+**Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
+**Updated:** 2026-02-20
+**Status:** Planning Complete — Ready for Phase 1 Planning
+
+---
+
+## Project Reference
+
+**Core Value:** Customers can browse the product catalog and submit orders for educational CS products — if nothing else works, browsing and ordering must.
+
+**Stack:** Next.js 15 + TypeScript + Tailwind CSS + DatoCMS (GraphQL) + Zustand (cart) + Server Actions (checkout) + Resend (emails)
+
+**Fulfillment Model:** Meetup-based (no payment processing, orders collected via form, arranged in-person)
+
+**Current Focus:** Establish product catalog foundation and DatoCMS integration patterns
+
+---
+
+## Current Position
+
+**Milestone:** Centimentalcomics Shop v1
+**Phase:** Planning Complete
+**Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
+**Next:** Phase 1 Planning
+
+**Progress:**
+```
+Planning:      ████████████████████ 100% Complete
+Execution:     ░░░░░░░░░░░░░░░░░░░░   0% Pending
+```
+
+---
+
+## Phases Overview
+
+| Phase | Goal | Requirements | Status |
+|-------|------|--------------|--------|
+| 1 | Product Catalog & Foundation | 12 reqs | Pending → Planning |
+| 2 | Shopping Cart | 4 reqs | Pending |
+| 3 | Checkout & Order Form | 3 reqs | Pending |
+
+---
+
+## Performance Metrics
+
+**Roadmap Quality:**
+- Coverage: 19/19 requirements mapped ✓
+- Orphaned requirements: 0 ✓
+- Phases coherent: Yes ✓
+- Success criteria observable: Yes ✓
+
+**Research Integration:**
+- Stack validated: Next.js 15 + DatoCMS ✓
+- Critical pitfalls identified: 5 ✓
+- Phase ordering research-backed: Yes ✓
+
+---
+
+## Accumulated Context
+
+### Key Decisions
+
+| Decision | Status | Notes |
+|----------|--------|-------|
+| Rebuild from scratch | Committed | Current codebase doesn't match vision |
+| Keep Next.js/TS/Tailwind stack | Committed | Familiar, good for SSG shop |
+| DatoCMS for product data | Committed | Existing integration, webhook revalidation |
+| Order form + meetup checkout | Committed | No payment gateway, simple fulfillment |
+| 3-phase roadmap | Committed | Quick depth, clear dependencies |
+
+### Critical Pitfalls to Avoid
+
+1. **Silent fetch caching = stale product data**
+   - Use `cache: "no-store"` for product fetches
+   - Set `useCdn: false` in DatoCMS client
+   - Test in production-like deployment
+
+2. **Cart state lost on page refresh**
+   - Implement localStorage persistence upfront
+   - Use Zustand with persist middleware
+   - Test with hard-refresh, multiple tabs
+
+3. **SEO ranking loss from URL structure changes**
+   - Finalize product URL slugs NOW (Phase 1)
+   - Implement 301 redirects in `next.config.js`
+   - Preserve category structure and internal links
+
+4. **DatoCMS schema drift**
+   - Store schema.graphql in Git
+   - Run `pnpm datocms:generate` after schema changes
+   - Use `gql.tada` for query validation
+
+5. **Over-engineering for <20 products**
+   - Use static site generation (build once, cache forever)
+   - Simple localStorage cart
+   - Defer Supabase/payment/admin until needed
+
+### Technical Constraints
+
+- Tech stack: Next.js 15 + TypeScript + Tailwind CSS (locked)
+- Content source: DatoCMS (existing integration)
+- Hosting: Vercel (existing setup)
+- Package manager: pnpm
+- No payment processing (meetup-based fulfillment)
+- Under 20 products
+
+### Outstanding Questions
+
+- [ ] Order storage decision: JSON file + email, Supabase, or external service?
+- [ ] Product URL finalization: Confirm slug strategy before Phase 1 ships
+- [ ] DatoCMS data bulk import: Need custom script for Notion/spreadsheet migration?
+- [ ] Cart persistence edge cases: Fallback strategy for Safari Private mode / localStorage unavailable?
+
+---
+
+## Session Continuity
+
+**Last Action:** Created ROADMAP.md with 3 phases, 19 requirements mapped
+
+**Awaiting:** `/gsd:plan-phase 1` to decompose Phase 1 into executable plans
+
+**Context Preserved:** All planning artifacts written to disk
+- `.planning/ROADMAP.md` — Phase structure and success criteria
+- `.planning/STATE.md` — Project memory and decisions
+- `.planning/REQUIREMENTS.md` — Traceability updated
+
+---
+
+## Quick Reference
+
+**To review roadmap:**
+```
+cat .planning/ROADMAP.md
+```
+
+**To start Phase 1 planning:**
+```
+/gsd:plan-phase 1
+```
+
+**To see current requirements:**
+```
+cat .planning/REQUIREMENTS.md
+```
+
+**Key research insights:**
+- Phase 1 forces upfront decisions on fetch caching, URL structure, DatoCMS schema (expensive to change later)
+- Phase 2 tests cart UX with localStorage persistence (Zustand or Context)
+- Phase 3 completes flow with Server Actions and order storage
+- Pre-launch (Phase 4 in research) deferred to v1.x — focus on core flow first
+
+---
+
+*State snapshot: 2026-02-20 — Roadmap complete, ready for Phase 1 planning*

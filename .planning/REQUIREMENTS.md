@@ -85,31 +85,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAT-01 | — | Pending |
-| CAT-02 | — | Pending |
-| CAT-03 | — | Pending |
-| CAT-04 | — | Pending |
-| CART-01 | — | Pending |
-| CART-02 | — | Pending |
-| CART-03 | — | Pending |
-| CART-04 | — | Pending |
-| CHKT-01 | — | Pending |
-| CHKT-02 | — | Pending |
-| CHKT-03 | — | Pending |
-| CONT-01 | — | Pending |
-| CONT-02 | — | Pending |
-| DSGN-01 | — | Pending |
-| DSGN-02 | — | Pending |
-| DSGN-03 | — | Pending |
-| TECH-01 | — | Pending |
-| TECH-02 | — | Pending |
-| TECH-03 | — | Pending |
+| CAT-01 | Phase 1 | Pending |
+| CAT-02 | Phase 1 | Pending |
+| CAT-03 | Phase 1 | Pending |
+| CAT-04 | Phase 1 | Pending |
+| CART-01 | Phase 2 | Pending |
+| CART-02 | Phase 2 | Pending |
+| CART-03 | Phase 2 | Pending |
+| CART-04 | Phase 2 | Pending |
+| CHKT-01 | Phase 3 | Pending |
+| CHKT-02 | Phase 3 | Pending |
+| CHKT-03 | Phase 3 | Pending |
+| CONT-01 | Phase 1 | Pending |
+| CONT-02 | Phase 1 | Pending |
+| DSGN-01 | Phase 1 | Pending |
+| DSGN-02 | Phase 1 | Pending |
+| DSGN-03 | Phase 1 | Pending |
+| TECH-01 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Pending |
+| TECH-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19
+- Mapped to phases: 19
+- Unmapped: 0 ✓
 
 ---
+
 *Requirements defined: 2026-02-20*
-*Last updated: 2026-02-20 after initial definition*
+*Last updated: 2026-02-20 after roadmap creation*
