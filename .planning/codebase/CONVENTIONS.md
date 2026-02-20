@@ -5,78 +5,82 @@
 ## Naming Patterns
 
 **Files:**
-- React components in `app/components/`: kebab-case (e.g., `comic-navigation.tsx`, `loading-skeleton.tsx`)
-- Page components: kebab-case in dynamic route folders (e.g., `[slug]/page.tsx`, `[id]/page.tsx`)
-- Utility/lib files: camelCase (e.g., `posts.ts`, `supabase.ts`, `datocms.ts`, `useSupabase.ts`)
-- Configuration files: camelCase (e.g., `tailwind.config.ts`, `next.config.ts`)
+- PascalCase for React component files: `Pagination.tsx`, `LoadingSkeleton.tsx`, `ComicNavigation.tsx`
+- camelCase for utility and library files: `utils.ts`, `posts.ts`, `database.ts`, `datocms.ts`, `markdown.ts`
+- Snake_case for segment directories and dynamic routes: `[slug]`, `[id]`, `(main)`
 
 **Functions:**
-- React components (PascalCase): `Pagination`, `LoadingSkeleton`, `ComicNavigation`, `SupabaseExample`
-- Utility functions (camelCase): `formatDate`, `fetchAllPosts`, `getPosts`, `getPost`, `mapDatoComicToPost`, `datocmsRequest`
-- Hook functions (camelCase with `use` prefix): `useAuth`, `useSupabaseQuery`, `useSupabaseRecord`, `useSupabaseMutation`
-- Private/helper functions (camelCase): `mapDatoComicToPost`, `fetchAllPosts`, `handleError`
+- camelCase for regular functions: `formatDate()`, `fetchAllPosts()`, `mapDatoComicToPost()`
+- camelCase for async functions: `getPosts()`, `getPost()`, `fetchData()`
+- camelCase for exported utility functions: `clearPostsCache()`, `datocmsRequest()`
+- PascalCase for React components: `Pagination`, `LoadingSkeleton`, `ComicNavigation`
+- camelCase with prefix for handler functions: `handleError()`
 
 **Variables:**
-- State variables (camelCase): `formData`, `currentPage`, `isSignUp`, `user`, `loading`
-- Constants (UPPER_SNAKE_CASE for API configs): `API_URL`, `ITEMS_PER_PAGE`, `DATOCMS_API_URL`
-- React props (camelCase): `currentPage`, `totalPages`, `searchParams`
+- camelCase for all variables: `currentPage`, `totalPages`, `imageArray`, `decodedBody`
+- UPPER_SNAKE_CASE for constants: `API_URL`, `ITEMS_PER_PAGE`, `DATOCMS_API_URL`
+- Destructured parameters use camelCase: `{ currentPage, totalPages }`
 
 **Types/Interfaces:**
-- PascalCase for all type definitions: `Post`, `Product`, `PageProps`, `HomeProps`, `CheckoutPageProps`
-- Extend with more specific suffixes when needed: `DatocmsGraphQLResponse<T>`, `DatocmsGraphQLError`
-- Database types also PascalCase: `Database`
+- PascalCase for all interfaces and types: `Post`, `Product`, `DatocmsGraphQLError`, `DatocmsGraphQLResponse`
+- Generic type parameters use single letters or descriptive PascalCase: `<T>`, `<Database>`
+- Optional fields use `?`: `id?: string`, `next_comic_slug?: string`
 
 ## Code Style
 
 **Formatting:**
-- No ESLint or Prettier config detected - follows implicit Next.js/TypeScript defaults
-- Indentation: 2 spaces (observed consistently across all files)
-- Line length: No strict enforcement, varies but most lines under 100 characters
-- Quote style: Double quotes for strings (JavaScript/JSX)
+- No explicit linter config file found (no .eslintrc or prettier config)
+- TypeScript strict mode enabled in `tsconfig.json`
+- 2-space indentation is used (observed in code)
+- Semicolons present in most code
+- Double quotes used for strings in JSX attributes and most imports
+- Single quotes used in some cases (GraphQL queries, inline strings)
 
 **Linting:**
-- TypeScript strict mode enabled in `tsconfig.json` (strict: true)
-- Module resolution: bundler
-- JSX: preserve mode (uses React 19)
-- No external linter detected - relies on TypeScript for type checking
+- No detected ESLint or Prettier configuration
+- Code follows Next.js conventions implicitly
+- TypeScript strict checks enforced: `"strict": true`
+- No unused variables allowed by TypeScript strict mode
 
 ## Import Organization
 
 **Order:**
-1. Next.js core imports (`next/image`, `next/link`, `next/navigation`, `next/font/google`)
-2. Third-party libraries (`@supabase/supabase-js`, `react`, `use-debounce`)
-3. Next.js provided libraries (`@next/third-parties/google`)
-4. Internal app imports (using `@/` alias)
-5. Type imports (using `type` keyword)
+1. External library imports (React, Next.js, third-party)
+2. Type imports (`import type`)
+3. Internal app imports (`import ... from "@/app/..."`)
+4. Relative imports (rare in this codebase)
 
-**Path Aliases:**
-- `@/*` maps to project root (defined in `tsconfig.json`)
-- Used consistently across all files: `@/app/lib/posts`, `@/app/components/pagination`
-- Single alias pattern, not multiple variants
-
-**Example import structure from `app/[slug]/page.tsx`:**
+**Examples:**
 ```typescript
+// External libraries first
 import Image from "next/image"
 import Link from "next/link"
-import { getPost } from "@/app/lib/posts"
-import { notFound } from "next/navigation"
+import type React from "react"
 import type { Metadata } from "next"
-import { LoadingSkeleton } from "@/app/components/loading-skeleton"
-import { Suspense } from "react"
+
+// Internal imports from @/app
+import { getPosts, type Post } from "@/app/lib/posts"
+import { Pagination } from "./components/pagination"
 import { formatDate } from "@/app/lib/utils"
+
+// Type imports separated
+import type { Post } from "@/app/lib/posts"
 ```
+
+**Path Aliases:**
+- Uses `@/*` alias pointing to project root (defined in `tsconfig.json`)
+- All internal imports use `@/app/...` prefix
+- Examples: `@/app/lib/posts`, `@/app/lib/datocms`, `@/app/components/pagination`
 
 ## Error Handling
 
 **Patterns:**
-- Try-catch blocks for async operations in server components (e.g., `app/shop/[id]/page.tsx`)
-- Supabase operations use destructured error returns: `const { error } = await operation`
-- Console.error logging for development: `console.error("Error fetching posts from DatoCMS:", error)`
-- Throwing errors with descriptive messages: `throw new Error("Missing DATOCMS_API_TOKEN...")`
-- Next.js `notFound()` function for 404 cases in dynamic routes
-- Fallback data structures when errors occur: `return [] as T[]`, `return null`
+- Try-catch blocks wrapping async operations
+- Console.error() for logging errors: `console.error("Error fetching posts from DatoCMS:", error)`
+- Detailed error messages with context: `Error fetching product: ${error}`
+- Generic error handler function used for database operations
 
-**Error handling in library functions (`app/lib/database.ts`):**
+**Error Handler Example:**
 ```typescript
 const handleError = (error: any, operation: string) => {
   console.error(`Database ${operation} error:`, error)
@@ -84,148 +88,152 @@ const handleError = (error: any, operation: string) => {
 }
 ```
 
-**Error handling in components (`app/components/SupabaseExample.tsx`):**
-```typescript
-const { error } = isSignUp
-  ? await signUp(email, password)
-  : await signIn(email, password)
+**Fallback Returns:**
+- Return empty arrays on fetch errors: `return [] as T[]`
+- Return null on single record errors: `return null`
+- Return false on delete/file operation errors: `return false`
+- Early returns for validation: `if (!comic) { notFound() }`
 
-if (error) {
-  alert(`Authentication error: ${error.message}`)
-}
-```
+**Input Validation:**
+- GraphQL errors checked explicitly: `if (json.errors && json.errors.length > 0)`
+- Response data validated before use: `if (!json.data) { throw new Error(...) }`
+- Environment variables validated at module load: `if (!supabaseUrl || !supabaseAnonKey) { throw ... }`
 
 ## Logging
 
-**Framework:** Console object (no logging framework detected)
+**Framework:** Console (no external logging library used)
 
 **Patterns:**
-- `console.error()` for errors with context: `console.error("Error fetching posts from DatoCMS:", error)`
-- `console.log()` for debugging messages: `console.log("Posts cache cleared (disabled)")`
-- Include operation context in messages: `Database ${operation} error:`
-- Log errors twice for detailed context when available: `console.error("Error details:", error)`
-- Prefix logs with domain/module name: `"Error fetching posts from DatoCMS"`, `"Database ${operation} error"`
+- `console.error()` for errors with descriptive context
+- Errors logged with operation name and full error object
+- Example: `console.error("Error fetching posts from DatoCMS:", error)`
+- Detailed logging for debugging: `console.error("Error details:", error)`
+- Info logs for cache clearing: `console.log("Posts cache cleared (disabled)")`
+
+**When to Log:**
+- Errors in try-catch blocks
+- API request failures
+- Cache operations
+- NOT used for debug info in components
 
 ## Comments
 
 **When to Comment:**
-- Function-level explanations for non-obvious logic
-- Helper function descriptions explaining transformations
-- Sections clarifying business logic or special handling
-
-**Patterns observed:**
-```typescript
-// GraphQL query for products
-const PRODUCTS_QUERY = `...`
-
-// Type for the product data
-interface Product { ... }
-
-// Helper to convert DatoCMS comic records to Post shape used by the app
-function mapDatoComicToPost(...) { ... }
-
-// Decode HTML entities in body and blurb
-let decodedBody = comic.body || ""
-
-// Handle numeric HTML entities
-decodedBody = decodedBody.replace(/&#(\d+);/g, ...)
-
-// Hook for authentication state
-export function useAuth() { ... }
-
-// Example: Fetch posts
-const { data: posts, ... } = useSupabaseQuery(...)
-```
+- HTML entity decoding regex blocks - complex logic documented
+- GraphQL query constants documented with "GraphQL query for..." comment
+- Cache-related code documented with "Cache disabled for debugging"
+- Function purposes documented with single-line comments above function
 
 **JSDoc/TSDoc:**
-- Not used - relies on TypeScript types and inline comments
-- Function signatures fully typed with parameters and return types
-- Type annotations preferred over documentation
+- Not systematically used in this codebase
+- Comments use regular `//` style
+- No @param, @returns documentation observed
+- Type information provided through TypeScript instead
+
+**Comment Examples:**
+```typescript
+// Cache disabled for debugging
+// let cachedPosts: Post[] | null = null
+
+// Helper to convert DatoCMS comic records to Post shape used by the app
+function mapDatoComicToPost(comic: {...}): Post {
+```
 
 ## Function Design
 
-**Size:** Functions are generally focused and under 50 lines
-- Map/transform functions: 5-20 lines
-- Component render functions: 20-100+ lines (complex layouts)
-- Async data functions: 15-50 lines
-- Utility helpers: 5-15 lines
+**Size:**
+- Most functions are concise (10-30 lines)
+- Complex logic (HTML entity decoding) reaches 80+ lines but contained in single function
+- Generic database functions handle all CRUD operations with options object
 
 **Parameters:**
-- Props passed via object destructuring: `{ currentPage, totalPages }`
-- React component props with interface definitions
-- Query/search params unwrapped from Promise in Server Components: `const params = await searchParams`
-- Optional parameters with defaults using spread operator defaults
+- Positional parameters for simple functions: `formatDate(dateString: string)`
+- Options object pattern for functions with multiple optional params:
+```typescript
+fetchData<T>(
+  table: string,
+  options?: {
+    select?: string
+    filters?: Record<string, any>
+    orderBy?: { column: string; ascending?: boolean }
+    limit?: number
+  }
+)
+```
+- Destructured parameters in React components:
+```typescript
+export function Pagination({ currentPage, totalPages }: { currentPage: number; totalPages: number })
+```
 
 **Return Values:**
-- Explicit return types via TypeScript interfaces
-- Functions return objects with metadata: `{ posts, totalPages, currentPage }`
-- Nullable returns for optional data: `Post | null`, `T | null`
-- Promise return types for async functions: `Promise<Post[]>`, `Promise<{ next: Post | null; prev: Post | null }>`
-
-**Example from `app/lib/posts.ts`:**
-```typescript
-export async function getPosts(page = 1): Promise<{
-  posts: Post[]
-  totalPages: number
-  currentPage: number
-}> {
-  const all = await fetchAllPosts()
-  const start = (page - 1) * ITEMS_PER_PAGE
-  const end = start + ITEMS_PER_PAGE
-  const slice = all.slice(start, end)
-  const totalPages = Math.max(1, Math.ceil(all.length / ITEMS_PER_PAGE))
-  return { posts: slice, totalPages, currentPage: page }
-}
-```
+- Functions return typed values with generics: `Promise<Post[]>`, `Promise<T>`
+- Objects containing multiple values: `{ posts: Post[], totalPages: number, currentPage: number }`
+- Nullable returns for optional data: `Post | null`
+- Boolean for operation success: `Promise<boolean>`
 
 ## Module Design
 
 **Exports:**
-- Named exports for functions, types, and components
-- Default exports for React components in pages and components
-- Example exports in library files:
-  - `app/lib/posts.ts`: `export interface Post`, `export function clearPostsCache()`, `export async function getPosts()`
-  - `app/lib/supabase.ts`: `export const supabase`, `export interface Database`, `export const typedSupabase`
-  - `app/components/pagination.tsx`: `export function Pagination(...)`
+- Named exports for utility functions: `export function formatDate()`
+- Named exports for components: `export function Pagination()`
+- Default exports for page components: `export default function Home()`
+- Exported interfaces for type sharing: `export interface Post`
+- Exported constants: `export const DATOCMS_API_URL`
 
 **Barrel Files:**
-- Not used - direct imports from specific files
-- Each component/utility imported directly: `import { Pagination } from "./components/pagination"`
+- Not used in this codebase
+- Components imported directly: `import { Pagination } from "./components/pagination"`
 
-## Async/Await Pattern
+**File Organization:**
+- Each file has single responsibility
+- Utility files contain pure functions
+- API client files (datocms.ts, supabase.ts) handle external service communication
+- Library files (posts.ts, database.ts) provide domain-specific operations
+- Component files export single component
 
-**Server Components:**
-- Async function syntax for page/layout components
-- Props with `Promise` types: `params: Promise<{ slug: string }>`
-- Await props before destructuring: `const params = await searchParams`
-- Suspense boundaries with async components for streaming UI
+## Component Structure
 
-**Client Components:**
-- Use `'use client'` directive
-- Hook-based async patterns with custom hooks: `useAuth()`, `useSupabaseQuery()`
-- State management with `useState` for form data
-- Callback functions for handlers: `const handleInputChange = (e: React.ChangeEvent<...>) => {...}`
+**React Components:**
+- Functional components using async when needed
+- Props typed with inline object type annotations
+- Components use destructuring for props
+- Next.js page components are async by default
+- Suspense boundaries used with fallback loading skeletons
+- Dynamic route parameters accessed via `params` prop (Promise-wrapped in Next.js 15)
 
-## TypeScript Usage
-
-**Strict Mode:**
-- Enabled globally - all code uses strict type checking
-- Types required for all function parameters and returns
-- Generic types used for reusable components: `useSupabaseQuery<T>()`, `fetchData<T>()`
-- Type assertions used sparingly with `as` keyword
-
-**Generic Functions:**
+**Example Pattern:**
 ```typescript
-export async function datocmsRequest<T>(
-  query: string,
-  variables?: Record<string, unknown>,
-): Promise<T> { ... }
-
-export async function fetchData<T>(
-  table: string,
-  options?: {...}
-): Promise<T[]> { ... }
+export function Pagination({
+  currentPage,
+  totalPages,
+}: {
+  currentPage: number
+  totalPages: number
+}) {
+  return (
+    <section className="docs-share">
+      {/* JSX content */}
+    </section>
+  )
+}
 ```
+
+## TypeScript Patterns
+
+**Generics:**
+- Used extensively for database functions: `fetchData<T>()`, `insertData<T>()`
+- Response type inference: `datocmsRequest<{ allComics: Array<...> }>(query)`
+
+**Type Aliases:**
+- Inline type definitions in function signatures
+- Interface usage for complex types: `interface Product`, `interface Post`
+- Const assertions for GraphQL queries: `as const`
+
+**Type Safety:**
+- All variables properly typed
+- Function return types explicitly declared
+- Async functions return `Promise<Type>`
+- Try-catch errors typed as `any` due to unknown error shapes
 
 ---
 

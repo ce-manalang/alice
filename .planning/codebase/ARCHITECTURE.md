@@ -4,191 +4,172 @@
 
 ## Pattern Overview
 
-**Overall:** Next.js server-side rendering with headless CMS integration (DatoCMS as primary content source, Supabase as secondary database)
+**Overall:** Server-Side Rendering (SSR) with Static Generation - Next.js 15 App Router pattern
 
 **Key Characteristics:**
-- Server-side rendered pages with async data fetching
-- Multi-source content strategy (DatoCMS for comics/products, Supabase for auxiliary data)
-- Minimal client-side interactivity (primarily form handling)
-- Static asset serving from AWS S3 CDN
-- Client-side form state management for checkout flow
+- Static site generation with server-side data fetching
+- Headless CMS integration (DatoCMS) for content management
+- Component-based UI with React Server Components
+- Optional database layer for future features (Supabase configured but minimal current usage)
+- Image optimization through Next.js Image component
+- Type-safe API requests to external services
 
 ## Layers
 
-**Presentation Layer (Next.js Pages):**
-- Purpose: Handle HTTP requests, render components, manage page metadata, and coordinate data fetching
-- Location: `app/page.tsx`, `app/[slug]/page.tsx`, `app/shop/page.tsx`, `app/about/page.tsx`, `app/checkout/page.tsx`, `app/layout.tsx`
-- Contains: Page components, Server-side async functions, metadata exports, Suspense boundaries
-- Depends on: Data fetching layer (`app/lib/posts.ts`, `app/lib/datocms.ts`), UI components (`app/components/`), utilities
-- Used by: Next.js router and browser HTTP requests
+**Presentation Layer:**
+- Purpose: Render pages and components to users
+- Location: `app/page.tsx`, `app/[slug]/page.tsx`, `app/shop/page.tsx`, `app/shop/[id]/page.tsx`, `app/about/page.tsx`, `app/components/`, `app/ui/`
+- Contains: Page components (async functions returning JSX), reusable React components for UI patterns (Pagination, LoadingSkeleton, Navigation)
+- Depends on: Data layer (posts, products), utilities for formatting
+- Used by: Next.js router
 
-**Data Fetching Layer:**
-- Purpose: Abstract database and API interactions, transform raw data into app-usable shapes
-- Location: `app/lib/posts.ts`, `app/lib/database.ts`, `app/lib/supabase.ts`, `app/lib/datocms.ts`
-- Contains: Async functions for content retrieval, data mapping/transformation, error handling
-- Depends on: External services (DatoCMS API, Supabase client)
-- Used by: Page components, other data fetching functions
+**Data Layer:**
+- Purpose: Fetch and transform data from external sources (DatoCMS, Supabase)
+- Location: `app/lib/posts.ts`, `app/lib/datocms.ts`, `app/lib/database.ts`, `app/lib/supabase.ts`, `app/lib/datocms-queries.ts`
+- Contains: GraphQL queries, API clients, data transformation/mapping functions, generic database helpers
+- Depends on: Environment variables for API keys and URLs
+- Used by: Page components, route handlers
 
-**Infrastructure/Client Layer:**
-- Purpose: Establish connections to external services, configure authentication
-- Location: `app/lib/supabase.ts`, `app/lib/datocms.ts`
-- Contains: Service client initialization, API configuration, type definitions
-- Depends on: Environment variables, external SDKs (Supabase, fetch API)
-- Used by: Data fetching functions
+**Utilities Layer:**
+- Purpose: Shared helper functions for formatting, markdown processing, and type definitions
+- Location: `app/lib/utils.ts`, `app/lib/markdown.ts`, `app/lib/useSupabase.ts`
+- Contains: Date formatting functions, markdown-to-HTML conversion, hooks for client-side features
+- Depends on: External libraries (remark, rehype, unist)
+- Used by: Page components, data layer
 
-**UI/Component Layer:**
-- Purpose: Render reusable interface elements with minimal state
-- Location: `app/components/` (pagination.tsx, loading-skeleton.tsx, comic-navigation.tsx), `app/ui/`
-- Contains: React components (functional, mostly presentational)
-- Depends on: Next.js components (Image, Link), styling via CSS classes
-- Used by: Page components
-
-**Utility Layer:**
-- Purpose: Provide helper functions for common operations
-- Location: `app/lib/utils.ts`, `app/lib/markdown.ts`
-- Contains: Date formatting, markdown-to-HTML conversion, shared logic
-- Depends on: External libraries (remark, rehype)
-- Used by: Data fetching layer, page components
+**Layout Layer:**
+- Purpose: Common UI structure across all pages (header, navigation, footer)
+- Location: `app/layout.tsx`, global styles in `app/globals.css`
+- Contains: Root metadata configuration, analytics setup (Google Tag Manager/Analytics), base HTML structure
+- Depends on: Next.js metadata API, analytics libraries
+- Used by: All routes via Next.js routing
 
 ## Data Flow
 
-**Comic/Post Display:**
+**Comic Display Flow:**
 
-1. User requests `/` or `/:slug` or paginated route
-2. Next.js calls async page component function
-3. Component calls `getPosts()` or `getPost()` from `app/lib/posts.ts`
-4. `posts.ts` calls `datocmsRequest()` with `ALL_COMICS_QUERY` from `app/lib/datocms-queries.ts`
-5. `datocmsRequest()` makes authenticated GraphQL request to DatoCMS API
-6. Response data is mapped via `mapDatoComicToPost()` (HTML entity decoding, image URL extraction)
-7. Posts are paginated in-memory (10 items per page) or returned as single post
-8. Page component renders posts with images via Next.js `Image` component pointing to AWS S3
-9. HTML with metadata is sent to browser
+1. User requests page (e.g., `/`)
+2. Next.js renders `app/page.tsx` (Server Component)
+3. Page component calls `getPosts(page)` from `app/lib/posts.ts`
+4. `getPosts` calls `datocmsRequest()` with `ALL_COMICS_QUERY`
+5. GraphQL query fetches all comics from DatoCMS via `https://graphql.datocms.com/`
+6. Response mapped through `mapDatoComicToPost()` to normalize shape
+7. Posts sliced for pagination (10 items per page)
+8. Server-rendered HTML with `<Image>` components returned
+9. Browser receives fully-rendered HTML with image URLs from DatoCMS CDN
 
-**Shop/Product Display:**
+**Product Display Flow:**
 
-1. User requests `/shop` or `/shop/:id`
-2. Page component calls `datocmsRequest()` with product GraphQL query
-3. DatoCMS returns product data (name, price, images, description)
-4. Component renders product grid or detail page
-5. Links navigate to `/checkout` with product metadata as search params
+1. User requests `/shop` or `/shop/[id]`
+2. For shop listing: `datocmsRequest()` with inline `PRODUCTS_QUERY` in `app/shop/page.tsx`
+3. For product detail: `SINGLE_PRODUCT_QUERY` fetched with product ID variable
+4. Response includes product data, images, price, description
+5. Server renders page with Next.js Image component for optimization
+6. Metadata generation for SEO via `generateMetadata()` async function
 
-**Checkout Flow:**
+**Individual Comic Page Flow:**
 
-1. User clicks product link with search params (productId, productName, productPrice, productImage)
-2. Checkout page loads as client component (`'use client'`)
-3. Component uses React `useState` to manage form fields (email, address, payment details)
-4. Form submission is currently a no-op (no backend integration)
-5. Order summary displays product details from search params
+1. User navigates to `/{slug}`
+2. `app/[slug]/page.tsx` calls `getPost(slug)`
+3. Fetches all comics (no slug-specific query), finds match via `find()`
+4. Renders comic images, title, body content
+5. Previous/next navigation provided via nav links
 
 **State Management:**
 
-- **Server State:** DatoCMS and Supabase data (stateless, fetched per request)
-- **Client State:** Checkout form state only (`app/checkout/page.tsx` useState hooks)
-- **Caching:** DatoCMS requests revalidate every 60 seconds (Next.js ISR via `next: { revalidate: 60 }`)
+- No client-side state management (Redux, Zustand, etc.)
+- All state is server-side or derived from URL params (pagination page number)
+- Optional Supabase client available but not currently used in main flows
+- Future state management can be added via React Context or hooks (e.g., `app/lib/useSupabase.ts` is available for client-side database calls)
 
 ## Key Abstractions
 
-**Post (Comic):**
-- Purpose: Represents a published comic/article
-- Examples: `app/lib/posts.ts` (type `Post` interface)
-- Pattern: Data class with slug, title, image URLs, date, blurb, body, navigation links
-- Transformation: DatoCMS GraphQL response → `Post` interface via `mapDatoComicToPost()`
+**DatoCMS Request Handler:**
+- Purpose: Encapsulates GraphQL request logic and error handling
+- Examples: `app/lib/datocms.ts`
+- Pattern: `datocmsRequest<T>(query, variables)` - Generic function with type parameter for response shape
 
-**Product:**
-- Purpose: Represents a merchandise item for sale
-- Examples: `app/shop/page.tsx` (interface `Product`)
-- Pattern: Simple data transfer object with id, name, price, images array, alt text
+**Post Mapper:**
+- Purpose: Transform DatoCMS comic record into application-specific Post interface
+- Examples: `mapDatoComicToPost()` in `app/lib/posts.ts`
+- Pattern: Handles HTML entity decoding (comprehensive entity replacement + regex for numeric/hex entities), normalizes image arrays, maps related comic slugs
 
-**Database Operations:**
-- Purpose: Generic CRUD abstractions for Supabase tables
-- Examples: `app/lib/database.ts` functions (fetchData, insertData, updateData, deleteData)
-- Pattern: Generics-based wrapper over Supabase client with error handling
+**Database Helpers:**
+- Purpose: Generic CRUD operations for Supabase tables
+- Examples: `app/lib/database.ts` exports `fetchData`, `insertData`, `updateData`, `deleteData`, `getById`, `uploadFile`, `deleteFile`
+- Pattern: Generic functions with type parameters, composable options object pattern
 
-**DatoCMS Client:**
-- Purpose: Authenticated GraphQL request wrapper
-- Examples: `app/lib/datocms.ts` function `datocmsRequest()`
-- Pattern: Generic async function accepting GraphQL query string, returns typed response
+**Post Interface:**
+- Purpose: Standardized shape for comic data across app
+- Location: `app/lib/posts.ts`
+- Fields: `slug`, `title`, `image_urls[]`, `date`, `blurb`, `body`, `prev_comic_slug`, `next_comic_slug`, `id`
 
 ## Entry Points
 
-**Root Page (`app/page.tsx`):**
-- Location: `app/page.tsx`
-- Triggers: `GET /` HTTP request
-- Responsibilities: Fetch paginated posts, render comic feed, display pagination controls, include global navigation/header/footer
-
-**Comic Detail Page (`app/[slug]/page.tsx`):**
-- Location: `app/[slug]/page.tsx`
-- Triggers: `GET /:slug` HTTP request
-- Responsibilities: Fetch single comic by slug, generate metadata, render full comic with navigation links, handle not-found cases
-
-**Shop Page (`app/shop/page.tsx`):**
-- Location: `app/shop/page.tsx`
-- Triggers: `GET /shop` HTTP request
-- Responsibilities: Fetch products from DatoCMS, render product grid with links to checkout
-
-**Product Detail Page (`app/shop/[id]/page.tsx`):**
-- Location: `app/shop/[id]/page.tsx` (exists but not examined)
-- Triggers: `GET /shop/:id` HTTP request
-- Responsibilities: Likely fetches single product by ID, renders detail page
-
-**Checkout Page (`app/checkout/page.tsx`):**
-- Location: `app/checkout/page.tsx`
-- Triggers: `GET /checkout` HTTP request with search params
-- Responsibilities: Client-side form rendering with product summary, handles form state management
-
-**About Page (`app/about/page.tsx`):**
-- Location: `app/about/page.tsx`
-- Triggers: `GET /about` HTTP request
-- Responsibilities: Static content page about artist, renders bio and image
-
-**Root Layout (`app/layout.tsx`):**
+**Root Layout:**
 - Location: `app/layout.tsx`
-- Triggers: Applied to all routes
-- Responsibilities: Wrap all pages with metadata, Google Analytics/GTM setup, font loading, global CSS
+- Triggers: All requests to the application
+- Responsibilities: Sets global metadata, imports global CSS, initializes analytics (GTM/GA4), wraps all routes with root HTML/body structure
+
+**Home Page:**
+- Location: `app/page.tsx`
+- Triggers: GET `/`
+- Responsibilities: Fetches paginated comic list, renders header/nav/footer, displays ComicsList component with Suspense boundary
+
+**Comic Detail Page:**
+- Location: `app/[slug]/page.tsx`
+- Triggers: GET `/{slug}`
+- Responsibilities: Fetches single comic by slug, generates metadata for SEO, renders comic images and body content, provides navigation to prev/next comics
+
+**Shop Listing:**
+- Location: `app/shop/page.tsx`
+- Triggers: GET `/shop`
+- Responsibilities: Fetches all products from DatoCMS, renders product grid with Links to detail pages
+
+**Product Detail:**
+- Location: `app/shop/[id]/page.tsx`
+- Triggers: GET `/shop/{id}`
+- Responsibilities: Fetches single product, generates metadata, renders product images/price/description, provides checkout link with query params
+
+**About Page:**
+- Location: `app/about/page.tsx`
+- Triggers: GET `/about`
+- Responsibilities: Static content about artist, no data fetching required
 
 ## Error Handling
 
-**Strategy:** Try-catch with console logging, graceful degradation
+**Strategy:** Graceful degradation with try-catch blocks and fallback values
 
 **Patterns:**
 
-- **Data Fetching Errors:** Functions return empty arrays/null on error, logs error to console
-  - `app/lib/posts.ts`: `fetchAllPosts()` catches errors and returns `[]`
-  - `app/lib/database.ts`: Generic `fetchData()` returns `[]` on error, logs with context
-  - `app/lib/datocms.ts`: `datocmsRequest()` throws on GraphQL errors, caller catches
-
-- **Missing Data:** Pages call `notFound()` when data fetch fails or returns null
-  - `app/[slug]/page.tsx`: Calls `notFound()` if comic not found
-
-- **API Errors:** GraphQL errors checked via `if (json.errors)` in `datocmsRequest()`
-
-- **Missing Env Vars:** Throw Error in client initialization if critical env vars missing
-  - `app/lib/supabase.ts`: Throws if NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY missing
-  - `app/lib/datocms.ts`: Throws if DATOCMS_API_TOKEN missing
+- **API Errors:** `datocmsRequest()` throws on HTTP or GraphQL errors, caught in route handlers with console.error
+- **Missing Data:** `getPost()`, `getProductById()` return `null` if not found, routes call `notFound()` which renders 404 page
+- **Fallback Images:** Product detail uses `/assets/images/placeholder.jpg` if images missing
+- **Empty Results:** Functions return empty arrays (`[]`) rather than null on fetch failure to prevent breaking map operations
+- **Database Errors:** `database.ts` functions catch and log errors, return `null` or `false` to signal failure
 
 ## Cross-Cutting Concerns
 
-**Logging:** Console-based via `console.error()` and `console.log()` for debugging
-- Used in: `app/lib/database.ts`, `app/lib/posts.ts`, `app/lib/datocms.ts`
-- Pattern: Logs operation name and error details, no structured logging
+**Logging:** Console-based (console.log, console.error) in data fetching functions, disabled cache clearing in `app/lib/posts.ts`
 
-**Validation:** TypeScript type system, minimal runtime validation
-- Zod available in dependencies but not actively used in current code
-- Form validation in `app/checkout/page.tsx` is client-side setState only
+**Validation:** Zod library available in dependencies but not actively used - TypeScript interfaces provide type safety
 
-**Authentication:**
-- DatoCMS: Bearer token via DATOCMS_API_TOKEN environment variable
-- Supabase: Anonymous key via NEXT_PUBLIC_SUPABASE_ANON_KEY (public client)
-- No user authentication implemented; Supabase client is anonymous
+**Authentication:** Not implemented - site is public. Next-auth configured in package.json but not integrated
 
-**Image Optimization:**
-- Next.js `Image` component with remote URL whitelisting in `next.config.ts`
-- Allowed sources: AWS S3 (s3.us-east-2.amazonaws.com), DatoCMS CDN (datocms-assets.com)
-- Always includes `width`, `height`, `alt` for accessibility
+**Image Handling:**
+- Remote patterns configured in `next.config.ts` for S3 and DatoCMS CDN
+- Next.js Image component with `priority` flag for LCP optimization
+- Responsive sizes with `sizes="100vw"` and dynamic width/height props
 
-**Markdown Processing:**
-- `app/lib/markdown.ts` converts markdown to HTML using remark/rehype pipeline
-- Adds `target="_blank"` and `rel="noopener noreferrer"` to all links for security
+**Metadata & SEO:**
+- Centralized in `app/layout.tsx` for site-wide defaults
+- Dynamic metadata via `generateMetadata()` in detail pages
+- Open Graph and Twitter card support in all routes
+
+**Analytics:**
+- Google Tag Manager (GTM ID via `NEXT_PUBLIC_GTM_ID`)
+- Google Analytics 4 (GA4 measurement ID via `NEXT_PUBLIC_GA_MEASUREMENT_ID`)
+- Conditional initialization based on env var presence
 
 ---
 

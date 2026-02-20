@@ -5,108 +5,131 @@
 ## Languages
 
 **Primary:**
-- TypeScript 5.7.3 - Entire application (React components, Next.js pages, utilities)
-- JSX/TSX - React component syntax throughout `app/` directory
+- TypeScript 5.7.3 - All source code and configuration files
 
 **Secondary:**
-- JavaScript - PostCSS configuration
-- CSS - Global styles in `app/globals.css`
+- JavaScript (Node.js) - Build tooling and package management
 
 ## Runtime
 
 **Environment:**
-- Node.js (version not specified in `.nvmrc` - uses system default)
+- Node.js 18.x or later (recommended)
+- Next.js 15.1.6 (Latest) - Full-stack framework
 
 **Package Manager:**
-- pnpm (lockfile version 9.0)
+- pnpm 9.0 (lockfileVersion)
 - Lockfile: `pnpm-lock.yaml` (present)
 
 ## Frameworks
 
 **Core:**
-- Next.js 15.1.6 - Full-stack framework with App Router
-- React 19.0.0 - UI component library
-- React DOM 19.0.0 - DOM rendering
-
-**Authentication:**
-- next-auth 5.0.0-beta.25 - Authentication management (installed but not actively used in checked files)
+- Next.js 15.1.6 - App Router for SSR/SSG, API routes
+- React 19.0.0 - UI library
+- React DOM 19.0.0 - React rendering
 
 **Styling:**
 - Tailwind CSS 3.4.17 - Utility-first CSS framework
-- @tailwindcss/forms 0.5.10 - Form component styling plugin
+- Tailwind Forms 0.5.10 - Pre-styled form components
 - PostCSS 8.5.1 - CSS transformation tool
-- Autoprefixer 10.4.20 - Browser prefix support
+- Autoprefixer 10.4.20 - CSS vendor prefixing
 
-**Build/Dev:**
-- @next/third-parties 15.2.4 - Google Analytics and GTM integration
+**Authentication & Authorization:**
+- next-auth 5.0.0-beta.25 - Session management (beta, installed but not actively used in current codebase)
+
+**Content Processing:**
+- remark 15.0.1 - Markdown parser
+- remark-parse 11.0.0 - Markdown parsing plugin
+- remark-html 16.0.1 - Markdown to HTML transformation
+- remark-rehype 11.1.1 - Markdown to rehype AST
+- remark-directive 4.0.0 - Directive syntax support
+- rehype-stringify 10.0.1 - rehype to HTML string
+- hast 1.0.0 - HTML AST specification
 
 ## Key Dependencies
 
 **Critical:**
-- @supabase/supabase-js 2.56.0 - Supabase client for database and auth operations (`app/lib/supabase.ts`, `app/lib/database.ts`)
-- bcrypt 5.1.1 - Password hashing utility
-- postgres 3.4.5 - Direct PostgreSQL client driver (supports `NEXT_PUBLIC_API_URL` fallback)
-- zod 3.24.1 - Schema validation library
-- use-debounce 10.0.4 - Debouncing utility for input handlers
+- @supabase/supabase-js 2.56.0 - Postgres database client and auth platform
+  - Used for: Database queries, file storage, real-time subscriptions
+  - Location: `app/lib/supabase.ts`, `app/lib/database.ts`
 
-**UI/UX:**
-- @heroicons/react 2.2.0 - Icon component library
-- clsx 2.1.1 - Conditional class names utility
+- postgres 3.4.5 - PostgreSQL protocol driver
+  - Used for: Direct database connections and advanced queries
 
-**Markdown/Content:**
-- remark 15.0.1 - Markdown processor
-- remark-parse 11.0.0 - Parse markdown
-- remark-html 16.0.1 - Render markdown as HTML
-- remark-directive 4.0.0 - Custom markdown syntax
-- remark-rehype 11.1.1 - Convert remark to rehype AST
-- rehype-stringify 10.0.1 - Stringify rehype AST
-- unist 0.0.1 - Universal Syntax Tree utilities
-- unist-util-visit 5.0.0 - AST visitor utilities
-- hast 1.0.0 - HTML Abstract Syntax Tree
+- bcrypt 5.1.1 - Password hashing
+  - Used for: Secure password encryption (can be integrated with auth flows)
+  - Types: @types/bcrypt 5.0.2
 
-## Configuration
+**UI Components:**
+- @heroicons/react 2.2.0 - SVG icon library (Heroicons)
+  - Used for: Consistent icon components throughout interface
 
-**Environment:**
+- clsx 2.1.1 - Conditional class name utility
+  - Used for: Dynamic Tailwind CSS class combination
 
-Required variables (see `app/lib/supabase.ts`, `app/lib/datocms.ts`, `app/layout.tsx`):
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous/public key
-- `DATOCMS_API_TOKEN` - DatoCMS API token for GraphQL queries
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics 4 measurement ID (optional)
-- `NEXT_PUBLIC_GTM_ID` - Google Tag Manager ID (optional)
-- `NEXT_PUBLIC_API_URL` - External API endpoint (defaults to `http://localhost:3001`)
+- use-debounce 10.0.4 - Debounce hook for React
+  - Used for: Optimizing rapid state changes
 
-Configuration files location:
-- `.env` - Environment variables (git-ignored)
-- `.env.example` - Template for environment setup
-- `.env.local` - Local override (git-ignored)
+**Data Validation:**
+- zod 3.24.1 - TypeScript-first schema validation
+  - Used for: Runtime type checking and data validation
 
-**Build:**
-- `next.config.ts` - Next.js build configuration
-- `tsconfig.json` - TypeScript compiler options
-- `tailwind.config.ts` - Tailwind CSS configuration
+**Content Delivery:**
+- @next/third-parties 15.2.4 - Third-party script optimization
+  - Used for: Safely loading external scripts and libraries
+
+## Configuration Files
+
+**TypeScript:**
+- `tsconfig.json` - Strict mode enabled, ES2017 target, ESNext modules
+- Path alias: `@/*` → `./*` for root-level imports
+
+**Next.js:**
+- `next.config.ts` - Image optimization with remote patterns
+  - AWS S3 bucket: `s3.us-east-2.amazonaws.com` (centimentalcomics.com assets)
+  - DatoCMS CDN: `www.datocms-assets.com` and `images.datocms-assets.com`
+
+**Styling:**
+- `tailwind.config.ts` - Custom theme with blue color overrides and shimmer animation
 - `postcss.config.js` - PostCSS configuration
+
+## Environment Configuration
+
+**Required environment variables:**
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key (safe for client)
+- `DATOCMS_API_TOKEN` - DatoCMS GraphQL API bearer token
+- `NEXT_PUBLIC_API_URL` - Custom API endpoint (defaults to `http://localhost:3001`)
+
+**Files:**
+- `.env.example` - Template with required variables
+- `.env` - Local environment (not committed)
+- `.env.local` - Local overrides for development
 
 ## Platform Requirements
 
 **Development:**
-- Node.js (no specific version specified)
+- Node.js 18.x or later
 - pnpm package manager
+- Turbopack enabled (`next dev --turbopack`)
 
 **Production:**
-- Node.js runtime (Next.js recommends 18+)
-- Vercel or compatible Node.js hosting platform
-- Supabase account for database and auth
-- DatoCMS account for headless CMS content
-- Google Analytics/GTM account for analytics (optional)
-- AWS S3 for image hosting (configured in `next.config.ts` for remote image optimization)
+- Next.js deployment on Vercel (recommended)
+- Static hosting compatible (build output: `.next/`)
+- Environment variables from hosting platform
 
-## External Asset Sources
+## Build & Development
 
-**Remote Images Allowed:**
-- `s3.us-east-2.amazonaws.com` - AWS S3 bucket for comic assets
-- `www.datocms-assets.com` - DatoCMS asset delivery
-- `images.datocms-assets.com` - DatoCMS image optimization
+**Build:**
+- Command: `pnpm build` → `next build`
+- Output: `.next/` directory
+
+**Development:**
+- Command: `pnpm dev` → `next dev --turbopack`
+- Turbopack for fast HMR and builds
+
+**Production:**
+- Command: `pnpm start` → `next start`
+- Requires `pnpm build` first
 
 ---
 

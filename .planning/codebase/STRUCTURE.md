@@ -6,232 +6,199 @@
 
 ```
 alice/
-├── app/                          # Next.js app directory (all routes and components)
-│   ├── (main)/                  # Route group (not actively used)
-│   ├── [slug]/                  # Dynamic route for comic detail pages
-│   │   └── page.tsx             # Single comic page with metadata generation
-│   ├── shop/                    # Shop routes
-│   │   ├── page.tsx             # Shop listing page
-│   │   └── [id]/                # Dynamic product detail route
-│   ├── about/                   # About page
-│   │   └── page.tsx
-│   ├── checkout/                # Checkout page
-│   │   └── page.tsx             # Client-side checkout form
-│   ├── components/              # Reusable UI components
-│   │   ├── pagination.tsx       # Post pagination navigation
-│   │   ├── loading-skeleton.tsx # Suspense fallback UI
-│   │   ├── comic-navigation.tsx # Navigation between comics
-│   │   └── SupabaseExample.tsx  # Example Supabase integration
-│   ├── lib/                     # Utility and data fetching functions
-│   │   ├── posts.ts             # Comic data fetching and transformation
-│   │   ├── datocms.ts           # DatoCMS GraphQL client
-│   │   ├── datocms-queries.ts   # GraphQL query strings
-│   │   ├── database.ts          # Supabase CRUD abstractions
-│   │   ├── supabase.ts          # Supabase client initialization
-│   │   ├── markdown.ts          # Markdown to HTML conversion
-│   │   ├── utils.ts             # Shared utilities (date formatting)
-│   │   └── useSupabase.ts       # Custom hook for Supabase
-│   ├── ui/                      # UI component folder (currently empty)
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx               # Root layout with metadata and analytics
-│   ├── page.tsx                 # Home page with comic feed
-│   ├── robots.ts                # Robots.txt generation
-│   ├── sitemap.ts               # Sitemap generation
-│   └── not-found.tsx            # 404 page
-├── lib/                         # Root-level utilities (empty in current structure)
-├── public/                      # Static assets served directly
-│   ├── assets/
-│   │   ├── css/                 # Custom CSS files
-│   │   │   ├── normalize.css
-│   │   │   ├── skeleton.css
-│   │   │   └── custom.css
-│   │   └── images/              # Static images
-│   │       ├── og-image.jpg     # Open Graph meta image
-│   │       ├── about.jpg        # About page image
-│   │       └── placeholder.jpg  # Product fallback image
-│   ├── favicon.ico
-│   ├── apple-touch-icon.png
-│   ├── android-chrome-*.png
-│   ├── site.webmanifest         # PWA manifest
-│   └── ...
-├── .planning/                   # GSD planning documents
-│   └── codebase/                # This analysis output
-├── node_modules/                # Dependencies (pnpm)
-├── .next/                       # Next.js build output (gitignored)
-├── .git/                        # Git repository
-├── .env                         # Environment variables (not committed)
-├── .env.example                 # Example env file
-├── .env.local                   # Local overrides
-├── .gitignore                   # Git exclusions
-├── package.json                 # Project manifest
-├── pnpm-lock.yaml               # pnpm lockfile
-├── tsconfig.json                # TypeScript configuration
-├── next.config.ts               # Next.js configuration
-├── tailwind.config.ts           # Tailwind CSS configuration
-├── postcss.config.js            # PostCSS configuration
-├── SUPABASE_SETUP.md            # Supabase setup documentation
-└── README.md                    # Project README
+├── app/                        # Next.js App Router directory - contains all routes and components
+│   ├── (main)/                # Route group (unused, for potential future organization)
+│   ├── [slug]/                # Dynamic route for individual comic posts
+│   ├── shop/                  # Shop feature directory
+│   │   ├── [id]/             # Dynamic product detail route
+│   │   └── page.tsx          # Shop listing page
+│   ├── about/                 # Static about page route
+│   ├── checkout/              # Checkout page route
+│   ├── components/            # Reusable React components
+│   ├── ui/                    # UI styles directory
+│   ├── lib/                   # Data fetching and utility functions
+│   ├── layout.tsx             # Root layout - all routes wrap here
+│   ├── page.tsx               # Home page
+│   ├── globals.css            # Global styles for the app
+│   ├── sitemap.ts             # Dynamic sitemap generation
+│   ├── robots.ts              # Robots.txt configuration
+│   └── not-found.tsx          # 404 page
+├── lib/                       # Shared utilities outside app directory
+├── public/                    # Static assets (images, favicon, manifest)
+│   └── assets/               # Images and CSS assets
+├── .planning/                 # Planning and documentation directory
+│   └── codebase/             # GSD codebase analysis documents
+├── .next/                     # Build output (ignored)
+├── tsconfig.json             # TypeScript configuration
+├── next.config.ts            # Next.js configuration
+├── tailwind.config.ts        # Tailwind CSS configuration
+├── postcss.config.js         # PostCSS configuration
+├── package.json              # Dependencies
+├── pnpm-lock.yaml            # pnpm lock file
+└── README.md                 # Project documentation
 ```
 
 ## Directory Purposes
 
-**`app/`:**
-- Purpose: Next.js App Router directory containing all routes, layouts, and components
-- Contains: Page files (`page.tsx`), layouts, dynamic routes, components, and utilities
-- Key files: `layout.tsx` (root), `page.tsx` (home), `[slug]/page.tsx` (comics), `shop/page.tsx` (products)
+**app/:**
+- Purpose: Next.js App Router source directory - contains all routes, pages, layouts, and client/server components
+- Contains: Route handlers, page components, shared components, utilities, and global styles
+- Key files: `layout.tsx` (root layout), `page.tsx` (home), `[slug]/page.tsx` (comic detail), `shop/page.tsx` (shop), `components/` (UI components), `lib/` (data and utilities)
 
-**`app/components/`:**
-- Purpose: Reusable React components used across pages
-- Contains: Pagination, loading skeletons, navigation components
-- Key files: `pagination.tsx`, `loading-skeleton.tsx`
+**app/components/:**
+- Purpose: Reusable React components used across multiple pages
+- Contains: UI components like Pagination, LoadingSkeleton, Navigation, SupabaseExample
+- Key files: `pagination.tsx`, `loading-skeleton.tsx`, `comic-navigation.tsx`
 
-**`app/lib/`:**
-- Purpose: Data fetching, transformation, and utility functions
-- Contains: DatoCMS/Supabase clients, GraphQL queries, data mappers, helpers
-- Key files: `posts.ts` (comic data), `datocms.ts` (API client), `database.ts` (CRUD ops)
+**app/lib/:**
+- Purpose: Data fetching, API integration, and utility functions
+- Contains: DatoCMS GraphQL client, Supabase client and helpers, post/product fetchers, markdown processor, formatting utilities
+- Key files: `datocms.ts` (GraphQL client), `posts.ts` (comic data fetcher), `supabase.ts` (Supabase client), `database.ts` (generic DB helpers), `datocms-queries.ts` (GraphQL queries), `utils.ts` (formatDate), `markdown.ts` (markdown-to-HTML)
 
-**`public/assets/`:**
-- Purpose: Static assets (CSS and images) served directly by Next.js
-- Contains: Normalization CSS, skeleton animations, custom styles, fallback images
-- Key files: `css/custom.css` (main styles), `images/og-image.jpg` (social previews)
+**app/ui/:**
+- Purpose: UI-specific stylesheets
+- Contains: Component-level or feature-level CSS
+- Key files: `global.css` (global styles, currently minimal)
 
-**`.planning/codebase/`:**
-- Purpose: GSD codebase analysis documents
-- Contains: Architecture, structure, conventions analysis
-- Generated by: `/gsd:map-codebase` command
+**lib/:**
+- Purpose: Utilities shared outside the app directory (if needed)
+- Contains: Currently empty - reserved for future shared code
+- Key files: None currently
+
+**public/:**
+- Purpose: Static assets served directly (not processed by Next.js build)
+- Contains: Favicon, images, manifest file, OG images
+- Key files: `assets/images/` (og-image.jpg, about.jpg, placeholder.jpg), `apple-touch-icon.png`, `favicon.ico`, `site.webmanifest`
+
+**.planning/codebase/:**
+- Purpose: GSD (Get Stuff Done) codebase analysis documentation
+- Contains: Architecture, structure, conventions, testing patterns, tech stack, concerns analysis
+- Key files: `ARCHITECTURE.md`, `STRUCTURE.md`, `CONVENTIONS.md`, `TESTING.md`, `STACK.md`, `INTEGRATIONS.md`, `CONCERNS.md`
 
 ## Key File Locations
 
 **Entry Points:**
 
-- `app/layout.tsx`: Root layout wrapping all routes, sets up metadata, Google Analytics, global styles
-- `app/page.tsx`: Home page showing paginated comic feed
-- `app/[slug]/page.tsx`: Dynamic comic detail page with metadata generation
-- `app/shop/page.tsx`: Shop listing page with product grid
-- `app/checkout/page.tsx`: Checkout form page (client-side)
+- `app/layout.tsx`: Root layout - initializes global metadata, analytics, applies global CSS to all routes
+- `app/page.tsx`: Home page - displays paginated list of comics
+- `app/[slug]/page.tsx`: Dynamic comic detail route - renders individual comic with images and body content
+- `app/shop/page.tsx`: Shop listing - displays product grid from DatoCMS
+- `app/shop/[id]/page.tsx`: Product detail - shows individual product with images and checkout button
+- `app/about/page.tsx`: Static about page - contains artist bio
+- `app/checkout/page.tsx`: Checkout page (minimal implementation)
 
 **Configuration:**
 
-- `tsconfig.json`: TypeScript compiler options, path aliases (`@/*` maps to root)
-- `next.config.ts`: Next.js configuration including remote image domains for AWS S3 and DatoCMS CDN
-- `tailwind.config.ts`: Tailwind CSS theme extensions and plugin configuration
-- `package.json`: Project dependencies and scripts
+- `tsconfig.json`: TypeScript compiler options, path alias `@/*` -> `./*`
+- `next.config.ts`: Next.js configuration with remote image patterns for S3 and DatoCMS CDN
+- `tailwind.config.ts`: Tailwind CSS customization
+- `postcss.config.js`: PostCSS (handles Tailwind compilation)
+- `package.json`: Dependencies and build scripts
 
 **Core Logic:**
 
-- `app/lib/posts.ts`: Fetches comics from DatoCMS, handles HTML entity decoding, pagination logic
-- `app/lib/datocms.ts`: GraphQL client wrapper with error handling
-- `app/lib/database.ts`: Generic CRUD functions for Supabase tables
-- `app/lib/datocms-queries.ts`: GraphQL query string constants
+- `app/lib/posts.ts`: Main data layer for comics - exports `getPosts()`, `getPost()`, `getNextPrevPosts()`, `getAllSlugs()`
+- `app/lib/datocms.ts`: GraphQL client for DatoCMS API - exports `datocmsRequest<T>()`
+- `app/lib/datocms-queries.ts`: GraphQL query strings - `ALL_COMICS_QUERY`, `SINGLE_PRODUCT_QUERY`
+- `app/lib/supabase.ts`: Supabase client initialization - exports `supabase`, `typedSupabase`
+- `app/lib/database.ts`: Generic CRUD helpers for Supabase - exports `fetchData`, `insertData`, `updateData`, `deleteData`, `getById`, `uploadFile`, `deleteFile`
+- `app/lib/utils.ts`: Utility functions - exports `formatDate()`
+- `app/lib/markdown.ts`: Markdown processor - exports `markdownToHtml()`
 
 **Testing:**
 
-- No test files currently in codebase
-
-**Static Content:**
-
-- `public/assets/css/custom.css`: Cascading stylesheet with layout and component styles
-- `public/assets/images/`: OG images, placeholders, static images
-- `SUPABASE_SETUP.md`: Database setup documentation
+- No test files currently in codebase (see TESTING.md for setup)
 
 ## Naming Conventions
 
 **Files:**
 
-- Page routes: `page.tsx` (Next.js convention)
-- Components: PascalCase with `.tsx` extension (e.g., `Pagination.tsx`, `LoadingSkeleton.tsx`)
-- Utilities/Data: camelCase with `.ts` extension (e.g., `posts.ts`, `datocms.ts`)
-- Dynamic segments: Square brackets for routes (e.g., `[slug]`, `[id]`)
-- Route groups: Parentheses for non-URL routes (e.g., `(main)`)
+- Page routes: `page.tsx` (lowercase, Next.js convention)
+- Dynamic routes: `[slug].tsx`, `[id].tsx` (brackets for dynamic segments)
+- Layouts: `layout.tsx` (lowercase)
+- Components: `PascalCase.tsx` (e.g., `Pagination.tsx`, `LoadingSkeleton.tsx`)
+- Data/utilities: `camelCase.ts` (e.g., `posts.ts`, `datocms.ts`, `utils.ts`)
+- Config files: lowercase with dots (e.g., `tsconfig.json`, `next.config.ts`, `postcss.config.js`)
 
 **Directories:**
 
-- Lowercase for all directories except special Next.js directories
-- Kebab-case for multi-word directories (none currently)
-- Single word for most directories (`app`, `lib`, `components`, `public`)
+- Route directories: lowercase with hyphens (e.g., `/shop`, `/about`, `/checkout`)
+- Component groups: lowercase (e.g., `components/`, `ui/`, `lib/`)
+- Feature directories: lowercase (e.g., `shop/` for shop feature)
+
+**Variables/Functions:**
+
+- Functions: camelCase (e.g., `formatDate()`, `mapDatoComicToPost()`, `getPosts()`)
+- Constants: UPPER_SNAKE_CASE (e.g., `ALL_COMICS_QUERY`, `ITEMS_PER_PAGE`, `DATOCMS_API_URL`)
+- Interfaces: PascalCase (e.g., `Post`, `Product`, `Database`)
+- Environment variables: UPPER_SNAKE_CASE with optional `NEXT_PUBLIC_` prefix for client-side
 
 ## Where to Add New Code
 
-**New Feature (e.g., new section/page):**
+**New Feature:**
 
-1. Create route in `app/` following Next.js conventions
-2. Create `page.tsx` file in route directory
-3. If data needed, add fetching function to `app/lib/`
-4. Export any shared components to `app/components/`
+Example: Adding a new major section like "Merch"
 
-Example: Adding a "Gallery" section
-- Create: `app/gallery/page.tsx`
-- Data fetching: Add function to `app/lib/posts.ts` or new `app/lib/gallery.ts`
-- Components: Add reusable pieces to `app/components/` (e.g., `GalleryGrid.tsx`)
+1. Create route directory: `app/merch/`
+2. Add main page: `app/merch/page.tsx`
+3. Add dynamic detail page: `app/merch/[id]/page.tsx` (if needed)
+4. Create data fetcher: `app/lib/merch.ts` (following posts.ts pattern)
+5. Add GraphQL queries to: `app/lib/datocms-queries.ts` (if using DatoCMS)
+6. Create reusable component: `app/components/MerchCard.tsx`
+7. Update root layout navigation if needed in `app/page.tsx` or `app/layout.tsx`
 
 **New Component/Module:**
 
-- Reusable components: `app/components/ComponentName.tsx`
-- Page-specific components: Colocate in route folder or as sibling file
-- Data fetching: `app/lib/moduleName.ts`
-- External integrations: Add client initialization in `app/lib/serviceName.ts`
+Example: Adding a reusable UI component
+
+1. Create in: `app/components/MyComponent.tsx`
+2. Use PascalCase filename matching exported component name
+3. Import in consuming pages via: `import { MyComponent } from "@/app/components/MyComponent"`
+4. For shared utilities, add to: `app/lib/utils.ts` or create specific file like `app/lib/myUtility.ts`
 
 **Utilities:**
 
-- Shared helpers: `app/lib/utils.ts` (small utilities)
-- Larger modules: `app/lib/moduleName.ts` (separate file per concern)
-- Type definitions: Add to respective lib file or create `app/lib/types.ts`
+- Shared helpers: `app/lib/utils.ts` or create domain-specific files like `app/lib/validation.ts`, `app/lib/formatting.ts`
+- Data transformers: `app/lib/` directory following pattern of `mapDatoComicToPost()`
+- API clients: `app/lib/` with pattern of `datocms.ts` and `supabase.ts`
+
+**Styling:**
+
+- Global styles: `app/globals.css`
+- Component-specific: Use Tailwind classes in JSX (TailwindCSS configured)
+- Component modules: Can add CSS modules as needed (e.g., `app/components/Button.module.css`)
 
 ## Special Directories
 
-**`app/[slug]/`:**
-- Purpose: Dynamic route for comic/blog post detail pages
-- Generated: No (manually created)
+**app/:**
+- Purpose: Next.js App Router directory - holds all routes and components
+- Generated: No (source code)
 - Committed: Yes
-- Content: Single page component that fetches and renders individual comics by slug parameter
+- Note: This is the main source directory. Files here are compiled by Next.js.
 
-**`app/shop/[id]/`:**
-- Purpose: Dynamic route for individual product detail pages
-- Generated: No (manually created)
+**.next/:**
+- Purpose: Next.js build output - compiled JavaScript, cache, and pre-rendered pages
+- Generated: Yes (by `npm run build` or `next dev`)
+- Committed: No (in .gitignore)
+- Note: Safe to delete - will be regenerated on next build
+
+**public/:**
+- Purpose: Static assets served at root URL (favicon, manifest, images, etc.)
+- Generated: No (source code)
 - Committed: Yes
-- Content: Product detail page (not fully examined but exists)
+- Note: Files are served directly without processing. Image optimization uses next/image instead.
 
-**`.next/`:**
-- Purpose: Next.js build output directory
-- Generated: Yes (by `npm run build`)
-- Committed: No (in `.gitignore`)
-
-**`public/`:**
-- Purpose: Static files served directly by web server
-- Generated: Partially (some images pre-committed)
-- Committed: Yes
-- Content: Favicons, manifest, static assets, CSS files
-
-**`node_modules/`:**
-- Purpose: Installed dependencies (pnpm)
+**node_modules/:**
+- Purpose: Installed npm packages
 - Generated: Yes (by `pnpm install`)
-- Committed: No (in `.gitignore`)
+- Committed: No (in .gitignore)
+- Note: Managed via pnpm-lock.yaml for reproducible installs
 
-## Import Organization
-
-**Path Aliases:**
-
-- `@/*` maps to project root (configured in `tsconfig.json`)
-- Used throughout for clean imports: `@/app/lib/posts` instead of `../../../lib/posts`
-
-**Import Order (observed pattern):**
-
-1. External packages (`react`, `next`, `next/image`, `next/link`, `next/font/google`)
-2. Type imports from Next.js (`type Metadata`, `type React`)
-3. Local absolute imports (`@/app/lib/...`, `@/app/components/...`)
-4. Local relative imports (rare; components in same directory use relative)
-
-Example from `app/page.tsx`:
-```typescript
-import Image from "next/image";
-import Link from "next/link";
-import { getPosts, type Post } from "@/app/lib/posts";
-import { Suspense } from "react";
-import { Pagination } from "./components/pagination";
-import { LoadingSkeleton } from "./components/loading-skeleton";
-import type { Metadata } from "next"
-import { formatDate } from "@/app/lib/utils";
-```
+**app/[slug]/ and app/shop/[id]/**
+- Purpose: Dynamic route segments
+- Pattern: `[paramName]` creates a dynamic segment, becomes `params.paramName`
+- Usage: Access via `const params = await props.params`, then `params.slug` or `params.id`
+- Routes: `/{slug}` and `/shop/{id}` respectively
 
 ---
 

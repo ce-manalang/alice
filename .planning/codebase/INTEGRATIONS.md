@@ -5,147 +5,136 @@
 ## APIs & External Services
 
 **Content Management:**
-- DatoCMS - Headless CMS for comic content
-  - API: GraphQL endpoint at `https://graphql.datocms.com/`
-  - SDK/Client: Fetch-based in `app/lib/datocms.ts`
-  - Auth: Bearer token via `DATOCMS_API_TOKEN`
-  - Queries: Defined in `app/lib/datocms-queries.ts`
-  - Revalidation: 60-second ISR (Incremental Static Regeneration)
+- DatoCMS - Headless CMS for comic and product content
+  - SDK/Client: GraphQL API via `fetch` with custom wrapper
+  - URL: `https://graphql.datocms.com/`
+  - Auth: `DATOCMS_API_TOKEN` (Bearer token)
+  - Implementation: `app/lib/datocms.ts` with request handler
+  - Queries: `app/lib/datocms-queries.ts`
+  - Cache revalidation: 60 seconds
+  - Used for:
+    - Comics listing: `ALL_COMICS_QUERY`
+    - Product details: `SINGLE_PRODUCT_QUERY`
+    - Markdown rendering of content
+
+**Image Hosting:**
+- AWS S3 - Static asset hosting
+  - Bucket: `centimentalcomics.com/assets/images/`
+  - Region: `us-east-2`
+  - Access: HTTPS remote image patterns configured in `next.config.ts`
+  - Used for: Comic images, product images, about page images
+
+**Custom API:**
+- Local/Custom API server
+  - URL: `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:3001`)
+  - Purpose: Can be used for custom backend endpoints
+  - Location: Referenced in `app/lib/posts.ts`
 
 ## Data Storage
 
 **Databases:**
-- Supabase (PostgreSQL)
-  - Connection: `NEXT_PUBLIC_SUPABASE_URL` (public endpoint)
+- Supabase PostgreSQL
+  - Connection: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - Client: `@supabase/supabase-js` v2.56.0
-  - Auth: `NEXT_PUBLIC_SUPABASE_ANON_KEY` (anonymous JWT token)
-  - Location: `app/lib/supabase.ts` (client initialization)
-
-**Database Utilities:**
-- Generic CRUD operations in `app/lib/database.ts`:
-  - `fetchData()` - SELECT with filters, ordering, limits
-  - `insertData()` - INSERT with error handling
-  - `updateData()` - UPDATE by ID
-  - `deleteData()` - DELETE by ID
-  - `getById()` - Single record retrieval
-  - `uploadFile()` - Supabase Storage upload
-  - `deleteFile()` - Supabase Storage deletion
+  - Driver: PostgreSQL over `postgres` v3.4.5
+  - Location: `app/lib/supabase.ts`
+  - Database abstraction layer: `app/lib/database.ts`
+  - Features:
+    - CRUD operations (fetch, insert, update, delete)
+    - File storage and public URL generation
+    - Row-level security (RLS) policies
+    - Real-time subscriptions (available but not actively used)
 
 **File Storage:**
-- Supabase Storage - File uploads and serving
-  - Integrated in `app/lib/database.ts` upload/delete functions
-  - Public URL generation for uploaded files
+- Supabase Storage - Cloud file hosting
+  - Accessed via Supabase client
+  - Functions: `uploadFile()`, `deleteFile()` in `app/lib/database.ts`
+  - Returns public URLs for uploaded files
+  - Bucket-based organization
 
 **Caching:**
-- Next.js built-in caching via ISR
-- 60-second revalidation interval for DatoCMS queries
+- Next.js built-in caching
+  - ISR (Incremental Static Regeneration): DatoCMS queries revalidate every 60 seconds
+  - No external cache service (Redis, Memcached)
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Supabase Auth - Built-in authentication system
-  - Implementation: React hooks in `app/lib/useSupabase.ts`
-  - Supported methods:
-    - Email/password sign-in: `useAuth().signIn(email, password)`
-    - Email/password sign-up: `useAuth().signUp(email, password)`
-    - Sign-out: `useAuth().signOut()`
-  - Session management: Automatic via `onAuthStateChange` listener
-  - User object: Returns full `User` type from `@supabase/supabase-js`
+- Supabase Auth + next-auth
+  - Supabase built-in authentication
+  - Implementation: `app/lib/useSupabase.ts`
+  - Methods:
+    - Email/password sign-in: `supabase.auth.signInWithPassword()`
+    - Email/password sign-up: `supabase.auth.signUp()`
+    - Sign out: `supabase.auth.signOut()`
+  - next-auth beta integration
+    - Package: next-auth 5.0.0-beta.25
+    - Status: Installed but not actively configured in current codebase
 
-**Next-Auth Integration:**
-- next-auth 5.0.0-beta.25 installed but not actively configured in current codebase
+**Session Management:**
+- Supabase Auth state
+  - Uses `supabase.auth.getSession()` for initial session
+  - Listens to auth changes via `supabase.auth.onAuthStateChange()`
+  - Session and user objects available to components
+  - Custom hook: `useAuth()` in `app/lib/useSupabase.ts`
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Console logging via `console.error()` calls in:
-  - `app/lib/datocms.ts` - DatoCMS request errors
-  - `app/lib/database.ts` - Database operation errors
-  - `app/lib/posts.ts` - Post fetching errors
-- No external error tracking service detected
+- Console logging only
+  - Error handling: `console.error()` in `app/lib/database.ts`
+  - No external error tracking (Sentry, Rollbar)
 
 **Logs:**
-- Client-side: Browser console only
-- Server-side: Node.js stdout/stderr (Next.js managed)
-
-**Analytics:**
-- Google Analytics 4
-  - Measurement ID: `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-  - Integration: `GoogleAnalytics` component from `@next/third-parties/google`
-  - Location: `app/layout.tsx` (conditional rendering)
-
-- Google Tag Manager
-  - Container ID: `NEXT_PUBLIC_GTM_ID`
-  - Integration: `GoogleTagManager` component from `@next/third-parties/google`
-  - Location: `app/layout.tsx` (conditional rendering)
+- Browser console (client-side)
+- Server logs via Next.js (server-side)
+- No centralized logging service
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Vercel (implied by Next.js latest and deployment configuration)
-- Next.js 15.x with Turbopack for local dev (`next dev --turbopack`)
+- Vercel (recommended in README)
+- Next.js optimized deployment platform
+- Supports environment variable management
 
 **CI Pipeline:**
-- Not detected - No GitHub Actions, GitLab CI, or other CI config files found
+- Not detected in current codebase
+- Likely handled by Vercel's built-in CI for git integration
 
 ## Environment Configuration
 
 **Required env vars:**
-```
-NEXT_PUBLIC_SUPABASE_URL      # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY # Supabase public key
-DATOCMS_API_TOKEN             # DatoCMS GraphQL token
-```
-
-**Optional env vars:**
-```
-NEXT_PUBLIC_GA_MEASUREMENT_ID # Google Analytics 4 ID
-NEXT_PUBLIC_GTM_ID            # Google Tag Manager ID
-NEXT_PUBLIC_API_URL           # External API (defaults to http://localhost:3001)
-```
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL (public)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anon key (public, safe for client)
+- `DATOCMS_API_TOKEN` - DatoCMS bearer token (secret, server-only)
+- `NEXT_PUBLIC_API_URL` - Custom API endpoint (optional, defaults to localhost:3001)
 
 **Secrets location:**
-- `.env` - Git-ignored local environment file
-- `.env.local` - Git-ignored local overrides
-- `.env.example` - Template for required variables
-
-## Data Flow Integrations
-
-**Comic Content Pipeline:**
-1. DatoCMS → GraphQL API query in `app/lib/posts.ts`
-2. Query via `datocmsRequest()` in `app/lib/datocms.ts`
-3. Response mapping: `mapDatoComicToPost()` transforms DatoCMS schema to app schema
-4. HTML entity decoding for body and blurb content
-5. Pagination: 10 items per page via `getPosts(page)`
-
-**User Data Pipeline:**
-1. Supabase Auth → Session via `useAuth()` hook
-2. Optional: Database operations via `useSupabaseQuery()`, `useSupabaseMutation()` hooks
-3. CRUD operations delegated to `app/lib/database.ts` functions
-
-**Product/Checkout Flow:**
-1. Product data passed via URL search params to `app/checkout/page.tsx`
-2. Form state management in React component (not yet integrated to payment processor)
-3. Mock payment methods shown: Credit card, PayPal, Google Pay
-4. No actual payment processor integration detected (Stripe, Square, etc.)
+- `.env.local` for local development
+- Vercel environment variables for production
+- Never commit `.env` or `.env.local`
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- None detected - No API route handlers for incoming webhooks
+- Not detected
+- Checkout form is client-side only (no server webhook handling)
 
 **Outgoing:**
-- None detected - No webhook triggers to external services
+- DatoCMS queries (fetch requests, not webhooks)
+- Supabase auth state changes (client-side events)
+- File uploads to Supabase Storage
+- No outgoing webhooks to external services
 
-## Third-Party Services Summary
+## Payment Processing
 
-| Service | Type | Status | Config |
-|---------|------|--------|--------|
-| Supabase | Database + Auth | Active | Env vars |
-| DatoCMS | Content CMS | Active | Env var |
-| Google Analytics 4 | Analytics | Optional | Env var |
-| Google Tag Manager | Analytics | Optional | Env var |
-| AWS S3 | Image Hosting | Configured | next.config.ts |
+**Status:** UI Layer Only
+- Checkout page: `app/checkout/page.tsx`
+- Payment methods UI: Credit card, PayPal, Google Pay buttons
+- Implementation status: Form UI built, payment processing not integrated
+- No Stripe, PayPal SDK, or payment gateway currently configured
+- Product data passed via URL params (productId, productName, productPrice, productImage)
+- Form data collected but no backend submission logic
 
 ---
 
