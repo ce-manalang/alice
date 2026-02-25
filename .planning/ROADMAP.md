@@ -37,7 +37,14 @@
 9. All pages are responsive and usable on mobile devices with touch-friendly interactions
 10. Product pages are SEO-optimized with metadata, Open Graph tags, and social media links visible in header/footer
 
-**Plans:** TBD
+**Plans:** 5 plans across 3 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Foundation: types, constants, DatoCMS queries, cache tags (Wave 1)
+- [ ] 01-02-PLAN.md — Design system: layout, Navigation, Footer, Tailwind accent color (Wave 2)
+- [ ] 01-03-PLAN.md — Product browsing: ProductCard, ProductGrid, /shop page, category pages (Wave 2)
+- [ ] 01-04-PLAN.md — Product detail page: SSG, SEO metadata, availability badge (Wave 3)
+- [ ] 01-05-PLAN.md — Content: homepage hero + featured products, About page, FAQ page (Wave 3)
 
 ---
 
@@ -83,7 +90,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Product Catalog & Foundation | 0/4 | Not started | — |
+| 1. Product Catalog & Foundation | 0/5 | Planned | — |
 | 2. Shopping Cart | 0/3 | Not started | — |
 | 3. Checkout & Order Form | 0/2 | Not started | — |
 
@@ -97,4 +104,4 @@
 
 **Research integration:** Phases align with SUMMARY.md recommendations. Phase 1 establishes foundation and avoids critical pitfalls (fetch caching, URL structure, DatoCMS schema). Phase 2 implements proven cart patterns (Zustand or Context with localStorage). Phase 3 completes the flow with Server Actions and order storage.
 
-**Next step:** Run `/gsd:plan-phase 1` to decompose Phase 1 into executable plans.
+**Next step:** Run `/gsd:execute-phase 1` to execute Phase 1 plans.
