@@ -7,12 +7,21 @@ interface ProductCardProps {
   priority?: boolean
 }
 
+/** Format a numeric price from DatoCMS (stored as Float) into a display string */
+function formatPrice(price: number): string {
+  // Prices are stored as whole numbers in PHP (e.g. 300 = PHP 300)
+  return `PHP ${price.toFixed(0)}`
+}
+
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  const isSoldOut = !product.available
+  // available defaults to true until the field is added to DatoCMS
+  const isSoldOut = product.available === false
+  // Use slug for cleaner URLs when available, fall back to id
+  const href = `/shop/${product.slug ?? product.id}`
 
   return (
     <Link
-      href={`/shop/${product.id}`}
+      href={href}
       className={`shop-product-card${isSoldOut ? ' sold-out' : ''}`}
     >
       <div className="shop-product-card__image">
@@ -43,7 +52,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       </div>
       <div className="shop-product-card__body">
         <h3 className="shop-product-card__name">{product.name}</h3>
-        <p className="shop-product-card__price">{product.price}</p>
+        <p className="shop-product-card__price">{formatPrice(product.price)}</p>
         {isSoldOut && (
           <span className="shop-product-card__badge shop-product-card__badge--sold-out">
             Sold Out
