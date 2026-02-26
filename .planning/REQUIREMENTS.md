@@ -10,8 +10,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Catalog
 
 - [x] **CAT-01**: User can browse all products on the shop page with images and prices
-- [ ] **CAT-02**: User can view product detail page with images, price, description, and availability status
-- [ ] **CAT-03**: User can see featured products highlighted on the homepage
+- [x] **CAT-02**: User can view product detail page with images, price, description, and availability status
+- [x] **CAT-03**: User can see featured products highlighted on the homepage
 - [x] **CAT-04**: User can browse products organized by category (Zines, Apparel, Stationery, Pins)
 
 ### Cart
@@ -29,8 +29,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Content
 
-- [ ] **CONT-01**: User can view About page with brand story and educational mission
-- [ ] **CONT-02**: User can view FAQ page with answers about ordering, fulfillment, availability, and pre-orders
+- [x] **CONT-01**: User can view About page with brand story and educational mission
+- [x] **CONT-02**: User can view FAQ page with answers about ordering, fulfillment, availability, and pre-orders
 
 ### Design
 
@@ -40,7 +40,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Technical
 
-- [ ] **TECH-01**: Product pages have SEO metadata and Open Graph tags
+- [x] **TECH-01**: Product pages have SEO metadata and Open Graph tags
 - [x] **TECH-02**: Product data is fetched from DatoCMS via GraphQL
 - [x] **TECH-03**: Social media links (Instagram, Twitter) displayed in site header/footer
 
@@ -86,8 +86,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | CAT-01 | Phase 1 | Complete |
-| CAT-02 | Phase 1 | Pending |
-| CAT-03 | Phase 1 | Pending |
+| CAT-02 | Phase 1 | Complete |
+| CAT-03 | Phase 1 | Complete |
 | CAT-04 | Phase 1 | Complete |
 | CART-01 | Phase 2 | Pending |
 | CART-02 | Phase 2 | Pending |
@@ -96,12 +96,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHKT-01 | Phase 3 | Pending |
 | CHKT-02 | Phase 3 | Pending |
 | CHKT-03 | Phase 3 | Pending |
-| CONT-01 | Phase 1 | Pending |
-| CONT-02 | Phase 1 | Pending |
+| CONT-01 | Phase 1 | Complete |
+| CONT-02 | Phase 1 | Complete |
 | DSGN-01 | Phase 1 | Complete |
 | DSGN-02 | Phase 1 | Complete |
 | DSGN-03 | Phase 1 | Complete |
-| TECH-01 | Phase 1 | Pending |
+| TECH-01 | Phase 1 | Complete |
 | TECH-02 | Phase 1 | Complete |
 | TECH-03 | Phase 1 | Complete |
 

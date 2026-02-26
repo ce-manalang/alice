@@ -2,7 +2,7 @@
 
 **Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
 **Updated:** 2026-02-26
-**Status:** Phase 1 Execution In Progress — Plan 03 Complete
+**Status:** Phase 1 Complete — All 5 Plans Delivered
 
 ---
 
@@ -21,14 +21,14 @@
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** 01 — Product Catalog & Foundation (Plan 3/5 complete)
+**Phase:** 01 — Product Catalog & Foundation (5/5 complete)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Phase 1 Plan 04
+**Next:** Phase 2 — Shopping Cart
 
 **Progress:**
 ```
-Phase 1:    [██████░░░░] 60% (3/5 plans)
-Execution:  [██████░░░░░░░░░░░░░░] In Progress
+Phase 1:    [██████████] 100% (5/5 plans) — COMPLETE
+Execution:  [████████░░░░░░░░░░░░] Phase 1 Complete
 ```
 
 ---
@@ -78,6 +78,11 @@ Execution:  [██████░░░░░░░░░░░░░░] In Pr
 | Unified [slug] route for shop | Committed | Handles both /shop/zines (category) and /shop/slug (product) — avoids Next.js dynamic segment conflict |
 | Product URLs use DatoCMS slug field | Committed | Human-readable URLs (/shop/love-letters-to-ruby) rather than opaque IDs |
 | DatoCMS price is Float not String | Committed | formatPrice() converts to PHP display string; available/category fields not yet in schema |
+| Homepage hero uses "CS education, made with care." | Committed | Direct, brand-true, educational mission |
+| FAQ and About content hardcoded | Committed | Content rarely changes; no CMS overhead justified |
+| Accordion uses HTML details/summary | Committed | Zero-JS, accessible by default, no library needed |
+| Featured products fallback strategy | Committed | Try FEATURED_PRODUCTS_QUERY first, fall back to first N from PRODUCTS_QUERY |
+| Comics homepage fully replaced | Committed | Old comics listing removed; comics routes at /[slug] unaffected |
 
 ### Critical Pitfalls to Avoid
 
@@ -126,25 +131,31 @@ Execution:  [██████░░░░░░░░░░░░░░] In Pr
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 1 Plan 03 — ProductCard, ProductGrid, /shop page, /shop/[slug] unified route
+**Last Action:** Completed Phase 1 Plan 05 — Homepage (hero + featured products), About page, FAQ page, Accordion component
 
-**Stopped At:** Completed 01-03-PLAN.md
+**Stopped At:** Completed 01-05-PLAN.md
 
-**Context Preserved:** All execution artifacts written to disk
+**Context Preserved:** All Phase 1 execution artifacts written to disk
 - `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
 - `.planning/phases/01-product-catalog-foundation/01-02-SUMMARY.md` — Plan 02 summary
 - `.planning/phases/01-product-catalog-foundation/01-03-SUMMARY.md` — Plan 03 summary
+- `.planning/phases/01-product-catalog-foundation/01-04-SUMMARY.md` — Plan 04 summary
+- `.planning/phases/01-product-catalog-foundation/01-05-SUMMARY.md` — Plan 05 summary
 - `app/lib/types.ts` — Product type updated (price: number, slug field, optional available/category)
-- `app/lib/constants.ts` — Shared constants
+- `app/lib/constants.ts` — Shared constants (FEATURED_PRODUCT_COUNT=4)
 - `app/lib/datocms-queries.ts` — Queries updated to match actual DatoCMS schema
 - `app/lib/datocms.ts` — Cache tags enabled
 - `app/components/ProductCard.tsx` — Reusable product card with sold-out dimming
 - `app/components/ProductGrid.tsx` — Responsive grid wrapper
+- `app/components/Accordion.tsx` — Zero-JS accordion (details/summary HTML)
 - `app/components/Navigation.tsx` — Sticky header (Plan 02)
 - `app/components/Footer.tsx` — Footer with social links (Plan 02)
+- `app/page.tsx` — Shop homepage: hero + featured products row
+- `app/about/page.tsx` — Static About page with brand story
+- `app/faq/page.tsx` — Static FAQ page with 4 topic sections
 - `app/shop/page.tsx` — SSG shop index with category nav
 - `app/shop/[slug]/page.tsx` — Unified route: category pages + product detail
-- `app/globals.css` — Shop design system CSS classes
+- `app/globals.css` — Shop design system CSS classes (includes featured-row)
 
 ---
 
@@ -173,4 +184,4 @@ cat .planning/REQUIREMENTS.md
 
 ---
 
-*State snapshot: 2026-02-26 — Phase 1 Plan 03 complete, Plans 04 and 05 remaining*
+*State snapshot: 2026-02-26 — Phase 1 COMPLETE (5/5 plans). Ready for Phase 2: Shopping Cart.*
