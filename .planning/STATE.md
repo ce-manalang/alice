@@ -2,7 +2,7 @@
 
 **Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
 **Updated:** 2026-02-26
-**Status:** Phase 1 Execution In Progress — Plan 02 Complete (awaiting human-verify)
+**Status:** Phase 1 Execution In Progress — Plan 03 Complete
 
 ---
 
@@ -21,14 +21,14 @@
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** 01 — Product Catalog & Foundation (Plan 2/5 complete)
+**Phase:** 01 — Product Catalog & Foundation (Plan 3/5 complete)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Phase 1 Plan 03 (Wave 2 parallel plans)
+**Next:** Phase 1 Plan 04
 
 **Progress:**
 ```
-Phase 1:    [████░░░░░░] 40% (2/5 plans)
-Execution:  [████░░░░░░░░░░░░░░░░] In Progress
+Phase 1:    [██████░░░░] 60% (3/5 plans)
+Execution:  [██████░░░░░░░░░░░░░░] In Progress
 ```
 
 ---
@@ -75,6 +75,9 @@ Execution:  [████░░░░░░░░░░░░░░░░] In Pr
 | Accent color #ec4899 (pink-500) | Committed | Matches existing .pay-now-btn brand color for indie/zine aesthetic |
 | shop-* CSS prefix convention | Committed | All design system classes use this prefix to avoid collision with comic page CSS |
 | Inter via next/font/google | Committed | Font optimization (subsetting, no layout shift); existing page.tsx nav duplication resolved in Plan 05 |
+| Unified [slug] route for shop | Committed | Handles both /shop/zines (category) and /shop/slug (product) — avoids Next.js dynamic segment conflict |
+| Product URLs use DatoCMS slug field | Committed | Human-readable URLs (/shop/love-letters-to-ruby) rather than opaque IDs |
+| DatoCMS price is Float not String | Committed | formatPrice() converts to PHP display string; available/category fields not yet in schema |
 
 ### Critical Pitfalls to Avoid
 
@@ -123,22 +126,25 @@ Execution:  [████░░░░░░░░░░░░░░░░] In Pr
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 1 Plan 02 — design system, Navigation/Footer components, root layout with Inter font
+**Last Action:** Completed Phase 1 Plan 03 — ProductCard, ProductGrid, /shop page, /shop/[slug] unified route
 
-**Stopped At:** Completed 01-02-PLAN.md — awaiting human-verify checkpoint
+**Stopped At:** Completed 01-03-PLAN.md
 
 **Context Preserved:** All execution artifacts written to disk
 - `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
 - `.planning/phases/01-product-catalog-foundation/01-02-SUMMARY.md` — Plan 02 summary
-- `app/lib/types.ts` — Product interface and category/availability types
-- `app/lib/constants.ts` — Shared constants (includes SOCIAL_LINKS)
-- `app/lib/datocms-queries.ts` — 5 product queries + existing comics query
+- `.planning/phases/01-product-catalog-foundation/01-03-SUMMARY.md` — Plan 03 summary
+- `app/lib/types.ts` — Product type updated (price: number, slug field, optional available/category)
+- `app/lib/constants.ts` — Shared constants
+- `app/lib/datocms-queries.ts` — Queries updated to match actual DatoCMS schema
 - `app/lib/datocms.ts` — Cache tags enabled
-- `app/components/Navigation.tsx` — Sticky header with shop/about/faq links
-- `app/components/Footer.tsx` — Footer with Instagram/Twitter social links
-- `app/layout.tsx` — Root layout with Inter font, Navigation + Footer
-- `tailwind.config.ts` — Accent color (#ec4899) and Inter font family
-- `app/globals.css` — Shop design system CSS classes appended
+- `app/components/ProductCard.tsx` — Reusable product card with sold-out dimming
+- `app/components/ProductGrid.tsx` — Responsive grid wrapper
+- `app/components/Navigation.tsx` — Sticky header (Plan 02)
+- `app/components/Footer.tsx` — Footer with social links (Plan 02)
+- `app/shop/page.tsx` — SSG shop index with category nav
+- `app/shop/[slug]/page.tsx` — Unified route: category pages + product detail
+- `app/globals.css` — Shop design system CSS classes
 
 ---
 
@@ -167,4 +173,4 @@ cat .planning/REQUIREMENTS.md
 
 ---
 
-*State snapshot: 2026-02-26 — Phase 1 Plan 01 complete, Wave 2 unblocked*
+*State snapshot: 2026-02-26 — Phase 1 Plan 03 complete, Plans 04 and 05 remaining*

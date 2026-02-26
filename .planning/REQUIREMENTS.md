@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Catalog
 
-- [ ] **CAT-01**: User can browse all products on the shop page with images and prices
+- [x] **CAT-01**: User can browse all products on the shop page with images and prices
 - [ ] **CAT-02**: User can view product detail page with images, price, description, and availability status
 - [ ] **CAT-03**: User can see featured products highlighted on the homepage
-- [ ] **CAT-04**: User can browse products organized by category (Zines, Apparel, Stationery, Pins)
+- [x] **CAT-04**: User can browse products organized by category (Zines, Apparel, Stationery, Pins)
 
 ### Cart
 
@@ -85,10 +85,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAT-01 | Phase 1 | Pending |
+| CAT-01 | Phase 1 | Complete |
 | CAT-02 | Phase 1 | Pending |
 | CAT-03 | Phase 1 | Pending |
-| CAT-04 | Phase 1 | Pending |
+| CAT-04 | Phase 1 | Complete |
 | CART-01 | Phase 2 | Pending |
 | CART-02 | Phase 2 | Pending |
 | CART-03 | Phase 2 | Pending |
