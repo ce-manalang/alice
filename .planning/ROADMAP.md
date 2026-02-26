@@ -37,7 +37,7 @@
 9. All pages are responsive and usable on mobile devices with touch-friendly interactions
 10. Product pages are SEO-optimized with metadata, Open Graph tags, and social media links visible in header/footer
 
-**Plans:** 1/5 plans executed
+**Plans:** 2/5 plans executed
 
 Plans:
 - [ ] 01-01-PLAN.md — Foundation: types, constants, DatoCMS queries, cache tags (Wave 1)
@@ -90,7 +90,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Product Catalog & Foundation | 1/5 | In Progress|  |
+| 1. Product Catalog & Foundation | 2/5 | In Progress|  |
 | 2. Shopping Cart | 0/3 | Not started | — |
 | 3. Checkout & Order Form | 0/2 | Not started | — |
 

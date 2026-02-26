@@ -2,7 +2,7 @@
 
 **Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
 **Updated:** 2026-02-26
-**Status:** Phase 1 Execution In Progress — Plan 01 Complete
+**Status:** Phase 1 Execution In Progress — Plan 02 Complete (awaiting human-verify)
 
 ---
 
@@ -21,14 +21,14 @@
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** 01 — Product Catalog & Foundation (Plan 1/5 complete)
+**Phase:** 01 — Product Catalog & Foundation (Plan 2/5 complete)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Phase 1 Plan 02 (Wave 2 parallel plans)
+**Next:** Phase 1 Plan 03 (Wave 2 parallel plans)
 
 **Progress:**
 ```
-Phase 1:    [██░░░░░░░░] 20% (1/5 plans)
-Execution:  [██░░░░░░░░░░░░░░░░░░] In Progress
+Phase 1:    [████░░░░░░] 40% (2/5 plans)
+Execution:  [████░░░░░░░░░░░░░░░░] In Progress
 ```
 
 ---
@@ -72,6 +72,9 @@ Execution:  [██░░░░░░░░░░░░░░░░░░] In Pr
 | ProductCategory as union type | Committed | Simpler than enum, compatible with DatoCMS string fields |
 | Cache tags at datocmsRequest level | Committed | All fetches tagged 'products' for on-demand revalidation |
 | Product.available as boolean | Committed | DatoCMS boolean field; UI derives label from value |
+| Accent color #ec4899 (pink-500) | Committed | Matches existing .pay-now-btn brand color for indie/zine aesthetic |
+| shop-* CSS prefix convention | Committed | All design system classes use this prefix to avoid collision with comic page CSS |
+| Inter via next/font/google | Committed | Font optimization (subsetting, no layout shift); existing page.tsx nav duplication resolved in Plan 05 |
 
 ### Critical Pitfalls to Avoid
 
@@ -120,16 +123,22 @@ Execution:  [██░░░░░░░░░░░░░░░░░░] In Pr
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 1 Plan 01 — data foundation (types, constants, DatoCMS queries, cache tags)
+**Last Action:** Completed Phase 1 Plan 02 — design system, Navigation/Footer components, root layout with Inter font
 
-**Stopped At:** Completed 01-01-PLAN.md
+**Stopped At:** Completed 01-02-PLAN.md — awaiting human-verify checkpoint
 
 **Context Preserved:** All execution artifacts written to disk
 - `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
+- `.planning/phases/01-product-catalog-foundation/01-02-SUMMARY.md` — Plan 02 summary
 - `app/lib/types.ts` — Product interface and category/availability types
-- `app/lib/constants.ts` — Shared constants
+- `app/lib/constants.ts` — Shared constants (includes SOCIAL_LINKS)
 - `app/lib/datocms-queries.ts` — 5 product queries + existing comics query
 - `app/lib/datocms.ts` — Cache tags enabled
+- `app/components/Navigation.tsx` — Sticky header with shop/about/faq links
+- `app/components/Footer.tsx` — Footer with Instagram/Twitter social links
+- `app/layout.tsx` — Root layout with Inter font, Navigation + Footer
+- `tailwind.config.ts` — Accent color (#ec4899) and Inter font family
+- `app/globals.css` — Shop design system CSS classes appended
 
 ---
 

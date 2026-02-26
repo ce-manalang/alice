@@ -34,15 +34,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Design
 
-- [ ] **DSGN-01**: Site has a playful, zine-like visual aesthetic matching the centimentalcomics brand
-- [ ] **DSGN-02**: All pages are mobile responsive with touch-friendly interactions
-- [ ] **DSGN-03**: Site has clear navigation with header and product categories
+- [x] **DSGN-01**: Site has a playful, zine-like visual aesthetic matching the centimentalcomics brand
+- [x] **DSGN-02**: All pages are mobile responsive with touch-friendly interactions
+- [x] **DSGN-03**: Site has clear navigation with header and product categories
 
 ### Technical
 
 - [ ] **TECH-01**: Product pages have SEO metadata and Open Graph tags
 - [x] **TECH-02**: Product data is fetched from DatoCMS via GraphQL
-- [ ] **TECH-03**: Social media links (Instagram, Twitter) displayed in site header/footer
+- [x] **TECH-03**: Social media links (Instagram, Twitter) displayed in site header/footer
 
 ## v2 Requirements
 
@@ -98,12 +98,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHKT-03 | Phase 3 | Pending |
 | CONT-01 | Phase 1 | Pending |
 | CONT-02 | Phase 1 | Pending |
-| DSGN-01 | Phase 1 | Pending |
-| DSGN-02 | Phase 1 | Pending |
-| DSGN-03 | Phase 1 | Pending |
+| DSGN-01 | Phase 1 | Complete |
+| DSGN-02 | Phase 1 | Complete |
+| DSGN-03 | Phase 1 | Complete |
 | TECH-01 | Phase 1 | Pending |
 | TECH-02 | Phase 1 | Complete |
-| TECH-03 | Phase 1 | Pending |
+| TECH-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 19 total
