@@ -1,18 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Coming_Soon } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google"
+import Navigation from "@/app/components/Navigation"
+import Footer from "@/app/components/Footer"
 
-const comingSoon = Coming_Soon({
-  weight: "400",
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
 })
 
 export const metadata: Metadata = {
   title: {
-		template: "centimentalcomics: %s",
+    template: "centimentalcomics: %s",
     default: "centimentalcomics",
   },
   description: "some comics about art and internet",
@@ -67,17 +68,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-	// Get the GTM ID from environment variables
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID
-	// Get GA4 measurement ID
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
   return (
     <html lang="en">
-			{gtmId && <GoogleTagManager gtmId={gtmId} />}
-			{gaId && <GoogleAnalytics gaId={gaId} />}
-      <body className={comingSoon.className}>{children}</body>
+      {gtmId && <GoogleTagManager gtmId={gtmId} />}
+      {gaId && <GoogleAnalytics gaId={gaId} />}
+      <body className={inter.className} style={{ margin: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navigation />
+        <main style={{ flex: 1 }}>
+          {children}
+        </main>
+        <Footer />
+      </body>
     </html>
   )
 }
-
