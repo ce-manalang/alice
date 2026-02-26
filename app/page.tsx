@@ -1,141 +1,137 @@
-import Image from "next/image";
-import Link from "next/link";
-import { getPosts, type Post } from "@/app/lib/posts";
-import { Suspense } from "react";
-import { Pagination } from "./components/pagination";
-import { LoadingSkeleton } from "./components/loading-skeleton";
-import type { Metadata } from "next"
-import { formatDate } from "@/app/lib/utils";
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { datocmsRequest } from '@/app/lib/datocms'
+import { FEATURED_PRODUCTS_QUERY, PRODUCTS_QUERY } from '@/app/lib/datocms-queries'
+import ProductCard from '@/app/components/ProductCard'
+import type { Product } from '@/app/lib/types'
+import { FEATURED_PRODUCT_COUNT } from '@/app/lib/constants'
+
+export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: "centimentalcomics",
-  alternates: {
-    canonical: "/",
-  },
+  title: 'centimentalcomics',
+  description: 'Educational CS products with personality — zines, pins, stationery, and apparel for CS students and educators.',
+  alternates: { canonical: '/' },
   openGraph: {
-    title: "centimentalcomics",
-    description: "some comics about art and internet",
+    title: 'centimentalcomics',
+    description: 'Educational CS products with personality.',
+    url: '/',
   },
 }
 
-interface HomeProps {
-  searchParams: Promise<{ page?: string }>
+async function getFeaturedProducts(): Promise<Product[]> {
+  try {
+    // Try to fetch products marked as featured in DatoCMS.
+    // FEATURED_PRODUCTS_QUERY currently returns most-recent products (featured field not yet in DatoCMS schema).
+    const data = await datocmsRequest<{ allProducts: Product[] }>(FEATURED_PRODUCTS_QUERY, {
+      first: FEATURED_PRODUCT_COUNT,
+    })
+    if (data.allProducts && data.allProducts.length > 0) {
+      return data.allProducts
+    }
+  } catch {
+    // Featured field may not exist in DatoCMS schema yet — fall through to fallback
+  }
+
+  // Fallback: use first N products from all products query
+  try {
+    const data = await datocmsRequest<{ allProducts: Product[] }>(PRODUCTS_QUERY)
+    return (data.allProducts || []).slice(0, FEATURED_PRODUCT_COUNT)
+  } catch {
+    return []
+  }
 }
 
-export default async function Home({ searchParams }: HomeProps) {
-  const params = await searchParams
-  const currentPage = params.page ? Number.parseInt(params.page) : 1
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts()
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1 className="title">
-          <a href="/">centimentalcomics</a>
-        </h1>
-        <h2>some comics about art and internet</h2>
-        <div className="value-props row"></div>
-      </header>
-      <div className="navbar-spacer"></div>
-      <nav className="navbar">
-        <div className="container">
-          <ul className="navbar-list">
-            <li className="navbar-item">
-              <a className="navbar-link" href="/">
-                home
-              </a>
-            </li>
-            <li className="navbar-item">
-              <a className="navbar-link" href="/shop">
-                shop
-              </a>
-            </li>
-            <li className="navbar-item">
-              <a className="navbar-link" href="about">
-                about
-              </a>
-            </li>
-            {/*<li className="navbar-item">
-              <a className="navbar-link" href="#" data-popover="#codeNavPopover">stories</a>
-              <div id="codeNavPopover" className="popover">
-                <ul className="popover-list">
-                  <li className="popover-item">
-                    <a className="popover-link">you asked for space</a>
-                  </li>
-                  <li className="popover-item">
-                    <a className="popover-link">love letter to ruby</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li className="navbar-item">
-              <a className="navbar-link" href="subscribe">more</a>
-            </li>*/}
-          </ul>
+    <div className="shop-page">
+      {/* Hero section */}
+      <section style={{
+        padding: '5rem 0 3rem',
+        borderBottom: '1px solid #e5e7eb',
+      }}>
+        <div className="shop-container">
+          <div style={{ maxWidth: '560px' }}>
+            <h1 style={{
+              fontFamily: "'Inter', system-ui, sans-serif",
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              fontWeight: 700,
+              color: '#111111',
+              margin: '0 0 1rem',
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+            }}>
+              CS education, made with care.
+            </h1>
+            <p style={{
+              fontFamily: "'Inter', system-ui, sans-serif",
+              fontSize: '1.0625rem',
+              color: '#6b7280',
+              margin: '0 0 2rem',
+              lineHeight: 1.6,
+            }}>
+              Zines, pins, stationery, and apparel that make computer science feel human — for students, educators, and curious minds.
+            </p>
+            <Link
+              href="/shop"
+              style={{
+                display: 'inline-block',
+                padding: '0.75rem 1.75rem',
+                backgroundColor: '#ec4899',
+                color: '#ffffff',
+                textDecoration: 'none',
+                borderRadius: '6px',
+                fontFamily: "'Inter', system-ui, sans-serif",
+                fontWeight: 600,
+                fontSize: '0.9375rem',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Browse the shop
+            </Link>
+          </div>
         </div>
-      </nav>
-
-      <Suspense fallback={<LoadingSkeleton />}>
-        <ComicsList page={currentPage} />
-      </Suspense>
-
-      {/* <section className="docs-share"> */}
-      {/* <p className="u-text-center u-margin-0"> */}
-      {/* &lt;&lt; newer 1<a href="pages-2">2</a> */}
-      {/* <a href="pages-3">3</a> */}
-      {/* <a href="pages-4">4</a> */}
-      {/* <a href="pages-5">5</a> */}
-      {/* <a href="pages-2">older &gt;&gt;</a> */}
-      {/* </p> */}
-      {/* <span class="docs-header">further reading</span> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-instagram" href="https://instagram.com/centimentalcomics" target="_blank" alt="centimentalcomics instagram" title="https://instagram.com/centimentalcomics">instagram</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-twitter" href="https://twitter.com/centimentalcomx" target="_blank" alt="centimentalcomics twitter" title="https://twitter.com/centimentalcomx">twitter</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-facebook" href="https://facebook.com/centimentalcomics" target="_blank" alt="centimentalcomics facebook" title="https://facebook.com/centimentalcomics">facebook</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-tumblr" href="https://centimentalcomics.tumblr.com" target="_blank" alt="centimentalcomics facebook" title="https://centimentalcomics.tumblr.com">tumblr</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-email" href="mailto:cm@centimentalcomics.com" target="_blank" alt="centimentalcomics email" title="mailto:cm@centimentalcomics.com">email</a> */}
-      {/* </section> */}
-
-      <section className="footer">
-        <h3 className="u-text-center">© 2025 | made in ph 💘</h3>
       </section>
+
+      {/* Featured products section */}
+      {featuredProducts.length > 0 && (
+        <section style={{ padding: '3rem 0 4rem' }}>
+          <div className="shop-container">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.5rem' }}>
+              <h2 style={{
+                fontFamily: "'Inter', system-ui, sans-serif",
+                fontSize: '1rem',
+                fontWeight: 700,
+                color: '#111111',
+                margin: 0,
+                letterSpacing: '-0.01em',
+              }}>
+                Featured
+              </h2>
+              <Link
+                href="/shop"
+                style={{
+                  fontFamily: "'Inter', system-ui, sans-serif",
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  textDecoration: 'none',
+                }}
+              >
+                View all →
+              </Link>
+            </div>
+
+            {/* Horizontal row of featured product cards */}
+            <div className="featured-row">
+              {featuredProducts.map((product, idx) => (
+                <ProductCard key={product.id} product={product} priority={idx === 0} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
-  );
-}
-
-async function ComicsList({ page }: { page: number }) {
-  const { posts, totalPages, currentPage } = await getPosts(page);
-
-  return (
-    <>
-      {posts.map((post: Post, index: number) => (
-        <article key={index} className="docs-section">
-          {
-						post.image_urls.map((image_url, index) => (
-							<div key={index}>
-								<Link href={`/${post.slug}`}>
-									<Image
-										src={image_url}
-										alt={post.title}
-										width="0"
-										height="0"
-										sizes="100vw"
-										priority={index === 0}
-										style={{ width: "100%", height: "auto" }}
-									/>
-								</Link>
-							</div>
-						))
-          }
-          <h3 className="u-pull-right">
-            <strong>{formatDate(post.date)}</strong>
-          </h3>
-          <h2 className="docs-header">
-            <Link href={`/${post.slug}`}>{post.title}</Link>
-          </h2>
-          <div dangerouslySetInnerHTML={{ __html: post.blurb.replace('</p>', ' <a href="/' + post.slug + '">read more</a></p>') }} />
-        </article>
-      ))}
-
-      <Pagination currentPage={currentPage} totalPages={totalPages} />
-    </>
-  );
+  )
 }
