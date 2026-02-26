@@ -41,7 +41,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Technical
 
 - [ ] **TECH-01**: Product pages have SEO metadata and Open Graph tags
-- [ ] **TECH-02**: Product data is fetched from DatoCMS via GraphQL
+- [x] **TECH-02**: Product data is fetched from DatoCMS via GraphQL
 - [ ] **TECH-03**: Social media links (Instagram, Twitter) displayed in site header/footer
 
 ## v2 Requirements
@@ -102,7 +102,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DSGN-02 | Phase 1 | Pending |
 | DSGN-03 | Phase 1 | Pending |
 | TECH-01 | Phase 1 | Pending |
-| TECH-02 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Complete |
 | TECH-03 | Phase 1 | Pending |
 
 **Coverage:**

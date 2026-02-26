@@ -1,8 +1,8 @@
 # Project State: Centimentalcomics Shop
 
 **Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
-**Updated:** 2026-02-20
-**Status:** Planning Complete — Ready for Phase 1 Planning
+**Updated:** 2026-02-26
+**Status:** Phase 1 Execution In Progress — Plan 01 Complete
 
 ---
 
@@ -21,14 +21,14 @@
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** Planning Complete
+**Phase:** 01 — Product Catalog & Foundation (Plan 1/5 complete)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Phase 1 Planning
+**Next:** Phase 1 Plan 02 (Wave 2 parallel plans)
 
 **Progress:**
 ```
-Planning:      ████████████████████ 100% Complete
-Execution:     ░░░░░░░░░░░░░░░░░░░░   0% Pending
+Phase 1:    [██░░░░░░░░] 20% (1/5 plans)
+Execution:  [██░░░░░░░░░░░░░░░░░░] In Progress
 ```
 
 ---
@@ -69,6 +69,9 @@ Execution:     ░░░░░░░░░░░░░░░░░░░░   0%
 | DatoCMS for product data | Committed | Existing integration, webhook revalidation |
 | Order form + meetup checkout | Committed | No payment gateway, simple fulfillment |
 | 3-phase roadmap | Committed | Quick depth, clear dependencies |
+| ProductCategory as union type | Committed | Simpler than enum, compatible with DatoCMS string fields |
+| Cache tags at datocmsRequest level | Committed | All fetches tagged 'products' for on-demand revalidation |
+| Product.available as boolean | Committed | DatoCMS boolean field; UI derives label from value |
 
 ### Critical Pitfalls to Avoid
 
@@ -117,14 +120,16 @@ Execution:     ░░░░░░░░░░░░░░░░░░░░   0%
 
 ## Session Continuity
 
-**Last Action:** Created ROADMAP.md with 3 phases, 19 requirements mapped
+**Last Action:** Completed Phase 1 Plan 01 — data foundation (types, constants, DatoCMS queries, cache tags)
 
-**Awaiting:** `/gsd:plan-phase 1` to decompose Phase 1 into executable plans
+**Stopped At:** Completed 01-01-PLAN.md
 
-**Context Preserved:** All planning artifacts written to disk
-- `.planning/ROADMAP.md` — Phase structure and success criteria
-- `.planning/STATE.md` — Project memory and decisions
-- `.planning/REQUIREMENTS.md` — Traceability updated
+**Context Preserved:** All execution artifacts written to disk
+- `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
+- `app/lib/types.ts` — Product interface and category/availability types
+- `app/lib/constants.ts` — Shared constants
+- `app/lib/datocms-queries.ts` — 5 product queries + existing comics query
+- `app/lib/datocms.ts` — Cache tags enabled
 
 ---
 
@@ -153,4 +158,4 @@ cat .planning/REQUIREMENTS.md
 
 ---
 
-*State snapshot: 2026-02-20 — Roadmap complete, ready for Phase 1 planning*
+*State snapshot: 2026-02-26 — Phase 1 Plan 01 complete, Wave 2 unblocked*
