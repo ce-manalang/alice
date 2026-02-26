@@ -78,6 +78,8 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 | Unified [slug] route for shop | Committed | Handles both /shop/zines (category) and /shop/slug (product) — avoids Next.js dynamic segment conflict |
 | Product URLs use DatoCMS slug field | Committed | Human-readable URLs (/shop/love-letters-to-ruby) rather than opaque IDs |
 | DatoCMS price is Float not String | Committed | formatPrice() converts to PHP display string; available/category fields not yet in schema |
+| Product detail in [slug] route (not [id]) | Committed | Plan 04 improvements applied to unified [slug] route; isSoldOut uses strict === false check |
+| Add to Cart is button placeholder in Phase 1 | Committed | No navigation/action; Phase 2 wires Zustand onClick directly |
 | Homepage hero uses "CS education, made with care." | Committed | Direct, brand-true, educational mission |
 | FAQ and About content hardcoded | Committed | Content rarely changes; no CMS overhead justified |
 | Accordion uses HTML details/summary | Committed | Zero-JS, accessible by default, no library needed |
