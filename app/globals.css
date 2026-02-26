@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url("../public/assets/css/normalize.css");
 @import url('../public/assets/css/skeleton.css');
 @import url('../public/assets/css/custom.css');
@@ -582,9 +583,6 @@
 /* ============================================
    Shop Design System
    ============================================ */
-
-/* Inter font for shop pages */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* Shop layout containers */
 .shop-page {
