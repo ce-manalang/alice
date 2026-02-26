@@ -9,7 +9,7 @@ import {
 } from '@/app/lib/datocms-queries'
 import ProductGrid from '@/app/components/ProductGrid'
 import type { Product, ProductCategory } from '@/app/lib/types'
-import { CATEGORIES, CATEGORY_LABELS } from '@/app/lib/constants'
+import { CATEGORIES, CATEGORY_LABELS, SITE_URL } from '@/app/lib/constants'
 
 export const revalidate = 3600
 
@@ -74,17 +74,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       slug,
     })
     if (!data.product) return { title: 'Product Not Found | centimentalcomics' }
+
+    const product = data.product
+    const description = product.alt || `${product.name} from centimentalcomics shop`
+    const ogImage = product.images?.[0]?.url
+
     return {
-      title: `${data.product.name} | centimentalcomics`,
-      description: data.product.alt || `View ${data.product.name} from centimentalcomics shop`,
+      title: product.name,
+      description: description.substring(0, 160),
+      alternates: { canonical: `/shop/${slug}` },
       openGraph: {
-        title: `${data.product.name} | centimentalcomics`,
-        description: data.product.alt || `View ${data.product.name} from centimentalcomics shop`,
-        images: data.product.images?.length > 0 ? [data.product.images[0].url] : [],
+        title: `${product.name} | centimentalcomics`,
+        description: description.substring(0, 160),
+        url: `${SITE_URL}/shop/${slug}`,
+        type: 'website',
+        images: ogImage
+          ? [{ url: ogImage, width: 1200, height: 630, alt: product.name }]
+          : [],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${product.name} | centimentalcomics`,
+        description: description.substring(0, 160),
+        images: ogImage ? [ogImage] : [],
       },
     }
   } catch {
-    return { title: 'Product | centimentalcomics' }
+    return {
+      title: 'Product | centimentalcomics',
+      description: 'Shop centimentalcomics merchandise and products',
+    }
   }
 }
 
@@ -180,6 +199,8 @@ export default async function ShopSlugPage({ params }: PageProps) {
   }
 
   // --- Product detail page ---
+  let product: Product
+
   try {
     const data = await datocmsRequest<{ product: Product | null }>(PRODUCT_BY_SLUG_QUERY, {
       slug,
@@ -189,143 +210,194 @@ export default async function ShopSlugPage({ params }: PageProps) {
       notFound()
     }
 
-    const product = data.product
+    product = data.product
+  } catch {
+    notFound()
+  }
 
-    return (
-      <div className="container">
-        <header className="header">
-          <h1 className="title">
-            <Link href="/">centimentalcomics</Link>
-          </h1>
-          <h2>some comics about art and internet</h2>
-          <div className="value-props row"></div>
-        </header>
-        <div className="navbar-spacer"></div>
-        <nav className="navbar">
-          <div className="container">
-            <ul className="navbar-list">
-              <li className="navbar-item">
-                <a className="navbar-link" href="/">home</a>
-              </li>
-              <li className="navbar-item">
-                <a className="navbar-link" href="/shop">shop</a>
-              </li>
-              <li className="navbar-item">
-                <a className="navbar-link" href="/about">about</a>
-              </li>
-            </ul>
-          </div>
+  const isSoldOut = product.available === false
+
+  return (
+    <div className="shop-page">
+      <div className="shop-container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+        {/* Breadcrumb */}
+        <nav style={{ marginBottom: '1.5rem', fontFamily: "'Inter', system-ui, sans-serif" }}>
+          <Link href="/shop" style={{ fontSize: '0.875rem', color: '#6b7280', textDecoration: 'none' }}>
+            &larr; Back to Shop
+          </Link>
         </nav>
 
-        <div className="docs-section">
-          <div className="product-detail">
-            <div className="back-link">
-              <Link href="/shop" className="back-link-text">
-                Back to Shop
-              </Link>
-            </div>
+        {/* Product layout: image left, info right */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '2rem',
+          }}
+          className="product-detail-grid"
+        >
+          {/* Images column */}
+          <div>
+            {/* Main image */}
+            {product.images && product.images.length > 0 ? (
+              <div
+                style={{
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  background: '#f9fafb',
+                  aspectRatio: '1',
+                  position: 'relative',
+                }}
+              >
+                <Image
+                  src={product.images[0].url}
+                  alt={product.images[0].alt || product.alt || product.name}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            ) : (
+              <div
+                style={{
+                  borderRadius: '8px',
+                  background: '#f3f4f6',
+                  aspectRatio: '1',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <span style={{ color: '#9ca3af', fontFamily: "'Inter', system-ui, sans-serif" }}>
+                  No image available
+                </span>
+              </div>
+            )}
 
-            <div className="product-content">
-              <div className="product-images">
-                {product.images && product.images.length > 0 ? (
-                  <div className="main-image">
+            {/* Thumbnail strip (additional images) */}
+            {product.images && product.images.length > 1 && (
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                {product.images.slice(1).map((img, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      width: '72px',
+                      height: '72px',
+                      borderRadius: '6px',
+                      overflow: 'hidden',
+                      border: '1.5px solid #e5e7eb',
+                      flexShrink: 0,
+                      position: 'relative',
+                    }}
+                  >
                     <Image
-                      src={product.images[0].url}
-                      alt={product.images[0].alt || product.alt || product.name}
-                      width={600}
-                      height={600}
-                      style={{ width: '100%', height: 'auto' }}
-                      priority
+                      src={img.url}
+                      alt={img.alt || `${product.name} image ${idx + 2}`}
+                      fill
+                      sizes="72px"
+                      style={{ objectFit: 'cover' }}
                     />
                   </div>
-                ) : (
-                  <div
-                    className="main-image placeholder"
-                    style={{
-                      width: 600,
-                      height: 600,
-                      backgroundColor: '#f3f4f6',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <span style={{ color: '#9ca3af' }}>No image</span>
-                  </div>
-                )}
-
-                {product.images && product.images.length > 1 && (
-                  <div className="thumbnail-images">
-                    {product.images.slice(1).map((image, index) => (
-                      <div key={index} className="thumbnail">
-                        <Image
-                          src={image.url}
-                          alt={image.alt || `${product.name} - Image ${index + 2}`}
-                          width={150}
-                          height={150}
-                          style={{ width: '100%', height: 'auto' }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                ))}
               </div>
+            )}
+          </div>
 
-              <div className="product-info-detail">
-                <h1 className="product-title">{product.name}</h1>
+          {/* Info column */}
+          <div style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+            <h1
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: '#111111',
+                margin: '0 0 0.5rem',
+                lineHeight: 1.2,
+              }}
+            >
+              {product.name}
+            </h1>
 
-                <div className="product-price-section">
-                  <span className="product-price">{formatPrice(product.price)}</span>
-                </div>
+            <p style={{ fontSize: '1.25rem', fontWeight: 600, color: '#111111', margin: '0 0 1rem' }}>
+              {formatPrice(product.price)}
+            </p>
 
-                {product.available === false && (
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      fontFamily: "'Inter', system-ui, sans-serif",
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '9999px',
-                      background: '#f3f4f6',
-                      color: '#6b7280',
-                      border: '1px solid #e5e7eb',
-                      marginBottom: '1rem',
-                    }}
-                  >
-                    Sold Out
-                  </span>
-                )}
+            {/* Availability badge */}
+            {isSoldOut && (
+              <span
+                className="shop-product-card__badge shop-product-card__badge--sold-out"
+                style={{ marginBottom: '1rem', display: 'inline-block' }}
+              >
+                Sold Out
+              </span>
+            )}
 
-                {product.description && (
-                  <div className="product-description">
-                    <h3>Description</h3>
-                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                  </div>
-                )}
-
-                <div className="product-actions">
-                  <Link
-                    href={`/checkout?productId=${product.id}&productName=${encodeURIComponent(product.name)}&productPrice=${encodeURIComponent(formatPrice(product.price))}&productImage=${encodeURIComponent(product.images?.[0]?.url || '')}`}
-                    className="add-to-cart-btn"
-                  >
-                    Add to Cart
-                  </Link>
-                </div>
-
-                <div className="product-meta">
-                  <div className="meta-item">
-                    <span className="meta-label">Product ID:</span>
-                    <span className="meta-value">{product.id}</span>
-                  </div>
-                </div>
+            {/* Description */}
+            {product.description && (
+              <div style={{ marginTop: '1.5rem' }}>
+                <h2
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    margin: '0 0 0.75rem',
+                  }}
+                >
+                  Description
+                </h2>
+                <div
+                  style={{ fontSize: '0.9375rem', color: '#374151', lineHeight: 1.6 }}
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               </div>
+            )}
+
+            {/* Add to cart placeholder — Phase 2 will replace this with functional cart */}
+            <div style={{ marginTop: '2rem' }}>
+              <button
+                disabled={isSoldOut}
+                style={{
+                  width: '100%',
+                  padding: '0.875rem 1.5rem',
+                  backgroundColor: isSoldOut ? '#9ca3af' : '#ec4899',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  cursor: isSoldOut ? 'not-allowed' : 'pointer',
+                  fontFamily: "'Inter', system-ui, sans-serif",
+                }}
+              >
+                {isSoldOut ? 'Sold Out' : 'Add to Cart'}
+              </button>
+              {isSoldOut && (
+                <p
+                  style={{
+                    fontSize: '0.8125rem',
+                    color: '#6b7280',
+                    marginTop: '0.5rem',
+                    textAlign: 'center',
+                  }}
+                >
+                  This item is currently unavailable.
+                </p>
+              )}
             </div>
           </div>
         </div>
       </div>
-    )
-  } catch {
-    notFound()
-  }
+
+      {/* Responsive styles for product detail grid */}
+      <style>{`
+        @media (min-width: 768px) {
+          .product-detail-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
+      `}</style>
+    </div>
+  )
 }
