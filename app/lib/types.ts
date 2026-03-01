@@ -20,3 +20,9 @@ export interface Product {
   available?: boolean
   category?: ProductCategory
 }
+
+// Cart types
+export interface CartItem {
+  productId: string
+  quantity: number
+}
