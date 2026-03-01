@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-01T09:44:15.664Z"
+stopped_at: "Completed 02-02-PLAN.md (checkpoint: human-verify task 3 pending)"
+last_updated: "2026-03-01T09:49:10.665Z"
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State: Centimentalcomics Shop
@@ -41,7 +41,7 @@ progress:
 **Next:** Execute Phase 2 Plan 02 — Add-to-Cart buttons
 
 **Progress:**
-[████████░░] 75%
+[██████████] 100%
 Phase 1:    [██████████] 100% (5/5 plans) — COMPLETE
 Phase 2:    [███░░░░░░░]  33% (1/3 plans) — In Progress
 Execution:  [████████░░░░░░░░░░░░] Phase 2 Plan 1 of 3 done
@@ -105,6 +105,11 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 | hasHydrated SSR guard | Committed | Components check hasHydrated before rendering cart-dependent UI |
 | Cart persists indefinitely (no TTL) | Committed | Simple, no user frustration from unexpected expiration |
 | Phase 02-shopping-cart P01 | 1 | 2 tasks | 4 files |
+| Phase 02-shopping-cart P03 | 2 | 2 tasks | 3 files |
+| Phase 02-shopping-cart P02 | 2 | 2 tasks | 3 files |
+| AddToCartSection in separate file | Committed | Next.js 15 cannot mix 'use client' and async server functions in same file |
+| product.id as cart key (not slug) | Committed | DatoCMS id is immutable; slugs can change for SEO reasons |
+| Quantity stepper bounds min=1 max=99 | Committed | Defensive cap; stock validation deferred to Phase 3 checkout |
 
 ### Critical Pitfalls to Avoid
 
@@ -155,7 +160,7 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 
 **Last Action:** Completed Phase 2 Plan 01 — Zustand cart store with localStorage persistence
 
-**Stopped At:** Completed 02-01-PLAN.md
+**Stopped At:** Completed 02-02-PLAN.md (checkpoint: human-verify task 3 pending)
 
 **Context Preserved:** Phase 1 artifacts + Phase 2 Plan 01 artifacts
 - `.planning/phases/02-shopping-cart/02-01-SUMMARY.md` — Plan 01 summary

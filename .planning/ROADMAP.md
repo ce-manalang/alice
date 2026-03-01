@@ -10,7 +10,7 @@
 ## Phases
 
 - [x] **Phase 1: Product Catalog & Foundation** - Build product catalog, navigation, and information pages with DatoCMS integration (completed 2026-02-26)
-- [ ] **Phase 2: Shopping Cart** - Implement cart state management with persistence across sessions
+- [x] **Phase 2: Shopping Cart** - Implement cart state management with persistence across sessions (completed 2026-03-01)
 - [ ] **Phase 3: Checkout & Order Form** - Complete the purchase flow with order submission and confirmation
 
 ---
@@ -63,7 +63,7 @@ Plans:
 4. User can remove items from the cart and see them disappear from the cart view
 5. User can navigate away from the shop, close the browser, and return to find the same items still in their cart
 
-**Plans:** 1/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md — Cart store foundation: Zustand + localStorage persist, CartItem type (Wave 1)
@@ -96,7 +96,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Product Catalog & Foundation | 5/5 | Complete    | 2026-02-26 |
-| 2. Shopping Cart | 1/3 | In Progress|  |
+| 2. Shopping Cart | 3/3 | Complete   | 2026-03-01 |
 | 3. Checkout & Order Form | 0/2 | Not started | — |
 
 ---
