@@ -16,10 +16,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Cart
 
-- [ ] **CART-01**: User can add products to a shopping cart from product pages
+- [x] **CART-01**: User can add products to a shopping cart from product pages
 - [ ] **CART-02**: User can view cart with item list, quantities, and running total
 - [ ] **CART-03**: User can update quantities or remove items from cart
-- [ ] **CART-04**: Cart persists across page navigation and browser refresh
+- [x] **CART-04**: Cart persists across page navigation and browser refresh
 
 ### Checkout
 
@@ -89,10 +89,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAT-02 | Phase 1 | Complete |
 | CAT-03 | Phase 1 | Complete |
 | CAT-04 | Phase 1 | Complete |
-| CART-01 | Phase 2 | Pending |
+| CART-01 | Phase 2 | Complete |
 | CART-02 | Phase 2 | Pending |
 | CART-03 | Phase 2 | Pending |
-| CART-04 | Phase 2 | Pending |
+| CART-04 | Phase 2 | Complete |
 | CHKT-01 | Phase 3 | Pending |
 | CHKT-02 | Phase 3 | Pending |
 | CHKT-03 | Phase 3 | Pending |

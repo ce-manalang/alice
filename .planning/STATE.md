@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 2 context gathered
-last_updated: "2026-02-27T05:49:17.470Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-01T09:44:15.664Z"
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 8
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State: Centimentalcomics Shop
@@ -35,15 +36,15 @@ progress:
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** 01 — Product Catalog & Foundation (5/5 complete)
+**Phase:** 02 — Shopping Cart (1/3 complete — in progress)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Phase 2 — Shopping Cart
+**Next:** Execute Phase 2 Plan 02 — Add-to-Cart buttons
 
 **Progress:**
-```
+[████████░░] 75%
 Phase 1:    [██████████] 100% (5/5 plans) — COMPLETE
-Execution:  [████████░░░░░░░░░░░░] Phase 1 Complete
-```
+Phase 2:    [███░░░░░░░]  33% (1/3 plans) — In Progress
+Execution:  [████████░░░░░░░░░░░░] Phase 2 Plan 1 of 3 done
 
 ---
 
@@ -99,6 +100,11 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 | Accordion uses HTML details/summary | Committed | Zero-JS, accessible by default, no library needed |
 | Featured products fallback strategy | Committed | Try FEATURED_PRODUCTS_QUERY first, fall back to first N from PRODUCTS_QUERY |
 | Comics homepage fully replaced | Committed | Old comics listing removed; comics routes at /[slug] unaffected |
+| addToCart silently increments | Committed | No duplicate line items; quantity increases if productId already in cart |
+| clearCart removes localStorage key | Committed | Explicit removeItem call prevents re-hydration after clear |
+| hasHydrated SSR guard | Committed | Components check hasHydrated before rendering cart-dependent UI |
+| Cart persists indefinitely (no TTL) | Committed | Simple, no user frustration from unexpected expiration |
+| Phase 02-shopping-cart P01 | 1 | 2 tasks | 4 files |
 
 ### Critical Pitfalls to Avoid
 
@@ -147,11 +153,16 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 1 Plan 05 — Homepage (hero + featured products), About page, FAQ page, Accordion component
+**Last Action:** Completed Phase 2 Plan 01 — Zustand cart store with localStorage persistence
 
-**Stopped At:** Phase 2 context gathered
+**Stopped At:** Completed 02-01-PLAN.md
 
-**Context Preserved:** All Phase 1 execution artifacts written to disk
+**Context Preserved:** Phase 1 artifacts + Phase 2 Plan 01 artifacts
+- `.planning/phases/02-shopping-cart/02-01-SUMMARY.md` — Plan 01 summary
+- `app/lib/store/cartStore.ts` — useCartStore Zustand hook (new)
+- `app/lib/types.ts` — CartItem interface added
+
+**Phase 1 Context Preserved:** All Phase 1 execution artifacts written to disk
 - `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
 - `.planning/phases/01-product-catalog-foundation/01-02-SUMMARY.md` — Plan 02 summary
 - `.planning/phases/01-product-catalog-foundation/01-03-SUMMARY.md` — Plan 03 summary

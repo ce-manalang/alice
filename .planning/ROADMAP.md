@@ -63,7 +63,12 @@ Plans:
 4. User can remove items from the cart and see them disappear from the cart view
 5. User can navigate away from the shop, close the browser, and return to find the same items still in their cart
 
-**Plans:** TBD
+**Plans:** 1/3 plans executed
+
+Plans:
+- [ ] 02-01-PLAN.md — Cart store foundation: Zustand + localStorage persist, CartItem type (Wave 1)
+- [ ] 02-02-PLAN.md — Cart UI: NavigationCartIcon + /cart page with item management (Wave 2)
+- [ ] 02-03-PLAN.md — Add-to-Cart wiring: ProductCard quick-add + detail page stepper (Wave 2)
 
 ---
 
@@ -91,7 +96,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Product Catalog & Foundation | 5/5 | Complete    | 2026-02-26 |
-| 2. Shopping Cart | 0/3 | Not started | — |
+| 2. Shopping Cart | 1/3 | In Progress|  |
 | 3. Checkout & Order Form | 0/2 | Not started | — |
 
 ---
