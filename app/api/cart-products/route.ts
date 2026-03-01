@@ -10,7 +10,6 @@ const CART_PRODUCTS_QUERY = `
       price
       slug
       images { url alt }
-      available
     }
   }
 `
