@@ -4,22 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useCartStore } from '@/app/lib/store/cartStore'
-import { datocmsRequest } from '@/app/lib/datocms'
 import type { Product, CartItem } from '@/app/lib/types'
-
-// DatoCMS query — fetches only the fields needed for the cart display
-const CART_PRODUCTS_QUERY = `
-  query CartProducts($ids: [ItemId]!) {
-    allProducts(filter: { id: { in: $ids } }) {
-      id
-      name
-      price
-      slug
-      images { url alt }
-      available
-    }
-  }
-`
 
 function formatPrice(price: number): string {
   return `PHP ${price.toFixed(0)}`
@@ -156,7 +141,13 @@ export default function CartPage() {
 
       try {
         const ids = items.map((item) => item.productId)
-        const data = await datocmsRequest<{ allProducts: Product[] }>(CART_PRODUCTS_QUERY, { ids })
+        const res = await fetch('/api/cart-products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids }),
+        })
+        if (!res.ok) throw new Error(`Failed to fetch cart products: ${res.status}`)
+        const data = await res.json() as { allProducts: Product[] }
         const fetched = data.allProducts || []
 
         // Detect and auto-remove sold-out or missing items
