@@ -8,6 +8,7 @@ import {
   ALL_PRODUCT_IDS_QUERY,
 } from '@/app/lib/datocms-queries'
 import ProductGrid from '@/app/components/ProductGrid'
+import AddToCartSection from '@/app/components/AddToCartSection'
 import type { Product, ProductCategory } from '@/app/lib/types'
 import { CATEGORIES, CATEGORY_LABELS, SITE_URL } from '@/app/lib/constants'
 
@@ -354,38 +355,11 @@ export default async function ShopSlugPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Add to cart placeholder — Phase 2 will replace this with functional cart */}
-            <div style={{ marginTop: '2rem' }}>
-              <button
-                disabled={isSoldOut}
-                style={{
-                  width: '100%',
-                  padding: '0.875rem 1.5rem',
-                  backgroundColor: isSoldOut ? '#9ca3af' : '#ec4899',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  cursor: isSoldOut ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Inter', system-ui, sans-serif",
-                }}
-              >
-                {isSoldOut ? 'Sold Out' : 'Add to Cart'}
-              </button>
-              {isSoldOut && (
-                <p
-                  style={{
-                    fontSize: '0.8125rem',
-                    color: '#6b7280',
-                    marginTop: '0.5rem',
-                    textAlign: 'center',
-                  }}
-                >
-                  This item is currently unavailable.
-                </p>
-              )}
-            </div>
+            <AddToCartSection
+              productId={product.id}
+              productName={product.name}
+              isSoldOut={isSoldOut}
+            />
           </div>
         </div>
       </div>
