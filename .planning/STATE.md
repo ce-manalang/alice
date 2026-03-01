@@ -104,7 +104,12 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 | clearCart removes localStorage key | Committed | Explicit removeItem call prevents re-hydration after clear |
 | hasHydrated SSR guard | Committed | Components check hasHydrated before rendering cart-dependent UI |
 | Cart persists indefinitely (no TTL) | Committed | Simple, no user frustration from unexpected expiration |
+| isMounted guard for CartIcon badge | Committed | Prevents SSR hydration mismatch; simpler than hasHydrated for single badge use case |
+| Cart page fetches DatoCMS data client-side on mount | Committed | Ensures fresh prices/availability; next:{} cache options silently ignored in browser (acceptable) |
+| Qty stepper: decrement at qty=1 removes item | Committed | No disabled minimum state; follows CONTEXT.md locked decision |
+| Sold-out auto-removal on cart load | Committed | items fetched from DatoCMS; available===false strict check; dismissed notice banner shown |
 | Phase 02-shopping-cart P01 | 1 | 2 tasks | 4 files |
+| Phase 02-shopping-cart P02 | 1 | 2 tasks | 3 files |
 | Phase 02-shopping-cart P03 | 2 | 2 tasks | 3 files |
 | Phase 02-shopping-cart P02 | 2 | 2 tasks | 3 files |
 | AddToCartSection in separate file | Committed | Next.js 15 cannot mix 'use client' and async server functions in same file |
@@ -158,13 +163,16 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 
 ## Session Continuity
 
-**Last Action:** Completed Phase 2 Plan 01 — Zustand cart store with localStorage persistence
+**Last Action:** Completed Phase 2 Plan 02 — Cart page and Navigation badge (human-verify checkpoint pending)
 
 **Stopped At:** Completed 02-02-PLAN.md (checkpoint: human-verify task 3 pending)
 
-**Context Preserved:** Phase 1 artifacts + Phase 2 Plan 01 artifacts
+**Context Preserved:** Phase 1 artifacts + Phase 2 Plan 01 and 02 artifacts
 - `.planning/phases/02-shopping-cart/02-01-SUMMARY.md` — Plan 01 summary
+- `.planning/phases/02-shopping-cart/02-02-SUMMARY.md` — Plan 02 summary
 - `app/lib/store/cartStore.ts` — useCartStore Zustand hook (new)
+- `app/components/Navigation.tsx` — CartIcon with isMounted badge, links to /cart (updated)
+- `app/cart/page.tsx` — Full cart page: empty state, item list, qty stepper, clear cart, checkout link (new)
 - `app/lib/types.ts` — CartItem interface added
 
 **Phase 1 Context Preserved:** All Phase 1 execution artifacts written to disk
