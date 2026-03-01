@@ -1,5 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
+import { useCartStore } from '@/app/lib/store/cartStore'
 import type { Product } from '@/app/lib/types'
 
 interface ProductCardProps {
@@ -9,14 +13,65 @@ interface ProductCardProps {
 
 /** Format a numeric price from DatoCMS (stored as Float) into a display string */
 function formatPrice(price: number): string {
-  // Prices are stored as whole numbers in PHP (e.g. 300 = PHP 300)
   return `PHP ${price.toFixed(0)}`
 }
 
+interface QuickAddProps {
+  productId: string
+  productName: string
+  isSoldOut: boolean
+}
+
+function QuickAdd({ productId, productName, isSoldOut }: QuickAddProps) {
+  const [feedback, setFeedback] = useState<'idle' | 'added'>('idle')
+  const addToCart = useCartStore((state) => state.addToCart)
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent the parent <Link> from navigating when the button is clicked
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (isSoldOut) return
+
+    addToCart(productId, 1)
+    setFeedback('added')
+    setTimeout(() => setFeedback('idle'), 1500)
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={isSoldOut}
+      aria-label={
+        isSoldOut
+          ? `${productName} is sold out`
+          : feedback === 'added'
+          ? `${productName} added to cart`
+          : `Add ${productName} to cart`
+      }
+      style={{
+        marginTop: '0.5rem',
+        width: '100%',
+        padding: '0.5rem 0.75rem',
+        backgroundColor: isSoldOut ? '#e5e7eb' : feedback === 'added' ? '#16a34a' : '#ec4899',
+        color: isSoldOut ? '#9ca3af' : '#ffffff',
+        border: 'none',
+        borderRadius: '6px',
+        fontSize: '0.8125rem',
+        fontWeight: 600,
+        cursor: isSoldOut ? 'not-allowed' : 'pointer',
+        fontFamily: "'Inter', system-ui, sans-serif",
+        transition: 'background-color 0.2s',
+        letterSpacing: '0.01em',
+      }}
+    >
+      {isSoldOut ? 'Sold Out' : feedback === 'added' ? '✓ Added!' : 'Add to Cart'}
+    </button>
+  )
+}
+
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  // available defaults to true until the field is added to DatoCMS
   const isSoldOut = product.available === false
-  // Use slug for cleaner URLs when available, fall back to id
   const href = `/shop/${product.slug ?? product.id}`
 
   return (
@@ -58,6 +113,12 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             Sold Out
           </span>
         )}
+        {/* Quick-add: always rendered; handles its own sold-out state */}
+        <QuickAdd
+          productId={product.id}
+          productName={product.name}
+          isSoldOut={isSoldOut}
+        />
       </div>
     </Link>
   )
