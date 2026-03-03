@@ -1,392 +1,224 @@
 'use client'
 
-import { useState, use } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
+import { useActionState, useEffect, useRef, useState } from 'react'
+import { useCartStore } from '@/app/lib/store/cartStore'
+import { submitOrder } from '@/app/checkout/actions'
+import type { Product } from '@/app/lib/types'
 
-interface CheckoutPageProps {
-  searchParams: Promise<{
-    productId?: string
-    productName?: string
-    productPrice?: string
-    productImage?: string
-  }>
+function formatPrice(price: number): string {
+  return `PHP ${price.toFixed(0)}`
 }
 
-export default function CheckoutPage({ searchParams }: CheckoutPageProps) {
-  const params = use(searchParams)
-  const [formData, setFormData] = useState({
-    email: '',
-    newsOffers: false,
-    paymentMethod: 'credit',
-    cardNumber: '',
-    expiryDate: '',
-    securityCode: '',
-    nameOnCard: '',
-    country: 'Philippines',
-    firstName: '',
-    lastName: '',
-    company: '',
-    address: '',
-    apartment: '',
-    postalCode: '',
-    city: '',
-    region: 'Metro Manila',
-    phone: '',
-    saveInfo: true,
-    mobilePhone: '+63'
-  })
+interface DisplayItem {
+  productId: string
+  productName: string
+  quantity: number
+  unitPrice: number
+}
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
-  }
+interface CartSummaryProps {
+  items: DisplayItem[]
+  total: number
+  isLoading: boolean
+}
 
-  // Mock product data - in real app, this would come from props or API
-  const product = {
-    name: params.productName || 'Pixel Perfect',
-    price: params.productPrice || 'P600.00',
-    image: params.productImage || '/assets/images/placeholder.jpg',
-    quantity: 1
+function CartSummary({ items, total, isLoading }: CartSummaryProps) {
+  return (
+    <aside className="shop-checkout-summary">
+      <h2 className="shop-checkout-summary__title">Order Summary</h2>
+
+      {isLoading ? (
+        <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Loading order summary...</p>
+      ) : (
+        <>
+          {items.map((item) => (
+            <div key={item.productId} className="shop-checkout-summary__item">
+              <span className="shop-checkout-summary__item-name">{item.productName}</span>
+              <span className="shop-checkout-summary__item-qty">× {item.quantity}</span>
+              <span className="shop-checkout-summary__item-price">
+                {formatPrice(item.unitPrice * item.quantity)}
+              </span>
+            </div>
+          ))}
+          <div className="shop-checkout-summary__total">
+            <span>Total</span>
+            <span>{formatPrice(total)}</span>
+          </div>
+        </>
+      )}
+
+      <Link href="/cart" className="shop-checkout-summary__edit-link">
+        Edit cart
+      </Link>
+    </aside>
+  )
+}
+
+export default function CheckoutPage() {
+  const items = useCartStore((state) => state.items)
+  const clearCart = useCartStore((state) => state.clearCart)
+  const hasHydrated = useCartStore((state) => state.hasHydrated)
+
+  const [products, setProducts] = useState<Product[]>([])
+  const [isSummaryLoading, setIsSummaryLoading] = useState(true)
+  const [state, formAction, isPending] = useActionState(submitOrder, null)
+  const hasCleared = useRef(false)
+
+  // Fetch fresh product data for the order summary display
+  useEffect(() => {
+    if (!hasHydrated) return
+    if (items.length === 0) {
+      setIsSummaryLoading(false)
+      return
+    }
+
+    const ids = items.map((item) => item.productId)
+    fetch('/api/cart-products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    })
+      .then((res) => res.json())
+      .then((data: { allProducts: Product[] }) => {
+        setProducts(data.allProducts || [])
+      })
+      .catch((err) => {
+        console.error('Failed to fetch checkout product data:', err)
+      })
+      .finally(() => {
+        setIsSummaryLoading(false)
+      })
+  }, [hasHydrated, items])
+
+  // Clear cart after successful order submission (redirect fires from server action)
+  useEffect(() => {
+    if (state && 'success' in state && state.success && !hasCleared.current) {
+      hasCleared.current = true
+      clearCart()
+    }
+  }, [state, clearCart])
+
+  // Build display items from fetched products
+  const productMap = new Map(products.map((p) => [p.id, p]))
+  const displayItems: DisplayItem[] = items
+    .map((item) => {
+      const product = productMap.get(item.productId)
+      return {
+        productId: item.productId,
+        productName: product?.name ?? 'Unknown product',
+        quantity: item.quantity,
+        unitPrice: product?.price ?? 0,
+      }
+    })
+    .filter((item) => item.unitPrice > 0 || isSummaryLoading)
+
+  const total = displayItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0)
+
+  // Serialize cart items (productId + quantity only) for server action
+  const cartItemsJson = JSON.stringify(items.map((i) => ({ productId: i.productId, quantity: i.quantity })))
+
+  // Empty cart guard (after hydration)
+  if (hasHydrated && items.length === 0 && !isPending) {
+    return (
+      <div className="shop-page shop-checkout-page">
+        <div className="shop-container">
+          <h1 className="shop-checkout-title">Checkout</h1>
+          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
+            Your cart is empty. Add some items before checking out.
+          </p>
+          <Link href="/shop" className="shop-btn-primary" style={{ display: 'inline-block', width: 'auto' }}>
+            Browse the shop
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="checkout-container">
-      <div className="checkout-header">
-        <h1><Link href="/">centimentalcomics</Link></h1>
-      </div>
-      
-      <div className="checkout-content">
-        {/* Left Column - Checkout Form */}
-        <div className="checkout-form-column">
-          <div className="express-checkout">
-            <h3>Express checkout</h3>
-            <div className="express-buttons">
-              <button className="express-btn shop-btn">shop</button>
-              <button className="express-btn paypal-btn">
-                <span className="paypal-logo">PayPal</span>
-              </button>
-              <button className="express-btn gpay-btn">
-                <span className="gpay-logo">G Pay</span>
-              </button>
-            </div>
-            <div className="or-divider">OR</div>
-          </div>
+    <div className="shop-page shop-checkout-page">
+      <div className="shop-container">
+        <h1 className="shop-checkout-title">Checkout</h1>
 
-          <form className="checkout-form">
-            {/* Contact Section */}
-            <div className="form-section">
-              <h3>Contact</h3>
-              <div className="form-group">
+        <div className="shop-checkout-layout">
+          {/* Left: contact form */}
+          <div>
+            <form action={formAction} className="shop-checkout-form">
+              <input type="hidden" name="cartItems" value={cartItemsJson} />
+
+              {state && 'error' in state && state.error && (
+                <div className="shop-checkout-form__error" role="alert">
+                  {state.error}
+                </div>
+              )}
+
+              <div className="shop-checkout-field">
+                <label htmlFor="checkout-name">Full Name *</label>
                 <input
+                  id="checkout-name"
+                  type="text"
+                  name="name"
+                  placeholder="Your full name"
+                  required
+                  autoComplete="name"
+                  defaultValue={state && 'formData' in state ? (state.formData?.name as string) || '' : ''}
+                />
+              </div>
+
+              <div className="shop-checkout-field">
+                <label htmlFor="checkout-email">Email *</label>
+                <input
+                  id="checkout-email"
                   type="email"
                   name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-              <div className="checkbox-group">
-                <input
-                  type="checkbox"
-                  id="newsOffers"
-                  name="newsOffers"
-                  checked={formData.newsOffers}
-                  onChange={handleInputChange}
-                />
-                <label htmlFor="newsOffers">Email me with news and offers</label>
-              </div>
-            </div>
-
-            {/* Payment Section */}
-            <div className="form-section">
-              <h3>Payment</h3>
-              <p className="payment-subtitle">All transactions are secure and encrypted.</p>
-              
-              <div className="payment-methods">
-                <div className="payment-option">
-                  <input
-                    type="radio"
-                    id="credit"
-                    name="paymentMethod"
-                    value="credit"
-                    checked={formData.paymentMethod === 'credit'}
-                    onChange={handleInputChange}
-                  />
-                  <label htmlFor="credit">Credit card</label>
-                  <div className="card-logos">
-                    <span>VISA</span>
-                    <span>Mastercard</span>
-                    <span>AMEX</span>
-                    <span>+5</span>
-                  </div>
-                </div>
-
-                <div className="card-details">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      placeholder="Card number"
-                      value={formData.cardNumber}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
-                    <span className="input-icon">🔒</span>
-                  </div>
-                  <div className="form-row">
-                    <input
-                      type="text"
-                      name="expiryDate"
-                      placeholder="Expiration date (MM/YY)"
-                      value={formData.expiryDate}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
-                    <input
-                      type="text"
-                      name="securityCode"
-                      placeholder="Security code"
-                      value={formData.securityCode}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
-                    <span className="input-icon">?</span>
-                  </div>
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      name="nameOnCard"
-                      placeholder="Name on card"
-                      value={formData.nameOnCard}
-                      onChange={handleInputChange}
-                      className="form-input"
-                    />
-                  </div>
-                </div>
-
-                <div className="payment-option">
-                  <input
-                    type="radio"
-                    id="paypal"
-                    name="paymentMethod"
-                    value="paypal"
-                    checked={formData.paymentMethod === 'paypal'}
-                    onChange={handleInputChange}
-                  />
-                  <label htmlFor="paypal">PayPal</label>
-                  <span className="paypal-logo-small">PayPal</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Billing Address Section */}
-            <div className="form-section">
-              <h3>Billing address</h3>
-              
-              <div className="form-group">
-                <select
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  className="form-select"
-                >
-                  <option value="Philippines">Philippines</option>
-                  <option value="United States">United States</option>
-                  <option value="Canada">Canada</option>
-                </select>
-              </div>
-
-              <div className="form-row">
-                <input
-                  type="text"
-                  name="firstName"
-                  placeholder="First name"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Last name"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="form-input"
+                  placeholder="your@email.com"
+                  required
+                  autoComplete="email"
+                  defaultValue={state && 'formData' in state ? (state.formData?.email as string) || '' : ''}
                 />
               </div>
 
-              <div className="form-group">
+              <div className="shop-checkout-field">
+                <label htmlFor="checkout-phone">
+                  Phone{' '}
+                  <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
+                </label>
                 <input
-                  type="text"
-                  name="company"
-                  placeholder="Company (optional)"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="apartment"
-                  placeholder="Apartment, suite, etc. (optional)"
-                  value={formData.apartment}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-row">
-                <input
-                  type="text"
-                  name="postalCode"
-                  placeholder="Postal code"
-                  value={formData.postalCode}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <select
-                  name="region"
-                  value={formData.region}
-                  onChange={handleInputChange}
-                  className="form-select"
-                >
-                  <option value="Metro Manila">Metro Manila</option>
-                  <option value="Cebu">Cebu</option>
-                  <option value="Davao">Davao</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <input
+                  id="checkout-phone"
                   type="tel"
                   name="phone"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="form-input"
+                  placeholder="+63 9XX XXX XXXX"
+                  autoComplete="tel"
+                  defaultValue={state && 'formData' in state ? (state.formData?.phone as string) || '' : ''}
                 />
-                <span className="input-icon">?</span>
+                <p className="shop-checkout-field__hint">For meetup coordination</p>
               </div>
-            </div>
 
-            {/* Remember Me Section */}
-            <div className="form-section">
-              <h3>Remember me</h3>
-              <div className="checkbox-group">
-                <input
-                  type="checkbox"
-                  id="saveInfo"
-                  name="saveInfo"
-                  checked={formData.saveInfo}
-                  onChange={handleInputChange}
+              <div className="shop-checkout-field">
+                <label htmlFor="checkout-notes">
+                  Notes{' '}
+                  <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
+                </label>
+                <textarea
+                  id="checkout-notes"
+                  name="notes"
+                  placeholder="Any questions or special requests..."
+                  defaultValue={state && 'formData' in state ? (state.formData?.notes as string) || '' : ''}
                 />
-                <label htmlFor="saveInfo">Save my information for a faster checkout with a Shop account</label>
               </div>
-              
-              <div className="form-group">
-                <input
-                  type="tel"
-                  name="mobilePhone"
-                  placeholder="Mobile phone number"
-                  value={formData.mobilePhone}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-                <span className="input-icon">📱</span>
-              </div>
-            </div>
 
-            {/* Security and Submit */}
-            <div className="form-section">
-              <div className="security-info">
-                <span className="security-text">🔒 Secure and encrypted</span>
-              </div>
-              
-              <button type="submit" className="pay-now-btn">
-                Pay now
+              <button type="submit" disabled={isPending} className="shop-btn-primary">
+                {isPending ? 'Placing order...' : 'Place Order'}
               </button>
-              
-              <div className="terms-text">
-                Your info will be saved to a Shop account. By continuing, you agree to Shop's <a href="#">Terms of Service</a> and acknowledge the <a href="#">Privacy Policy</a>.
-              </div>
-            </div>
-          </form>
 
-          <div className="checkout-footer">
-            <p>All rights reserved centimentalcomics</p>
+              <p style={{ fontSize: '0.8125rem', color: '#9ca3af', textAlign: 'center', margin: 0 }}>
+                No payment needed — orders are fulfilled via meetup
+              </p>
+            </form>
           </div>
-        </div>
 
-        {/* Right Column - Order Summary */}
-        <div className="order-summary-column">
-          <div className="order-summary">
-            <div className="product-summary">
-              <div className="product-image">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={80}
-                  height={80}
-                  className="product-thumbnail"
-                />
-                <div className="quantity-badge">{product.quantity}</div>
-              </div>
-              <div className="product-details">
-                <h4 className="product-name">{product.name}</h4>
-                <p className="product-type">Digital</p>
-              </div>
-              <div className="product-price">
-                {product.price}
-              </div>
-            </div>
-
-            <div className="discount-section">
-              <div className="discount-input-group">
-                <input
-                  type="text"
-                  placeholder="Discount code"
-                  className="discount-input"
-                />
-                <button className="apply-btn">Apply</button>
-              </div>
-            </div>
-
-            <div className="total-section">
-              <div className="total-row">
-                <span className="total-label">Total</span>
-                <span className="total-amount">PHP {product.price}</span>
-              </div>
-            </div>
-          </div>
+          {/* Right: order summary */}
+          <CartSummary items={displayItems} total={total} isLoading={isSummaryLoading} />
         </div>
       </div>
     </div>
