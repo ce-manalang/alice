@@ -26,7 +26,6 @@ const CHECKOUT_PRODUCTS_QUERY = `
       id
       name
       price
-      available
     }
   }
 `
@@ -100,10 +99,6 @@ export async function submitOrder(
     const product = productMap.get(cartItem.productId)
     if (!product) {
       // Product no longer exists — skip it
-      continue
-    }
-    if (product.available === false) {
-      // Product sold out between cart page and checkout — skip it
       continue
     }
     orderItems.push({
