@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Completed 02-02-PLAN.md (checkpoint: human-verify task 3 pending)"
-last_updated: "2026-03-01T10:05:37.907Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-03T02:54:23.156Z"
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_plans: 10
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State: Centimentalcomics Shop
@@ -36,15 +36,16 @@ progress:
 ## Current Position
 
 **Milestone:** Centimentalcomics Shop v1
-**Phase:** 02 — Shopping Cart (1/3 complete — in progress)
+**Phase:** 03 — Checkout & Order Form (1/2 complete — in progress)
 **Roadmap:** ROADMAP.md (3 phases, 19 v1 requirements)
-**Next:** Execute Phase 2 Plan 02 — Add-to-Cart buttons
+**Next:** Execute Phase 3 Plan 02 — Checkout form UI
 
 **Progress:**
-[██████████] 100%
+[█████████░] 90%
 Phase 1:    [██████████] 100% (5/5 plans) — COMPLETE
-Phase 2:    [███░░░░░░░]  33% (1/3 plans) — In Progress
-Execution:  [████████░░░░░░░░░░░░] Phase 2 Plan 1 of 3 done
+Phase 2:    [██████████] 100% (3/3 plans) — COMPLETE
+Phase 3:    [█████░░░░░]  50% (1/2 plans) — In Progress
+Execution:  [█████████░░░░░░░░░░░] Phase 3 Plan 1 of 2 done
 
 ---
 
@@ -115,6 +116,10 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 | AddToCartSection in separate file | Committed | Next.js 15 cannot mix 'use client' and async server functions in same file |
 | product.id as cart key (not slug) | Committed | DatoCMS id is immutable; slugs can change for SEO reasons |
 | Quantity stepper bounds min=1 max=99 | Committed | Defensive cap; stock validation deferred to Phase 3 checkout |
+| Two-step Supabase insert for orders | Committed | INSERT with TEMP reference then UPDATE — UUID only known after insert |
+| Fire-and-forget Resend email | Committed | resend.emails.send without await; email failure never blocks order |
+| Server-side price re-fetch in submitOrder | Committed | Never trust client-sent totals; only productId/quantity from formData |
+| Plain React email template | Committed | No react-email package needed; Resend accepts any React component |
 
 ### Critical Pitfalls to Avoid
 
@@ -169,17 +174,16 @@ Execution:  [████████░░░░░░░░░░░░] Phase
 
 ## Session Continuity
 
-**Last Action:** Completed quick task 1: Create GitHub issues for Phase 3 plans
+**Last Action:** Completed Phase 3 Plan 01: Order Submission Backend
 
-**Stopped At:** Completed 02-02-PLAN.md (checkpoint: human-verify task 3 pending)
+**Stopped At:** Completed 03-01-PLAN.md
 
-**Context Preserved:** Phase 1 artifacts + Phase 2 Plan 01 and 02 artifacts
-- `.planning/phases/02-shopping-cart/02-01-SUMMARY.md` — Plan 01 summary
-- `.planning/phases/02-shopping-cart/02-02-SUMMARY.md` — Plan 02 summary
-- `app/lib/store/cartStore.ts` — useCartStore Zustand hook (new)
-- `app/components/Navigation.tsx` — CartIcon with isMounted badge, links to /cart (updated)
-- `app/cart/page.tsx` — Full cart page: empty state, item list, qty stepper, clear cart, checkout link (new)
-- `app/lib/types.ts` — CartItem interface added
+**Context Preserved:** Phase 1 + Phase 2 + Phase 3 Plan 01 artifacts
+- `.planning/phases/03-checkout-order-form/03-01-SUMMARY.md` — Plan 01 summary
+- `app/lib/types.ts` — OrderItem, OrderInsert, SubmitOrderResult types added
+- `app/lib/emails/order-notification.tsx` — React email template for seller notification (new)
+- `app/checkout/actions.ts` — submitOrder Server Action with Zod validation, DatoCMS price re-fetch, Supabase insert, Resend email, redirect (new)
+- Phase 2 artifacts preserved: cartStore.ts, Navigation.tsx, cart/page.tsx
 
 **Phase 1 Context Preserved:** All Phase 1 execution artifacts written to disk
 - `.planning/phases/01-product-catalog-foundation/01-01-SUMMARY.md` — Plan 01 summary
