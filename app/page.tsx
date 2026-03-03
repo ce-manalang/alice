@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: HomeProps) {
               </a>
             </li>
             <li className="navbar-item">
-              <a className="navbar-link" href="/shop">
+              <a className="navbar-link" href="https://instagram.com/centimentalcomics" target="_blank" rel="noopener noreferrer">
                 shop
               </a>
             </li>
