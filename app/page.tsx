@@ -96,7 +96,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured products section */}
-      {featuredProducts.length > 0 && (
+      {featuredProducts.length > 0 ? (
         <section style={{ padding: '3rem 0 4rem' }}>
           <div className="shop-container">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.5rem' }}>
@@ -128,6 +128,15 @@ export default async function HomePage() {
               {featuredProducts.map((product, idx) => (
                 <ProductCard key={product.id} product={product} priority={idx === 0} />
               ))}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section style={{ padding: '3rem 0 4rem' }}>
+          <div className="shop-container">
+            <div className="shop-empty-state">
+              <p className="shop-empty-state__heading">Products coming soon</p>
+              <p className="shop-empty-state__body">We&rsquo;re stocking the shelves — check back soon.</p>
             </div>
           </div>
         </section>
