@@ -26,20 +26,41 @@ export default async function ShopPage() {
 
   return (
     <div className="shop-page">
-      <div className="shop-container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-        {/* Page header */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h1
-            style={{
+      {/* Hero section */}
+      <section style={{
+        padding: '5rem 0 3rem',
+        borderBottom: '1px solid #e5e7eb',
+      }}>
+        <div className="shop-container">
+          <div style={{ maxWidth: '560px' }}>
+            <h1 style={{
               fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: '1.5rem',
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
               fontWeight: 700,
               color: '#111111',
-              margin: '0 0 0.5rem',
-            }}
-          >
-            Shop
-          </h1>
+              margin: '0 0 1rem',
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+            }}>
+              CS education, made with care.
+            </h1>
+            <p style={{
+              fontFamily: "'Inter', system-ui, sans-serif",
+              fontSize: '1.0625rem',
+              color: '#6b7280',
+              margin: 0,
+              lineHeight: 1.6,
+            }}>
+              Zines, pins, stationery, and apparel that make computer science feel human — for students, educators, and curious minds.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Product catalog */}
+      <div className="shop-container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
+        {/* Product count */}
+        <div style={{ marginBottom: '2rem' }}>
           <p
             style={{
               fontFamily: "'Inter', system-ui, sans-serif",
