@@ -1,15 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google"
 import Navigation from "@/app/components/Navigation"
 import Footer from "@/app/components/Footer"
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-})
 
 export const metadata: Metadata = {
   title: {
@@ -75,7 +69,7 @@ export default function RootLayout({
     <html lang="en">
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
-      <body className={inter.className} style={{ margin: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <body style={{ margin: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navigation />
         <main style={{ flex: 1 }}>
           {children}
