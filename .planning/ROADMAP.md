@@ -11,7 +11,7 @@
 
 - [x] **Phase 1: Product Catalog & Foundation** - Build product catalog, navigation, and information pages with DatoCMS integration (completed 2026-02-26)
 - [x] **Phase 2: Shopping Cart** - Implement cart state management with persistence across sessions (completed 2026-03-01)
-- [ ] **Phase 3: Checkout & Order Form** - Complete the purchase flow with order submission and confirmation
+- [x] **Phase 3: Checkout & Order Form** - Complete the purchase flow with order submission and confirmation (completed 2026-03-03)
 
 ---
 
@@ -87,7 +87,7 @@ Plans:
 4. User sees clear instructions on the confirmation page explaining that they will be contacted at the provided email/phone to arrange meetup
 5. Order data (customer contact info and items) is securely stored for the seller to retrieve and process
 
-**Plans:** TBD
+**Plans:** 2/2 plans complete
 
 ---
 
@@ -97,7 +97,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Product Catalog & Foundation | 5/5 | Complete    | 2026-02-26 |
 | 2. Shopping Cart | 3/3 | Complete    | 2026-03-01 |
-| 3. Checkout & Order Form | 0/2 | Not started | — |
+| 3. Checkout & Order Form | 2/2 | Complete   | 2026-03-03 |
 
 ---
 

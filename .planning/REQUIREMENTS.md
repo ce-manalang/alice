@@ -24,7 +24,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Checkout
 
 - [x] **CHKT-01**: User can submit an order form with name, contact info, and selected items
-- [ ] **CHKT-02**: User sees order confirmation after successful submission
+- [x] **CHKT-02**: User sees order confirmation after successful submission
 - [x] **CHKT-03**: Order details are stored for seller to review and arrange meetup
 
 ### Content
@@ -94,7 +94,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CART-03 | Phase 2 | Complete |
 | CART-04 | Phase 2 | Complete |
 | CHKT-01 | Phase 3 | Complete |
-| CHKT-02 | Phase 3 | Pending |
+| CHKT-02 | Phase 3 | Complete |
 | CHKT-03 | Phase 3 | Complete |
 | CONT-01 | Phase 1 | Complete |
 | CONT-02 | Phase 1 | Complete |
