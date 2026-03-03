@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { redirect } from 'next/navigation'
 import { Resend } from 'resend'
-import { supabase } from '@/app/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { datocmsRequest } from '@/app/lib/datocms'
 import { OrderNotificationEmail } from '@/app/lib/emails/order-notification'
 import type { Product, OrderItem, OrderInsert } from '@/app/lib/types'
@@ -17,6 +17,15 @@ const checkoutSchema = z.object({
   phone: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
 })
+
+// ─── Server-side Supabase client (service role bypasses RLS) ─────────────────
+
+function getServerSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  return createClient(url, serviceKey || anonKey)
+}
 
 // ─── DatoCMS query to fetch fresh prices server-side ─────────────────────────
 
@@ -127,7 +136,8 @@ export async function submitOrder(
     status: 'pending',
   }
 
-  const { data: insertedOrder, error: dbError } = await supabase
+  const serverSupabase = getServerSupabase()
+  const { data: insertedOrder, error: dbError } = await serverSupabase
     .from('orders')
     .insert({
       ...orderData,
@@ -143,7 +153,7 @@ export async function submitOrder(
 
   // 7. Generate reference number from UUID and update the record
   const reference = generateReference(insertedOrder.id as string)
-  await supabase
+  await serverSupabase
     .from('orders')
     .update({ reference })
     .eq('id', insertedOrder.id)
