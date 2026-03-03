@@ -502,6 +502,28 @@
   }
 }
 
+/* Empty state — shown when no products exist */
+.shop-empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  border: 1.5px dashed #e5e7eb;
+  border-radius: 8px;
+  color: #9ca3af;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.shop-empty-state__heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem;
+}
+
+.shop-empty-state__body {
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
 /* Product card */
 .shop-product-card {
   display: flex;

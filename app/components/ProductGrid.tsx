@@ -12,15 +12,9 @@ export default function ProductGrid({
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '4rem 0',
-          color: '#9ca3af',
-          fontFamily: "'Inter', system-ui, sans-serif",
-        }}
-      >
-        <p>{emptyMessage}</p>
+      <div className="shop-empty-state">
+        <p className="shop-empty-state__heading">Products coming soon</p>
+        <p className="shop-empty-state__body">{emptyMessage}</p>
       </div>
     )
   }
