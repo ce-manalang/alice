@@ -176,7 +176,7 @@ Execution:  All 10 plans complete — v1.0 milestone DONE
 | 1 | Create GitHub issues for Phase 3 plans | 2026-03-03 | 0cd67c8 | [1-create-github-issues-for-phase-3-plans](./quick/1-create-github-issues-for-phase-3-plans/) |
 | 2 | Close GitHub issues #31 and #32 for Phase 3 complete | 2026-03-03 | 1384633 | [2-update-github-issues-phase-3-complete](./quick/2-update-github-issues-phase-3-complete/) |
 | 3 | Add shop empty states for zero-product pages | 2026-03-03 | 896efa7 | [3-shop-empty-state-no-products](./quick/3-shop-empty-state-no-products/) |
-| 4 | Restore comics homepage and move shop hero to /shop | 2026-03-03 | 1b7b1db | [4-restore-comics-homepage-shop-at-shop](./quick/4-restore-comics-homepage-shop-at-shop/) |
+| 4 | Restore comics homepage and move shop hero to /shop | 2026-03-03 | 7dd1ac2 | [4-restore-comics-homepage-shop-at-shop](./quick/4-restore-comics-homepage-shop-at-shop/) |
 
 ---
 
