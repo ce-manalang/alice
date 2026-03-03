@@ -26,3 +26,27 @@ export interface CartItem {
   productId: string
   quantity: number
 }
+
+// Order types (Phase 3 — Checkout)
+export interface OrderItem {
+  productId: string
+  productName: string
+  quantity: number
+  price: number  // Unit price in PHP (numeric)
+}
+
+export interface OrderInsert {
+  reference: string
+  customer_name: string
+  customer_email: string
+  customer_phone?: string | null
+  notes?: string | null
+  items: OrderItem[]
+  total: number
+  status: 'pending'
+}
+
+// Return type from submitOrder Server Action
+export type SubmitOrderResult =
+  | { error: string; formData?: Record<string, unknown> }
+  | { success: true; orderId: string }
