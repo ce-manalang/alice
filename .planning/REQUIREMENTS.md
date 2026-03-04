@@ -37,11 +37,11 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Site Structure
 
-- [ ] **SITE-01**: Main navigation shows Home, Engineering, Case Studies, Resume, Contact
-- [ ] **SITE-02**: Shop link demoted to footer (not primary nav)
+- [x] **SITE-01**: Main navigation shows Home, Engineering, Case Studies, Resume, Contact
+- [x] **SITE-02**: Shop link demoted to footer (not primary nav)
 - [x] **SITE-03**: Portfolio pages use route groups for clean separation from shop routes
-- [ ] **SITE-04**: All portfolio pages have SEO metadata and Open Graph tags
-- [ ] **SITE-05**: Site tone is professional: clear outcomes, measurable impact, technical clarity throughout
+- [x] **SITE-04**: All portfolio pages have SEO metadata and Open Graph tags
+- [x] **SITE-05**: Site tone is professional: clear outcomes, measurable impact, technical clarity throughout
 
 ## Future Requirements
 
@@ -95,11 +95,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESM-02 | Phase 5 | Pending |
 | CTCT-01 | Phase 6 | Pending |
 | CTCT-02 | Phase 6 | Pending |
-| SITE-01 | Phase 4 | Pending |
-| SITE-02 | Phase 4 | Pending |
+| SITE-01 | Phase 4 | Complete |
+| SITE-02 | Phase 4 | Complete |
 | SITE-03 | Phase 4 | Complete |
-| SITE-04 | Phase 4 | Pending |
-| SITE-05 | Phase 4 | Pending |
+| SITE-04 | Phase 4 | Complete |
+| SITE-05 | Phase 4 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 18 total

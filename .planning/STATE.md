@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: planning
-stopped_at: Completed 04-portfolio-foundation-01-PLAN.md
-last_updated: "2026-03-04T19:23:09.278Z"
-last_activity: 2026-03-04 — Phase 4 plans created (3 plans across 3 waves)
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-04T19:25:53.617Z"
+last_activity: 2026-03-05 — Completed 04-02 portfolio layout and stub pages
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 67
 ---
 
 # Project State: Centimentalcomics
@@ -36,11 +36,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 4 of 6 (Portfolio Foundation)
-**Plan:** 01 of 03 (completed)
+**Plan:** 02 of 03 (completed)
 **Status:** Executing Phase 4 plans
-**Last activity:** 2026-03-05 — Completed 04-01 route architecture refactor
+**Last activity:** 2026-03-05 — Completed 04-02 portfolio layout and stub pages
 
-Progress: [███░░░░░░░] 33%
+Progress: [███████░░░] 67%
 
 ---
 
@@ -66,6 +66,9 @@ Recent decisions affecting current work:
 - [v2.0 start]: Contact form reuses existing Resend + Server Actions pattern from shop checkout
 - [Phase 04-portfolio-foundation]: Use (shop) layout as exclusive owner of Navigation/Footer so components render unconditionally.
 - [Phase 04-portfolio-foundation]: Keep root layout minimal (html/body/analytics/main only) to unblock portfolio route groups.
+- [Phase 04]: Portfolio routes use dedicated portfolio-* CSS tokens and system sans stack, distinct from shop Inter styling.
+- [Phase 04]: Portfolio navigation excludes shop; /shop appears in portfolio footer only.
+- [Phase 04]: Portfolio SEO baseline uses layout title template plus page-level metadata exports.
 
 ### Blockers/Concerns
 
@@ -86,12 +89,13 @@ Recent decisions affecting current work:
 
 ---
 | Phase 04-portfolio-foundation P01 | 18min | 2 tasks | 12 files |
+| Phase 04 P02 | 1min | 2 tasks | 8 files |
 
 ## Session Continuity
 
 **Last Action:** Phase 4 plans created — 3 plans (04-01 route architecture, 04-02 portfolio layout+pages, 04-03 verification)
 
-**Stopped At:** Completed 04-portfolio-foundation-01-PLAN.md
+**Stopped At:** Completed 04-02-PLAN.md
 
 ---
 
