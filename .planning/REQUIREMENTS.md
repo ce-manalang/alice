@@ -82,30 +82,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HOME-01 | TBD | Pending |
-| HOME-02 | TBD | Pending |
-| HOME-03 | TBD | Pending |
-| HOME-04 | TBD | Pending |
-| ENG-01 | TBD | Pending |
-| ENG-02 | TBD | Pending |
-| CASE-01 | TBD | Pending |
-| CASE-02 | TBD | Pending |
-| CASE-03 | TBD | Pending |
-| RESM-01 | TBD | Pending |
-| RESM-02 | TBD | Pending |
-| CTCT-01 | TBD | Pending |
-| CTCT-02 | TBD | Pending |
-| SITE-01 | TBD | Pending |
-| SITE-02 | TBD | Pending |
-| SITE-03 | TBD | Pending |
-| SITE-04 | TBD | Pending |
-| SITE-05 | TBD | Pending |
+| HOME-01 | Phase 5 | Pending |
+| HOME-02 | Phase 5 | Pending |
+| HOME-03 | Phase 5 | Pending |
+| HOME-04 | Phase 5 | Pending |
+| ENG-01 | Phase 5 | Pending |
+| ENG-02 | Phase 5 | Pending |
+| CASE-01 | Phase 6 | Pending |
+| CASE-02 | Phase 6 | Pending |
+| CASE-03 | Phase 6 | Pending |
+| RESM-01 | Phase 5 | Pending |
+| RESM-02 | Phase 5 | Pending |
+| CTCT-01 | Phase 6 | Pending |
+| CTCT-02 | Phase 6 | Pending |
+| SITE-01 | Phase 4 | Pending |
+| SITE-02 | Phase 4 | Pending |
+| SITE-03 | Phase 4 | Pending |
+| SITE-04 | Phase 4 | Pending |
+| SITE-05 | Phase 4 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 18 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 18
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-04 after v2.0 milestone definition*
+*Last updated: 2026-03-04 — Traceability complete, 18/18 mapped to Phases 4-6*
