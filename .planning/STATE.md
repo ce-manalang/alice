@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: MVP
-status: completed
-stopped_at: v1.0 milestone archived
-last_updated: "2026-03-04T03:45:00.000Z"
+milestone: v2.0
+milestone_name: Portfolio
+status: active
+stopped_at: Defining requirements
+last_updated: "2026-03-04T04:00:00.000Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
-# Project State: Centimentalcomics Shop
+# Project State: Centimentalcomics
 
-**Project:** Centimentalcomics Indie E-Commerce Shop
+**Project:** Centimentalcomics Rails Portfolio (Tokyo Market)
 **Updated:** 2026-03-04
-**Status:** v1.0 milestone complete and archived
+**Status:** Defining requirements for v2.0
 
 ---
 
@@ -25,18 +25,19 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-04)
 
-**Core value:** Customers can browse the product catalog and submit orders for educational CS products — if nothing else works, browsing and ordering must.
+**Core value:** Visitors can quickly assess Rails engineering competence through clear case studies, structured resume, and technical documentation.
 
-**Current focus:** v1.0 shipped — planning next milestone
+**Current focus:** v2.0 Portfolio — transform site into Rails-focused portfolio for Tokyo market
 
 ---
 
 ## Current Position
 
-**Milestone:** v1.0 MVP — SHIPPED 2026-03-04
-**Phases:** 3/3 complete (10/10 plans)
-**Requirements:** 19/19 v1 requirements validated
-**Next:** `/gsd:new-milestone` to plan v1.1
+**Milestone:** v2.0 Portfolio
+**Phase:** Not started (defining requirements)
+**Plan:** —
+**Status:** Defining requirements
+**Last activity:** 2026-03-04 — Milestone v2.0 started
 
 ---
 
@@ -54,10 +55,10 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 ## Session Continuity
 
-**Last Action:** Completed v1.0 milestone archival
+**Last Action:** Started v2.0 Portfolio milestone
 
-**Stopped At:** v1.0 milestone archived — ready for next milestone
+**Stopped At:** Defining requirements
 
 ---
 
-*State snapshot: 2026-03-04 — v1.0 MVP shipped and archived. Use `/gsd:new-milestone` to plan v1.1.*
+*State snapshot: 2026-03-04 — v2.0 Portfolio milestone started. Defining requirements.*
