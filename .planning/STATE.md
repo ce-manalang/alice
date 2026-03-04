@@ -177,14 +177,15 @@ Execution:  All 10 plans complete — v1.0 milestone DONE
 | 2 | Close GitHub issues #31 and #32 for Phase 3 complete | 2026-03-03 | 1384633 | [2-update-github-issues-phase-3-complete](./quick/2-update-github-issues-phase-3-complete/) |
 | 3 | Add shop empty states for zero-product pages | 2026-03-03 | 896efa7 | [3-shop-empty-state-no-products](./quick/3-shop-empty-state-no-products/) |
 | 4 | Restore comics homepage and move shop hero to /shop | 2026-03-03 | 7dd1ac2 | [4-restore-comics-homepage-shop-at-shop](./quick/4-restore-comics-homepage-shop-at-shop/) |
+| 5 | Move shop about to /shop/about, restore comics about at /about | 2026-03-04 | ba7d01d | [5-move-about-page-to-shop-about-adapting-m](./quick/5-move-about-page-to-shop-about-adapting-m/) |
 
 ---
 
 ## Session Continuity
 
-**Last Action:** Completed Quick Task 4: restore comics homepage at / and move shop hero to /shop
+**Last Action:** Completed Quick Task 5: move shop about to /shop/about, restore comics about at /about
 
-**Stopped At:** Completed quick task 4 (4-restore-comics-homepage-shop-at-shop)
+**Stopped At:** Completed quick task 5 (5-move-about-page-to-shop-about-adapting-m)
 
 **Context Preserved:** All phases complete — full e-commerce flow shipped
 - `.planning/phases/03-checkout-order-form/03-02-SUMMARY.md` — Plan 02 summary (checkout form UI)
