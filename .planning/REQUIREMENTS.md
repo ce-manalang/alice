@@ -1,0 +1,111 @@
+# Requirements: Centimentalcomics Portfolio
+
+**Defined:** 2026-03-04
+**Core Value:** Visitors can quickly assess Rails engineering competence through clear case studies, structured resume, and technical documentation
+
+## v2.0 Requirements
+
+Requirements for portfolio milestone. Each maps to roadmap phases.
+
+### Homepage
+
+- [ ] **HOME-01**: Visitor sees professional hero with Rails engineer positioning and CTAs (View Case Studies, View Resume)
+- [ ] **HOME-02**: Visitor sees core strengths section (Rails, system design, performance, deployment, maintenance)
+- [ ] **HOME-03**: Visitor sees 2-3 featured case study cards with links to full case studies
+- [ ] **HOME-04**: Visitor sees condensed professional timeline showing career progression
+
+### Engineering
+
+- [ ] **ENG-01**: Visitor can view engineering page with full stack listing organized by category (backend, frontend, infra, tools)
+- [ ] **ENG-02**: Engineering page emphasizes testing and code quality practices
+
+### Case Studies
+
+- [ ] **CASE-01**: Visitor can browse case studies index page showing all available case studies
+- [ ] **CASE-02**: Visitor can view individual case study with structured sections: context, technical challenges, and reflection
+- [ ] **CASE-03**: 2-3 production case studies written with specific technical outcomes (not vague/promotional)
+
+### Resume
+
+- [ ] **RESM-01**: Visitor can view clean, structured resume at /resume with experience, skills, and career progression
+- [ ] **RESM-02**: Resume emphasizes career stability, team collaboration, and production systems
+
+### Contact
+
+- [ ] **CTCT-01**: Visitor can submit contact form with name, email, and message
+- [ ] **CTCT-02**: Contact form sends email notification to site owner via Resend
+
+### Site Structure
+
+- [ ] **SITE-01**: Main navigation shows Home, Engineering, Case Studies, Resume, Contact
+- [ ] **SITE-02**: Shop link demoted to footer (not primary nav)
+- [ ] **SITE-03**: Portfolio pages use route groups for clean separation from shop routes
+- [ ] **SITE-04**: All portfolio pages have SEO metadata and Open Graph tags
+- [ ] **SITE-05**: Site tone is professional: clear outcomes, measurable impact, technical clarity throughout
+
+## Future Requirements
+
+Deferred to v2.1+. Tracked but not in current roadmap.
+
+### Case Study Enhancements
+
+- **CASE-04**: Architecture diagrams (Mermaid) in case studies
+- **CASE-05**: Measurable outcomes/metrics section in each case study
+- **CASE-06**: Code quality practices section per case study (test coverage, refactoring, error handling)
+
+### Tokyo Market
+
+- **TOKY-01**: Japanese-language short intro on homepage (1-2 sentences)
+- **TOKY-02**: Testing badges/signals visible per case study
+
+### Engagement
+
+- **ENGM-01**: Upcoming meetup events display
+- **ENGM-02**: Newsletter / email collection
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Blog / writing section | Case studies are the primary content; blog creates maintenance burden |
+| CMS for portfolio content | Hardcoded — content rarely changes, avoids CMS overhead |
+| PDF resume download | Browser print-to-PDF sufficient; HTML always current |
+| Animations / interactive effects | Engineering portfolio, not design portfolio |
+| Multi-language full translation | Scope creep; English sufficient with optional Japanese intro later |
+| Testimonials section | Self-hosted testimonials lack credibility; LinkedIn is better |
+| Video walkthroughs | High production cost, low ROI for text-first audience |
+| Online payment processing | Kept from v1.0 scope — meetup-based fulfillment |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| HOME-01 | TBD | Pending |
+| HOME-02 | TBD | Pending |
+| HOME-03 | TBD | Pending |
+| HOME-04 | TBD | Pending |
+| ENG-01 | TBD | Pending |
+| ENG-02 | TBD | Pending |
+| CASE-01 | TBD | Pending |
+| CASE-02 | TBD | Pending |
+| CASE-03 | TBD | Pending |
+| RESM-01 | TBD | Pending |
+| RESM-02 | TBD | Pending |
+| CTCT-01 | TBD | Pending |
+| CTCT-02 | TBD | Pending |
+| SITE-01 | TBD | Pending |
+| SITE-02 | TBD | Pending |
+| SITE-03 | TBD | Pending |
+| SITE-04 | TBD | Pending |
+| SITE-05 | TBD | Pending |
+
+**Coverage:**
+- v2.0 requirements: 18 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 18
+
+---
+*Requirements defined: 2026-03-04*
+*Last updated: 2026-03-04 after v2.0 milestone definition*
