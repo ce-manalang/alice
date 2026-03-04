@@ -45,7 +45,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
   3. Shop link appears only in the portfolio footer, not in the primary navigation
   4. Each portfolio page renders correct SEO title, description, and Open Graph tags in page source
   5. All text across portfolio pages uses professional tone: outcomes stated as measurable facts, no emotional language
-**Plans**: TBD
+**Plans**: 04-01 (route architecture), 04-02 (portfolio layout + pages), 04-03 (verification checkpoint)
 
 ### Phase 5: Core Portfolio Pages
 **Goal**: Hiring managers landing on the site can assess Rails engineering competence in under 30 seconds from the homepage and drill into engineering stack and resume for depth

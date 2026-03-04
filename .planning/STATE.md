@@ -3,14 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: planning
-stopped_at: Phase 4 plan-phase step 5 (research) - context exhausted before spawning researcher
-last_updated: "2026-03-04T05:22:12.534Z"
-last_activity: 2026-03-04 — Roadmap created, 18/18 requirements mapped to 3 phases
+stopped_at: Completed 04-portfolio-foundation-01-PLAN.md
+last_updated: "2026-03-04T19:23:09.278Z"
+last_activity: 2026-03-04 — Phase 4 plans created (3 plans across 3 waves)
 progress:
-  total_phases: 1
+  total_phases: 3
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 3
+  completed_plans: 1
+  percent: 0
 ---
 
 # Project State: Centimentalcomics
@@ -35,20 +36,20 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 4 of 6 (Portfolio Foundation)
-**Plan:** — (not started)
-**Status:** Ready to plan
-**Last activity:** 2026-03-04 — Roadmap created, 18/18 requirements mapped to 3 phases
+**Plan:** 01 of 03 (completed)
+**Status:** Executing Phase 4 plans
+**Last activity:** 2026-03-05 — Completed 04-01 route architecture refactor
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ---
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0 (v2.0)
-- Average duration: unknown (new milestone)
-- Total execution time: —
+- Total plans completed: 1 (v2.0)
+- Average duration: 18min
+- Total execution time: 18min
 
 *Updated after each plan completion*
 
@@ -63,6 +64,8 @@ Recent decisions affecting current work:
 - [v2.0 start]: Route groups `(portfolio)` and `(shop)` for architectural separation — prevents slug collisions, enables conditional nav
 - [v2.0 start]: Case study content hardcoded in TypeScript (`lib/portfolio-data.ts`) — no CMS, version-controlled
 - [v2.0 start]: Contact form reuses existing Resend + Server Actions pattern from shop checkout
+- [Phase 04-portfolio-foundation]: Use (shop) layout as exclusive owner of Navigation/Footer so components render unconditionally.
+- [Phase 04-portfolio-foundation]: Keep root layout minimal (html/body/analytics/main only) to unblock portfolio route groups.
 
 ### Blockers/Concerns
 
@@ -82,12 +85,13 @@ Recent decisions affecting current work:
 | 5 | Move shop about to /shop/about | 2026-03-04 |
 
 ---
+| Phase 04-portfolio-foundation P01 | 18min | 2 tasks | 12 files |
 
 ## Session Continuity
 
-**Last Action:** Roadmap created for v2.0 Portfolio (18/18 requirements, Phases 4-6)
+**Last Action:** Phase 4 plans created — 3 plans (04-01 route architecture, 04-02 portfolio layout+pages, 04-03 verification)
 
-**Stopped At:** Phase 4 plan-phase step 5 (research) - context exhausted before spawning researcher
+**Stopped At:** Completed 04-portfolio-foundation-01-PLAN.md
 
 ---
 
