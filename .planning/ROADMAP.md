@@ -29,7 +29,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 
 #### Phases
 
-- [ ] **Phase 4: Portfolio Foundation** - Route groups, navigation architecture, SEO baseline — the structural prerequisite for all portfolio content
+- [x] **Phase 4: Portfolio Foundation** - Route groups, navigation architecture, SEO baseline — the structural prerequisite for all portfolio content
 - [ ] **Phase 5: Core Portfolio Pages** - Homepage, engineering stack, and resume pages fully built with professional tone and content
 - [ ] **Phase 6: Case Studies + Contact** - Case study pages with written content and contact form backed by Resend
 
@@ -80,10 +80,10 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 | 1. Product Catalog & Foundation | v1.0 | 5/5 | Complete | 2026-02-26 |
 | 2. Shopping Cart | v1.0 | 3/3 | Complete | 2026-03-01 |
 | 3. Checkout & Order Form | v1.0 | 2/2 | Complete | 2026-03-03 |
-| 4. Portfolio Foundation | v2.0 | 2/3 | In Progress | - |
+| 4. Portfolio Foundation | v2.0 | 3/3 | Complete | 2026-03-05 |
 | 5. Core Portfolio Pages | v2.0 | 0/? | Not started | - |
 | 6. Case Studies + Contact | v2.0 | 0/? | Not started | - |
 
 ---
 
-_Last updated: 2026-03-05 — Phase 4 progress updated (2/3 plans complete)_
+_Last updated: 2026-03-05 — Phase 4 completed (3/3 plans complete)_
