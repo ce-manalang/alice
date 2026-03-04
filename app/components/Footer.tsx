@@ -1,16 +1,6 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
 import { SOCIAL_LINKS } from '@/app/lib/constants'
 
-const SHOP_ROUTES = ['/shop', '/shop/about', '/faq', '/cart', '/checkout']
-
 export default function Footer() {
-  const pathname = usePathname()
-  const isShopRoute = SHOP_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
-
-  if (!isShopRoute) return null
-
   return (
     <footer
       style={{

@@ -2,10 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/app/lib/store/cartStore'
-
-const SHOP_ROUTES = ['/shop', '/shop/about', '/faq', '/cart', '/checkout']
 
 function CartIcon() {
   const [isMounted, setIsMounted] = useState(false)
@@ -67,11 +64,6 @@ function CartIcon() {
 }
 
 export default function Navigation() {
-  const pathname = usePathname()
-  const isShopRoute = SHOP_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
-
-  if (!isShopRoute) return null
-
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <div className="shop-container">

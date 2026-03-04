@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useCartStore } from '@/app/lib/store/cartStore'
-import { submitOrder } from '@/app/checkout/actions'
+import { submitOrder } from '@/app/(shop)/checkout/actions'
 import type { Product } from '@/app/lib/types'
 
 function formatPrice(price: number): string {
