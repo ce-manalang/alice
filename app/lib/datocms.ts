@@ -26,8 +26,8 @@ export async function datocmsRequest<T>(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    // Revalidate periodically to keep content fresh
-    next: { revalidate: 60 },
+    // Revalidate periodically and support on-demand revalidation via cache tags
+    next: { revalidate: 3600, tags: ['products'] },
     body: JSON.stringify({ query, variables }),
   })
 

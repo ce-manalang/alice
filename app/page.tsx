@@ -44,8 +44,8 @@ export default async function Home({ searchParams }: HomeProps) {
                 home
               </a>
             </li>
-						<li className="navbar-item">
-              <a className="navbar-link" href="https://www.instagram.com/centimentalcomics?utm_source=shop">
+            <li className="navbar-item">
+              <a className="navbar-link" href="https://instagram.com/centimentalcomics" target="_blank" rel="noopener noreferrer">
                 shop
               </a>
             </li>
@@ -54,22 +54,6 @@ export default async function Home({ searchParams }: HomeProps) {
                 about
               </a>
             </li>
-            {/*<li className="navbar-item">
-              <a className="navbar-link" href="#" data-popover="#codeNavPopover">stories</a>
-              <div id="codeNavPopover" className="popover">
-                <ul className="popover-list">
-                  <li className="popover-item">
-                    <a className="popover-link">you asked for space</a>
-                  </li>
-                  <li className="popover-item">
-                    <a className="popover-link">love letter to ruby</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li className="navbar-item">
-              <a className="navbar-link" href="subscribe">more</a>
-            </li>*/}
           </ul>
         </div>
       </nav>
@@ -77,22 +61,6 @@ export default async function Home({ searchParams }: HomeProps) {
       <Suspense fallback={<LoadingSkeleton />}>
         <ComicsList page={currentPage} />
       </Suspense>
-
-      {/* <section className="docs-share"> */}
-      {/* <p className="u-text-center u-margin-0"> */}
-      {/* &lt;&lt; newer 1<a href="pages-2">2</a> */}
-      {/* <a href="pages-3">3</a> */}
-      {/* <a href="pages-4">4</a> */}
-      {/* <a href="pages-5">5</a> */}
-      {/* <a href="pages-2">older &gt;&gt;</a> */}
-      {/* </p> */}
-      {/* <span class="docs-header">further reading</span> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-instagram" href="https://instagram.com/centimentalcomics" target="_blank" alt="centimentalcomics instagram" title="https://instagram.com/centimentalcomics">instagram</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-twitter" href="https://twitter.com/centimentalcomx" target="_blank" alt="centimentalcomics twitter" title="https://twitter.com/centimentalcomx">twitter</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-facebook" href="https://facebook.com/centimentalcomics" target="_blank" alt="centimentalcomics facebook" title="https://facebook.com/centimentalcomics">facebook</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-tumblr" href="https://centimentalcomics.tumblr.com" target="_blank" alt="centimentalcomics facebook" title="https://centimentalcomics.tumblr.com">tumblr</a> */}
-      {/* <a class="button docs-button docs-button-share docs-bg-email" href="mailto:cm@centimentalcomics.com" target="_blank" alt="centimentalcomics email" title="mailto:cm@centimentalcomics.com">email</a> */}
-      {/* </section> */}
 
       <section className="footer">
         <h3 className="u-text-center">© 2025 | made in ph 💘</h3>
@@ -109,21 +77,21 @@ async function ComicsList({ page }: { page: number }) {
       {posts.map((post: Post, index: number) => (
         <article key={index} className="docs-section">
           {
-						post.image_urls.map((image_url, index) => (
-							<div key={index}>
-								<Link href={`/${post.slug}`}>
-									<Image
-										src={image_url}
-										alt={post.title}
-										width="0"
-										height="0"
-										sizes="100vw"
-										priority={index === 0}
-										style={{ width: "100%", height: "auto" }}
-									/>
-								</Link>
-							</div>
-						))
+            post.image_urls.map((image_url, index) => (
+              <div key={index}>
+                <Link href={`/${post.slug}`}>
+                  <Image
+                    src={image_url}
+                    alt={post.title}
+                    width="0"
+                    height="0"
+                    sizes="100vw"
+                    priority={index === 0}
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </Link>
+              </div>
+            ))
           }
           <h3 className="u-pull-right">
             <strong>{formatDate(post.date)}</strong>

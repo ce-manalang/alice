@@ -8,15 +8,18 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        accent: {
+          DEFAULT: '#ec4899',  // pink-500 — matches existing brand touches
+          hover: '#db2777',    // pink-600
+          light: '#fce7f3',    // pink-100 for backgrounds
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       gridTemplateColumns: {
         '13': 'repeat(13, minmax(0, 1fr))',
-      },
-      colors: {
-        blue: {
-          400: '#2589FE',
-          500: '#0070F3',
-          600: '#2F6FEB',
-        },
       },
     },
     keyframes: {
