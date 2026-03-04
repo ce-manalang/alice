@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { SOCIAL_LINKS } from '@/app/lib/constants'
 
-const SHOP_ROUTES = ['/shop', '/about', '/faq', '/cart', '/checkout']
+const SHOP_ROUTES = ['/shop', '/shop/about', '/faq', '/cart', '/checkout']
 
 export default function Footer() {
   const pathname = usePathname()

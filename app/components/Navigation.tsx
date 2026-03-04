@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/app/lib/store/cartStore'
 
-const SHOP_ROUTES = ['/shop', '/about', '/faq', '/cart', '/checkout']
+const SHOP_ROUTES = ['/shop', '/shop/about', '/faq', '/cart', '/checkout']
 
 function CartIcon() {
   const [isMounted, setIsMounted] = useState(false)
@@ -91,7 +91,7 @@ export default function Navigation() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" style={{ fontSize: '0.9rem', color: '#374151', textDecoration: 'none', fontWeight: 500 }}
+                <Link href="/shop/about" style={{ fontSize: '0.9rem', color: '#374151', textDecoration: 'none', fontWeight: 500 }}
                   className="hover:text-accent">
                   about
                 </Link>
