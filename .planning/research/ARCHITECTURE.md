@@ -1,665 +1,1006 @@
-# Architecture Research: Next.js 15 E-Commerce Shop
+# Architecture Research: Portfolio Pages Integration
 
-**Domain:** Small e-commerce shop (under 20 products) with headless CMS
-**Researched:** 2026-02-20
+**Domain:** Rails-focused portfolio site with integrated e-commerce (Next.js)
+**Researched:** 2026-03-04
 **Confidence:** HIGH
 
-## Standard Architecture
+---
 
-### System Overview
+## Executive Summary
+
+The existing e-commerce architecture (Next.js 15 App Router, /shop/* routes) provides a solid foundation for integrating portfolio pages. The key architectural decision is whether to treat portfolio and shop as separate route hierarchies (via route groups) or nest them under a unified structure. **Recommendation: Use Next.js route groups to cleanly separate concerns while maintaining a single global layout.**
+
+This approach:
+- Creates two independent layout trees: `(portfolio)` for public pages (Home, Engineering, Case Studies, Resume, Contact) and `(shop)` for e-commerce
+- Allows each section to have its own navigation, styling, and data flow without collision
+- Preserves the existing /shop/* routes unchanged
+- Positions Portfolio as the primary entry point (root /) while Shop remains accessible at /shop/*
+- Avoids page reloads when navigating between sections (critical for UX)
+
+**Integration complexity: Moderate.** Portfolio pages are static, hardcoded content; no new data sources needed beyond existing DatoCMS. The contact form requires a new Server Action. CSS strategy stays unified (Tailwind + globals.css) but requires new semantic prefixes (portfolio-* vs shop-*).
+
+---
+
+## System Overview
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                         Client Layer                             │
-├──────────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐            │
-│  │ ProductPage  │  │ CartDrawer   │  │ OrderForm    │  Client    │
-│  │ (Server)     │  │ (Client)     │  │ (Client)     │ Components │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘            │
-│         │                 │                 │                    │
-├─────────┴─────────────────┴─────────────────┴────────────────────┤
-│                    Server Components                             │
-├──────────────────────────────────────────────────────────────────┤
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Layout (root layout, nav, footer)                       │   │
-│  │  ProductListLayout (category page structure)             │   │
-│  └──────────────────────────────────────────────────────────┘   │
+┌────────────────────────────────────────────────────────────────────┐
+│                       app/ (Root Layout)                           │
+│  ┌─────────────────────────────────────────────────────────────┐  │
+│  │  layout.tsx (Global: Metadata, Providers, GTM)              │  │
+│  │  globals.css, Tailwind, Font imports                        │  │
+│  └────────┬─────────────────────────┬──────────────────────────┘  │
+│           │                         │                              │
+│     ┌─────▼──────────┐       ┌──────▼──────────┐                  │
+│     │  (portfolio)   │       │    (shop)       │                  │
+│     │  layout.tsx    │       │    layout.tsx   │                  │
+│     ├────────────────┤       ├─────────────────┤                  │
+│     │ Routes:        │       │ Routes:         │                  │
+│     │ /              │       │ /shop           │                  │
+│     │ /engineering   │       │ /shop/[slug]    │                  │
+│     │ /case-studies  │       │ /shop/about     │                  │
+│     │ /resume        │       │                 │                  │
+│     │ /contact       │       │ Features:       │                  │
+│     │                │       │ • Inter font    │                  │
+│     │ Features:      │       │ • Product grid  │                  │
+│     │ • System fonts │       │ • DatoCMS data  │                  │
+│     │ • Static HTML  │       │ • ISR caching   │                  │
+│     │ • portfolio-*  │       │ • shop-* CSS    │                  │
+│     │   CSS          │       │                 │                  │
+│     └────┬───────────┘       └────┬────────────┘                  │
+│          │                        │                               │
+│    ┌─────▼────────────┐    ┌──────▼────────────┐                 │
+│    │ / (Home)         │    │ /shop (Catalog)   │                 │
+│    │ • Hero section   │    │ • Product grid    │                 │
+│    │ • Value props    │    │ • Categories      │                 │
+│    │ • Featured cases │    │ • Filtering       │                 │
+│    │ • Timeline       │    └──────┬────────────┘                 │
+│    └─────┬───────────┘            │                              │
+│          │                  ┌─────▼────────────┐                 │
+│    ┌─────┴────────────┐    │ /shop/[slug]     │                 │
+│    │ /engineering     │    │ • Product detail │                 │
+│    │ • Tech stack     │    │ • Add to cart    │                 │
+│    │ • By category    │    └──────┬───────────┘                 │
+│    └──────────────────┘           │                              │
+│                            ┌──────▼────────────┐                 │
+│    ┌──────────────────┐    │ /shop/about       │                 │
+│    │ /case-studies    │    │ • Brand story     │                 │
+│    │ • Grid/list      │    │ • Existing        │                 │
+│    │ • Filter/sort    │    └───────────────────┘                 │
+│    └─────┬────────────┘                                          │
+│          │                                                       │
+│    ┌─────▼────────────┐    Separate Root:                       │
+│    │ /case-studies/   │    /cart, /checkout                     │
+│    │ [slug]           │    /faq, /about (legacy)                │
+│    │ • Dynamic route  │    /[slug] (comic posts)                │
+│    │ • Static gen     │                                          │
+│    │ • Full detail    │                                          │
+│    └──────────────────┘                                          │
 │                                                                  │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Server Actions (formSubmit, cartMutations)              │   │
-│  └──────────────────────────────────────────────────────────┘   │
+│    ┌──────────────────┐                                          │
+│    │ /resume          │                                          │
+│    │ • Clean layout   │                                          │
+│    │ • Single page    │                                          │
+│    └──────────────────┘                                          │
 │                                                                  │
-├──────────────────────────────────────────────────────────────────┤
-│              Data & Integration Layer                            │
-├──────────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐            │
-│  │ DatoCMS API  │  │ Cart Context │  │ Form State   │  Services  │
-│  │ (fetch)      │  │ (React)      │  │ (useAction)  │            │
-│  └──────────────┘  └──────────────┘  └──────────────┘            │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
-
-                            Vercel Deployment
+│    ┌──────────────────┐                                          │
+│    │ /contact         │                                          │
+│    │ • Form + Server  │                                          │
+│    │   Action         │                                          │
+│    │ • Resend email   │                                          │
+│    └──────────────────┘                                          │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
-### Component Boundaries
-
-| Component | Responsibility | Communicates With | Render Type |
-|-----------|---|---|---|
-| **Root Layout** | HTML structure, navigation, footer, global styles | All pages | Server |
-| **ProductList** | Fetch and display all products with filtering/categories | ProductCard, Filter, Sort | Server |
-| **ProductPage** | Fetch individual product, display details, "Add to Cart" button | CartProvider, ProductDetail | Server (with Client Button) |
-| **ProductCard** | Display product preview card (image, name, price) | ProductPage link | Server |
-| **CartProvider** | Cart state management, persistence to localStorage | CartDrawer, CartButton | Client Context |
-| **CartDrawer** | Display cart items, remove items, show total, checkout link | CartProvider, OrderForm link | Client |
-| **OrderForm** | Collect customer info (name, email, phone) and items | Server Action (submitOrder) | Client Form |
-| **SubmitOrder Action** | Server-side form handling, validation, storage/notification | Database/email service | Server Action |
-| **About/FAQ Pages** | Static content pages | Navigation | Server |
+---
 
 ## Recommended Project Structure
 
 ```
-src/
-├── app/
-│   ├── layout.tsx                    # Root layout (nav, footer, providers)
-│   ├── page.tsx                      # Homepage
-│   ├── error.tsx                     # Error boundary
-│   ├── not-found.tsx                 # 404 page
-│   │
-│   ├── (shop)/
-│   │   ├── layout.tsx                # Shop section layout
-│   │   ├── products/
-│   │   │   ├── page.tsx              # All products list with filters
-│   │   │   └── [slug]/
-│   │   │       └── page.tsx          # Individual product page (dynamic)
-│   │   │
-│   │   ├── categories/
-│   │   │   └── [category]/
-│   │   │       └── page.tsx          # Products by category
-│   │   │
-│   │   └── checkout/
-│   │       └── page.tsx              # Order form page
-│   │
-│   ├── (marketing)/
-│   │   ├── about/
-│   │   │   └── page.tsx              # About page
-│   │   └── faq/
-│   │       └── page.tsx              # FAQ page
-│   │
-│   ├── api/
-│   │   └── revalidate/
-│   │       └── route.ts              # ISR webhook endpoint for DatoCMS
-│   │
-│   └── actions/
-│       └── order.ts                  # Server actions for form submission
-│
+app/
+├── layout.tsx                      # Root: Metadata, providers, GTM/GA
+├── globals.css                     # Unified Tailwind + base + prefixed styles
 ├── components/
-│   ├── _shared/                      # Shared components (prevents routing)
-│   │   ├── Header.tsx
-│   │   ├── Navigation.tsx
-│   │   ├── Footer.tsx
-│   │   └── SEO.tsx
-│   │
-│   ├── _shop/                        # Shop-specific components
-│   │   ├── ProductCard.tsx
-│   │   ├── ProductDetail.tsx
-│   │   ├── ProductFilter.tsx
-│   │   ├── ProductSort.tsx
-│   │   └── ProductGrid.tsx
-│   │
-│   ├── _cart/                        # Cart components
-│   │   ├── CartProvider.tsx          # Context provider (Client Component)
-│   │   ├── CartButton.tsx            # Cart button with item count
-│   │   ├── CartDrawer.tsx            # Drawer/modal showing cart items
-│   │   └── CartItem.tsx              # Individual cart item
-│   │
-│   └── _forms/                       # Form components
-│       └── OrderForm.tsx             # Checkout/order form
+│   ├── PortfolioNavigation.tsx      # NEW: Portfolio-specific nav
+│   ├── PortfolioFooter.tsx          # NEW: Portfolio-specific footer
+│   ├── ShopNavigation.tsx           # EXISTING: Shop nav (conditional)
+│   ├── ShopFooter.tsx               # EXISTING: Shop footer (conditional)
+│   ├── CaseStudyCard.tsx            # NEW: Case study preview
+│   ├── SkillBadge.tsx               # NEW: Tech skill badge
+│   ├── ContactForm.tsx              # NEW: Contact form + Server Action
+│   └── [existing shop components]
 │
 ├── lib/
-│   ├── datocms.ts                    # DatoCMS API client + fetch functions
-│   ├── types.ts                      # TypeScript types/interfaces
-│   ├── utils.ts                      # Helper functions
-│   └── constants.ts                  # App constants (categories, etc.)
+│   ├── portfolio-data.ts            # NEW: Hardcoded case studies, resume, stack
+│   ├── contact.ts                   # NEW: Contact form Server Action
+│   ├── types.ts                     # MODIFIED: Add portfolio types
+│   ├── constants.ts                 # MODIFIED: Add portfolio constants
+│   └── [existing shop libs]
 │
-├── styles/
-│   ├── globals.css                   # Global Tailwind styles
-│   └── variables.css                 # CSS custom properties
+├── (portfolio)/                     # NEW: Route group for portfolio
+│   ├── layout.tsx                   # Portfolio layout + nav/footer
+│   ├── page.tsx                     # / (Homepage)
+│   ├── engineering/
+│   │   └── page.tsx                 # /engineering (Stack listing)
+│   ├── case-studies/
+│   │   ├── page.tsx                 # /case-studies (Grid)
+│   │   └── [slug]/
+│   │       └── page.tsx             # /case-studies/[slug] (Detail)
+│   ├── resume/
+│   │   └── page.tsx                 # /resume (Clean layout)
+│   └── contact/
+│       └── page.tsx                 # /contact (Form)
 │
-├── hooks/
-│   ├── useCart.ts                    # Cart context hook
-│   └── useFormStatus.ts              # Form submission status
+├── (shop)/                          # EXISTING: Route group for shop
+│   ├── layout.tsx                   # Existing shop layout
+│   ├── page.tsx                     # /shop
+│   ├── [slug]/                      # /shop/[slug] (Product detail)
+│   ├── about/                       # /shop/about
+│   └── [other shop routes]
 │
-└── public/
-    ├── images/
-    │   └── products/                 # Product images
-    └── icons/                        # SVG icons
+├── cart/                            # EXISTING: Root-level (not in group)
+├── checkout/                        # EXISTING: Root-level
+├── faq/                             # EXISTING: Root-level
+├── about/                           # EXISTING: Legacy comics page
+├── [slug]/                          # EXISTING: Comic posts
+│
+├── api/
+│   ├── cart-products/               # EXISTING
+│   └── [other endpoints]
+│
+└── [metadata routes: robots, sitemap, not-found, etc.]
 ```
 
-### Structure Rationale
+**Key rationale:**
 
-- **Route Groups `(shop)`, `(marketing)`:** Organize related routes without affecting URL structure. Shop routes sit at `/products`, `/checkout` not `/shop/products`.
-- **Underscore-prefixed folders `_shared`, `_shop`, `_cart`:** Colocate components logically without accidentally creating routes. Router ignores these folders.
-- **Server vs Client Separation:** Server Components in `/app` (pages, layouts, data fetching). Client Components in `/components` marked with `"use client"`.
-- **Actions folder:** All Server Actions live in `src/app/actions/` following Next.js conventions.
-- **lib/datocms.ts:** Centralized data fetching logic to avoid coupling views to API calls.
-- **Types in lib/:** Single source of truth for TypeScript interfaces used across the app.
+- **Route groups**: `(portfolio)` and `(shop)` cleanly separate concerns. Routes nested under them don't include the group name in the URL: `(portfolio)/page.tsx` → `/`, not `/portfolio`.
+- **Single root layout**: All routes share `app/layout.tsx` for metadata, providers, and global styles. No full page reloads between portfolio and shop.
+- **Portfolio layout**: Defines portfolio-specific navigation and footer. Renders only for portfolio routes.
+- **Shop layout**: Existing; unchanged. Renders only for /shop/* routes.
+- **Hardcoded data**: Case studies, resume, and stack are in `lib/portfolio-data.ts` (no CMS needed; content rarely changes).
+- **Contact form**: Server Action in `lib/contact.ts` handles submission and Resend email.
+- **CSS strategy**: Single `globals.css` with `portfolio-*` and `shop-*` prefixes to prevent collisions.
+
+---
+
+## Navigation & Layout Strategy
+
+### Navigation Hierarchy
+
+**Portfolio (Primary):**
+```
+Home → Engineering → Case Studies → Resume → Contact
+                                            ↓
+                                   Shop (footer link)
+```
+
+**Shop (Secondary, demoted):**
+```
+Accessible at /shop, linked from portfolio footer
+Shop → Categories → Product Detail → Cart → Checkout
+```
+
+### Implementation Pattern
+
+```typescript
+// app/(portfolio)/layout.tsx
+'use client'
+
+import PortfolioNavigation from '@/app/components/PortfolioNavigation'
+import PortfolioFooter from '@/app/components/PortfolioFooter'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: { template: '%s | centimentalcomics', default: 'centimentalcomics' },
+  description: 'Rails engineer portfolio with case studies, technical stack, and resume.',
+}
+
+export default function PortfolioLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <PortfolioNavigation />
+      <main>{children}</main>
+      <PortfolioFooter />
+    </>
+  )
+}
+
+// app/components/PortfolioNavigation.tsx
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+
+export default function PortfolioNavigation() {
+  const pathname = usePathname()
+
+  // Show on portfolio routes only (not /shop/*, /cart, /checkout, etc.)
+  const isPortfolioRoute = !pathname.startsWith('/shop') &&
+                           !pathname.startsWith('/cart') &&
+                           !pathname.startsWith('/checkout') &&
+                           !pathname.startsWith('/faq')
+
+  if (!isPortfolioRoute) return null
+
+  return (
+    <nav className="portfolio-nav">
+      <Link href="/">centimentalcomics</Link>
+      <ul>
+        <li><Link href="/">home</Link></li>
+        <li><Link href="/engineering">engineering</Link></li>
+        <li><Link href="/case-studies">case studies</Link></li>
+        <li><Link href="/resume">resume</Link></li>
+        <li><Link href="/contact">contact</Link></li>
+      </ul>
+    </nav>
+  )
+}
+
+// app/components/PortfolioFooter.tsx
+'use client'
+
+import { usePathname } from 'next/navigation'
+
+export default function PortfolioFooter() {
+  const pathname = usePathname()
+
+  // Same conditional logic as nav
+  const isPortfolioRoute = !pathname.startsWith('/shop') &&
+                           !pathname.startsWith('/cart') &&
+                           !pathname.startsWith('/checkout')
+
+  if (!isPortfolioRoute) return null
+
+  return (
+    <footer className="portfolio-footer">
+      <div className="footer-links">
+        <a href="https://github.com/..." target="_blank">github</a>
+        <a href="https://linkedin.com/..." target="_blank">linkedin</a>
+        <a href="/shop">shop</a>
+      </div>
+      <p>&copy; 2025 centimentalcomics · made in ph</p>
+    </footer>
+  )
+}
+```
+
+### Font Strategy
+
+**Portfolio pages:** System fonts (default, clean, professional)
+```css
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+```
+
+**Shop pages:** Inter font (existing, brand-aligned)
+```
+fontFamily: "'Inter', system-ui, sans-serif"
+```
+
+**How to implement:**
+- Portfolio: Use Tailwind's default `font-sans` (system fonts)
+- Shop: Existing inline styles (no change needed)
+- No global font switching: Let route groups handle layout separation
+
+---
+
+## CSS Strategy: Portfolio + Shop Coexistence
+
+### Prefix Convention
+
+All CSS classes use semantic prefixes to avoid collisions:
+
+| Prefix | Used By | Examples |
+|--------|---------|----------|
+| `.portfolio-*` | Portfolio pages | `.portfolio-hero`, `.portfolio-nav`, `.portfolio-case-card` |
+| `.shop-*` | Shop pages (existing) | `.shop-container`, `.shop-product-card` |
+| `.u-*` | Utilities (shared) | `.u-text-center`, `.u-flex` |
+
+### CSS Organization in globals.css
+
+```css
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("...other font imports...");
+
+/* Base + Tailwind */
+@import url("../public/assets/css/normalize.css");
+@import url('../public/assets/css/skeleton.css');
+@import url('../public/assets/css/custom.css');
+
+/* === PORTFOLIO STYLES === */
+.portfolio-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.portfolio-hero {
+  padding: clamp(3rem, 10vw, 8rem) 0;
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.1;
+}
+
+.portfolio-case-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.portfolio-case-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* === SHOP STYLES (EXISTING, UNCHANGED) === */
+.shop-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.shop-product-card {
+  /* existing styles */
+}
+
+/* === SHARED UTILITIES === */
+.u-text-center { text-align: center; }
+.u-flex { display: flex; }
+.u-flex-col { flex-direction: column; }
+```
+
+### Why Single Tailwind Config?
+
+- **Shared design tokens**: Both portfolio and shop use colors, spacing, typography from same theme
+- **No CSS duplication**: Single stylesheet vs. separate bundles
+- **Prefix prevention**: `portfolio-*` and `shop-*` prevent naming collisions
+- **Simplicity**: No content-based scoping complexity
+
+---
 
 ## Architectural Patterns
 
-### Pattern 1: Server Components for Data Fetching + Client Components for Interactivity
+### Pattern 1: Route Groups for Multi-Layout Architecture
 
-**What:** Fetch data server-side on product pages using async Server Components, passing immutable data down to Client Components for interactivity (e.g., "Add to Cart" button).
+**What:** Use Next.js `(group-name)` folders to create independent layout hierarchies without affecting URLs.
 
-**When to use:** Always. This is the default pattern in Next.js 15 App Router.
+**When to use:**
+- Multiple sections with different layouts, navigation, or styling
+- Sections should not reload when navigating between them
+- Keep URLs clean (no `/portfolio/case-studies`, just `/case-studies`)
 
 **Trade-offs:**
-- **Pro:** Reduced JavaScript bundle, secrets stay secure, direct database/API access
-- **Pro:** Data fetching collocated with rendering
-- **Con:** Can't use React hooks in Server Components
-- **Con:** Must pass data as props to Client Children
+
+| Pros | Cons |
+|------|------|
+| Clean separation | Slight folder structure complexity |
+| No full page reloads | Route-aware components needed for nav/footer |
+| Single root layout | N/A |
 
 **Example:**
-```typescript
-// app/shop/products/[slug]/page.tsx - SERVER COMPONENT
-import { getProduct } from '@/lib/datocms';
-import ProductDetail from '@/components/_shop/ProductDetail';
-import AddToCartButton from '@/components/_cart/AddToCartButton';
-
-export default async function ProductPage({ params }) {
-  const product = await getProduct(params.slug);
-
-  return (
-    <div>
-      <ProductDetail product={product} />
-      {/* Client component receives product as prop */}
-      <AddToCartButton product={product} />
-    </div>
-  );
-}
-
-// components/_cart/AddToCartButton.tsx - CLIENT COMPONENT
-'use client';
-import { useCart } from '@/hooks/useCart';
-
-export default function AddToCartButton({ product }) {
-  const { addItem } = useCart();
-
-  return (
-    <button onClick={() => addItem(product)}>
-      Add to Cart
-    </button>
-  );
-}
+```
+(portfolio)/case-studies/[slug]/page.tsx  → URL: /case-studies/[slug]
+(shop)/[slug]/page.tsx                    → URL: /shop/[slug]
 ```
 
-### Pattern 2: Server Actions for Form Handling
+No collision because route groups don't contribute to the URL.
 
-**What:** Use `'use server'` directive for Server Actions that handle form submissions (order form) server-side, eliminating need for API routes while keeping logic secure.
+### Pattern 2: Static Generation + generateStaticParams
 
-**When to use:** Form submissions, mutations, operations requiring secrets/database access.
+**What:** Pre-render all case study pages at build time using `generateStaticParams`.
 
-**Trade-offs:**
-- **Pro:** No separate API route needed, progressive enhancement (works without JavaScript)
-- **Pro:** Strongly typed between client and server
-- **Con:** Can't use browser APIs (localStorage) directly in Server Actions
+**When to use:**
+- Content rarely changes (hardcoded in `lib/portfolio-data.ts`)
+- Small number of pages (2-5 case studies initially)
+- Want instant page loads and SEO optimization
 
-**Example:**
+**Implementation:**
 ```typescript
-// app/actions/order.ts
-'use server';
+// app/(portfolio)/case-studies/[slug]/page.tsx
 
-import { saveOrder } from '@/lib/db';
-
-export async function submitOrder(formData: FormData) {
-  const name = formData.get('name') as string;
-  const email = formData.get('email') as string;
-  const items = JSON.parse(formData.get('items') as string);
-
-  // Validation
-  if (!name || !email || !items.length) {
-    return { error: 'Missing required fields' };
-  }
-
-  try {
-    const order = await saveOrder({ name, email, items });
-    return { success: true, orderId: order.id };
-  } catch (error) {
-    return { error: 'Failed to submit order' };
-  }
-}
-
-// components/_forms/OrderForm.tsx - CLIENT COMPONENT
-'use client';
-import { useActionState } from 'react';
-import { submitOrder } from '@/app/actions/order';
-
-export default function OrderForm({ cartItems }) {
-  const [state, formAction, isPending] = useActionState(
-    submitOrder,
-    { error: null, success: false }
-  );
-
-  return (
-    <form action={formAction}>
-      <input name="name" required />
-      <input name="email" type="email" required />
-      <input name="items" type="hidden" value={JSON.stringify(cartItems)} />
-      <button disabled={isPending}>
-        {isPending ? 'Submitting...' : 'Place Order'}
-      </button>
-      {state.success && <p>Order #{state.orderId} received!</p>}
-      {state.error && <p className="error">{state.error}</p>}
-    </form>
-  );
-}
-```
-
-### Pattern 3: Context API for Cart State (Client-Side)
-
-**What:** Use React Context + useReducer for lightweight client-side cart state management. Persist to localStorage for cart recovery across sessions.
-
-**When to use:** Shared state needed across multiple client components (cart drawer, buttons, checkout form).
-
-**Trade-offs:**
-- **Pro:** Lightweight, no dependencies, built-in to React
-- **Pro:** Easy to debug, understand data flow
-- **Con:** No built-in persistence (must handle localStorage manually)
-- **Con:** All consumers re-render on state change (fine for small carts)
-
-**Example:**
-```typescript
-// contexts/CartContext.tsx
-'use client';
-import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
-
-type CartItem = { id: string; name: string; price: number; quantity: number };
-type CartState = { items: CartItem[] };
-type CartAction =
-  | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
-  | { type: 'LOAD_FROM_STORAGE'; payload: CartItem[] };
-
-function cartReducer(state: CartState, action: CartAction): CartState {
-  switch (action.type) {
-    case 'ADD_ITEM':
-      const existing = state.items.find(i => i.id === action.payload.id);
-      return {
-        items: existing
-          ? state.items.map(i =>
-              i.id === action.payload.id
-                ? { ...i, quantity: i.quantity + action.payload.quantity }
-                : i
-            )
-          : [...state.items, action.payload]
-      };
-    case 'REMOVE_ITEM':
-      return { items: state.items.filter(i => i.id !== action.payload) };
-    case 'LOAD_FROM_STORAGE':
-      return { items: action.payload };
-    default:
-      return state;
-  }
-}
-
-const CartContext = createContext<any>(null);
-
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('cart');
-    if (stored) {
-      dispatch({ type: 'LOAD_FROM_STORAGE', payload: JSON.parse(stored) });
-    }
-  }, []);
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(state.items));
-  }, [state.items]);
-
-  return (
-    <CartContext.Provider value={{ state, dispatch }}>
-      {children}
-    </CartContext.Provider>
-  );
-}
-
-export function useCart() {
-  const { state, dispatch } = useContext(CartContext);
-  return {
-    items: state.items,
-    addItem: (item: CartItem) => dispatch({ type: 'ADD_ITEM', payload: item }),
-    removeItem: (id: string) => dispatch({ type: 'REMOVE_ITEM', payload: id }),
-  };
-}
-```
-
-### Pattern 4: Static Generation + ISR for Product Pages
-
-**What:** Generate product pages at build time using `generateStaticParams()`. When CMS is updated, trigger on-demand revalidation via webhook.
-
-**When to use:** Product catalog pages that rarely change but need freshness on CMS publish.
-
-**Trade-offs:**
-- **Pro:** Lightning-fast static HTML served from CDN
-- **Pro:** Webhook-based updates = fresh content without full rebuilds
-- **Con:** Build takes longer initially (pre-generates all products)
-- **Con:** ISR revalidation adds slight delay when CMS publishes
-
-**Example:**
-```typescript
-// lib/datocms.ts
-const DATOCMS_API = 'https://graphql.datocms.com/';
-const DATOCMS_TOKEN = process.env.NEXT_PUBLIC_DATOCMS_API_TOKEN;
-
-export async function getProducts() {
-  const response = await fetch(DATOCMS_API, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${DATOCMS_TOKEN}` },
-    body: JSON.stringify({
-      query: `query { allProducts { id slug name price description image { url } } }`
-    })
-  });
-  return response.json();
-}
-
-export async function getProduct(slug: string) {
-  const response = await fetch(DATOCMS_API, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${DATOCMS_TOKEN}` },
-    body: JSON.stringify({
-      query: `query { product(filter: { slug: { eq: "${slug}" } }) { id slug name price description image { url } } }`
-    })
-  });
-  return response.json();
-}
-
-// app/shop/products/[slug]/page.tsx
-import { getProduct, getProducts } from '@/lib/datocms';
+import { getCaseStudy, getAllCaseSlugs } from '@/app/lib/portfolio-data'
+import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
-  const data = await getProducts();
-  return data.allProducts.map((product) => ({
-    slug: product.slug,
-  }));
+  const slugs = getAllCaseSlugs()
+  return slugs.map(slug => ({ slug }))
 }
 
-export default async function ProductPage({ params }) {
-  const product = await getProduct(params.slug);
-  return <ProductDetail product={product} />;
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const caseStudy = getCaseStudy(slug)
+
+  if (!caseStudy) {
+    return { title: 'Not Found' }
+  }
+
+  return {
+    title: caseStudy.title,
+    description: caseStudy.summary,
+    openGraph: {
+      title: caseStudy.title,
+      description: caseStudy.summary,
+      url: `/case-studies/${slug}`,
+    },
+  }
 }
 
-// app/api/revalidate/route.ts - WEBHOOK ENDPOINT
-import { revalidateTag } from 'next/cache';
+export default async function CaseStudyPage({ params }) {
+  const { slug } = await params
+  const caseStudy = getCaseStudy(slug)
 
-export async function POST(request: Request) {
-  const secret = request.headers.get('x-datocms-signature');
-
-  if (secret !== process.env.DATOCMS_WEBHOOK_SECRET) {
-    return new Response('Unauthorized', { status: 401 });
+  if (!caseStudy) {
+    notFound()
   }
 
-  const body = await request.json();
-  const resourceType = body.entity.__typename;
-
-  if (resourceType === 'Product') {
-    revalidateTag('products');
-    return Response.json({ revalidated: true });
-  }
-
-  return Response.json({ revalidated: false });
+  return <CaseStudyDetail caseStudy={caseStudy} />
 }
 ```
 
-### Pattern 5: Atomic Component Organization
+**Benefits:**
+- Build-time validation (Next.js errors if dynamic content is used)
+- Fast delivery (static HTML, no server processing)
+- SEO-friendly (all pages crawlable)
 
-**What:** Organize components using atomic design: Atoms (buttons, inputs) → Molecules (form fields, cards) → Organisms (product list, checkout).
+### Pattern 3: Server Actions for Contact Form
 
-**When to use:** Any project. Especially helpful for design consistency and reusability.
+**What:** Use React Server Actions to handle form submission without a separate API route.
 
-**Trade-offs:**
-- **Pro:** Clear component hierarchy, easy to find and reuse
-- **Pro:** Scales well as component library grows
-- **Con:** Requires discipline to maintain boundaries
-- **Con:** Can feel over-engineered for very small projects
+**When to use:**
+- Simple form (name, email, message)
+- No complex client-side state needed
+- Want progressive enhancement (works without JS)
+- Need server-side validation and email sending
 
-**Example:**
+**Implementation:**
 ```typescript
-// Atoms (smallest, reusable)
-components/_atoms/Button.tsx
-components/_atoms/Input.tsx
-components/_atoms/Badge.tsx
-components/_atoms/Price.tsx
+// app/lib/contact.ts
 
-// Molecules (combines atoms, standalone)
-components/_molecules/ProductCard.tsx (Image + Name + Price + Button)
-components/_molecules/FormField.tsx (Label + Input)
-components/_molecules/CartLineItem.tsx (Product info + Quantity + Remove)
+'use server'
 
-// Organisms (complex sections)
-components/_organisms/ProductGrid.tsx (multiple ProductCards)
-components/_organisms/OrderForm.tsx (multiple FormFields + Button)
-components/_organisms/CartDrawer.tsx (CartLineItems + Total + Checkout)
+import { z } from 'zod'
+import { Resend } from 'resend'
+
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+})
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export async function submitContact(formData: FormData) {
+  const data = Object.fromEntries(formData)
+
+  try {
+    const validated = contactSchema.parse(data)
+
+    const result = await resend.emails.send({
+      from: 'contact@centimentalcomics.com',
+      to: process.env.CONTACT_EMAIL_TO || 'you@example.com',
+      subject: `New contact from ${validated.name}`,
+      html: `
+        <h2>New Contact Submission</h2>
+        <p><strong>Name:</strong> ${validated.name}</p>
+        <p><strong>Email:</strong> ${validated.email}</p>
+        <h3>Message:</h3>
+        <p>${validated.message.replace(/\n/g, '<br>')}</p>
+      `,
+    })
+
+    if (result.error) {
+      return { error: 'Failed to send email. Please try again.' }
+    }
+
+    return { success: true }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { error: error.errors[0].message }
+    }
+    return { error: 'An unexpected error occurred.' }
+  }
+}
+
+// app/components/ContactForm.tsx
+
+'use client'
+
+import { submitContact } from '@/app/lib/contact'
+import { useActionState } from 'react'
+
+export default function ContactForm() {
+  const [state, formAction] = useActionState(submitContact, null)
+
+  return (
+    <form action={formAction} className="portfolio-contact-form">
+      <div>
+        <label htmlFor="name">Name</label>
+        <input id="name" name="name" type="text" required />
+      </div>
+
+      <div>
+        <label htmlFor="email">Email</label>
+        <input id="email" name="email" type="email" required />
+      </div>
+
+      <div>
+        <label htmlFor="message">Message</label>
+        <textarea id="message" name="message" required />
+      </div>
+
+      <button type="submit">Send</button>
+
+      {state?.error && <p className="error">{state.error}</p>}
+      {state?.success && <p className="success">Message sent successfully!</p>}
+    </form>
+  )
+}
 ```
+
+**Benefits:**
+- Simpler than API route
+- Progressive enhancement: works without JavaScript
+- Server-side validation built-in
+- No client-side state management needed
+
+### Pattern 4: Hardcoded Portfolio Data with Type Safety
+
+**What:** Store case studies, resume, and stack data in TypeScript, not a CMS.
+
+**When to use:**
+- Content is stable and rarely updated
+- Small data volume (few case studies, single resume)
+- Want type safety and no external dependencies
+
+**Implementation:**
+```typescript
+// app/lib/portfolio-data.ts
+
+export interface CaseStudy {
+  slug: string
+  title: string
+  category: 'backend' | 'fullstack' | 'devops' | 'infra'
+  summary: string
+  context: string // Problem/situation
+  architecture: string // Solution approach
+  challenges: string[] // Technical obstacles
+  outcomes: string[] // Results/metrics
+  technologies: string[] // Tech stack used
+  codeLink?: string // GitHub link
+  reflection: string // Lessons learned
+}
+
+export interface TechCategory {
+  name: string
+  description: string
+  items: string[]
+}
+
+export const caseStudies: CaseStudy[] = [
+  {
+    slug: 'rails-api-optimization',
+    title: 'Rails API Performance Optimization',
+    category: 'backend',
+    summary: 'Reduced API latency from 800ms to 200ms through caching and query optimization.',
+    context: 'SaaS platform with 10K DAU. Product listing endpoint was slow, impacting user experience.',
+    architecture: 'Implemented Redis caching layer, optimized SQL queries with eager loading, added background jobs for batch operations.',
+    challenges: [
+      'N+1 queries in product listing',
+      'Cache invalidation complexity',
+      'Memory constraints on shared hosting',
+    ],
+    outcomes: [
+      'P95 latency: 800ms → 200ms (75% reduction)',
+      'Throughput: 50 req/s → 200 req/s (4x improvement)',
+      'Database CPU load: 60% → 20%',
+    ],
+    technologies: ['Rails 7', 'PostgreSQL', 'Redis', 'Sidekiq'],
+    reflection: 'Started with profiling before optimizing. Learned that premature optimization wastes time. Observability first.',
+  },
+  // ... more case studies
+]
+
+export const engineeringStack: Record<string, TechCategory> = {
+  backend: {
+    name: 'Backend',
+    description: 'Server-side web development and APIs',
+    items: ['Rails 6+', 'PostgreSQL', 'Redis', 'Sidekiq', 'GraphQL'],
+  },
+  frontend: {
+    name: 'Frontend',
+    description: 'Client-side UI and interactions',
+    items: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+  },
+  devops: {
+    name: 'DevOps & Infrastructure',
+    description: 'Deployment, monitoring, and infrastructure',
+    items: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'GitHub Actions'],
+  },
+  testing: {
+    name: 'Testing & QA',
+    description: 'Code quality and reliability',
+    items: ['RSpec', 'Jest', 'E2E Testing', 'Load Testing'],
+  },
+}
+
+export const resume = {
+  summary: 'Senior Rails engineer with 8+ years experience...',
+  experience: [
+    {
+      title: 'Senior Rails Engineer',
+      company: 'Startup XYZ',
+      date: '2021 – Present',
+      description: [
+        'Led backend architecture for 10K+ user SaaS platform',
+        'Mentored 3 junior engineers on testing and performance',
+        'Reduced API latency by 60% through optimization',
+      ],
+    },
+    // ... more positions
+  ],
+  education: [
+    {
+      title: 'BS Computer Science',
+      company: 'University Name',
+      date: '2015',
+    },
+  ],
+}
+
+export function getCaseStudy(slug: string): CaseStudy | null {
+  return caseStudies.find(cs => cs.slug === slug) ?? null
+}
+
+export function getAllCaseSlugs(): string[] {
+  return caseStudies.map(cs => cs.slug)
+}
+```
+
+---
 
 ## Data Flow
 
-### Product Browsing & Cart Flow
+### Portfolio Data (Static at Build-Time)
 
 ```
-User Visits /products
-    ↓
-Server: Fetch all products from DatoCMS
-    ↓
-Render: ProductGrid component with ProductCard children
-    ↓
-User clicks product → /products/[slug]
-    ↓
-Server: Fetch single product from DatoCMS
-    ↓
-Render: ProductDetail + ClientAddToCartButton
-    ↓
-User clicks "Add to Cart" (Client Click)
-    ↓
-Client: CartContext dispatch → useReducer → localStorage update
-    ↓
-UI: CartDrawer shows updated count/items
+portfolio-data.ts (TypeScript objects)
+        ↓
+   (import)
+        ↓
+Page component (page.tsx)
+        ↓
+   (render)
+        ↓
+Static HTML (generated at next build)
+        ↓
+Served by CDN/Vercel
 ```
 
-### Order Submission Flow
+**Key property:** No runtime fetching. Content known at build time. Changes require redeploy.
+
+### Contact Form (Server Action)
 
 ```
-User clicks "Checkout"
-    ↓
-Navigate to /checkout
-    ↓
-Render: OrderForm (Client Component) with cart items in hidden input
-    ↓
-User fills form + clicks submit
-    ↓
-Form action → submitOrder Server Action
-    ↓
-Server: Validate data → Save to database/send email notification
-    ↓
-Return response: { success: true, orderId: "..." }
-    ↓
-Client: Show success message, clear cart from localStorage
-    ↓
-Optional: Redirect to confirmation page
+User fills form (client)
+        ↓
+Form submission (form action)
+        ↓
+Server Action (lib/contact.ts)
+        ↓
+Zod validation
+        ↓
+Resend API call
+        ↓
+Email delivered
+        ↓
+Response sent to client (success/error)
 ```
 
-### Content Update Flow (CMS → Live)
+**Key property:** No separate API route. Validation and email handling in Server Action.
+
+### Shop Data (Existing, Unchanged)
 
 ```
-Editor publishes product change in DatoCMS
-    ↓
-DatoCMS triggers webhook → POST /api/revalidate
-    ↓
-Next.js: revalidateTag('products') invalidates ISR cache
-    ↓
-Next request to product page → regenerate static HTML
-    ↓
-Serve updated page
+DatoCMS (GraphQL API)
+        ↓
+datocmsRequest() (lib/datocms.ts)
+        ↓
+Page/API route (shop pages)
+        ↓
+ProductGrid component
+        ↓
+Product cards
 ```
+
+**No changes needed.**
+
+---
 
 ## Integration Points
 
-### External Services
+### New Components
 
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| **DatoCMS** | REST/GraphQL fetch in lib/datocms.ts, Server Components call this | Use `NEXT_PUBLIC_DATOCMS_API_TOKEN` env var. Webhook for ISR revalidation. |
-| **Database (for orders)** | Server Actions + optional ORM (if using Supabase/etc) | Store orders: name, email, items, timestamp. No PII needed beyond contact info. |
-| **Email** | Server Actions can call Resend/SendGrid after order submission | Optional: send confirmation to customer + admin |
-| **Vercel Analytics** | Built-in with next/analytics | Track page views, user interactions |
+| Component | Purpose | Location |
+|-----------|---------|----------|
+| PortfolioNavigation | Navigation for portfolio pages | components/PortfolioNavigation.tsx |
+| PortfolioFooter | Footer for portfolio pages | components/PortfolioFooter.tsx |
+| CaseStudyCard | Preview card for case studies | components/CaseStudyCard.tsx |
+| SkillBadge | Tech skill/stack badge | components/SkillBadge.tsx |
+| ContactForm | Contact form with Server Action | components/ContactForm.tsx |
+| (portfolio)/layout | Portfolio section layout | (portfolio)/layout.tsx |
 
-### Internal Boundaries
+### New Data Files
 
-| Boundary | Communication | Notes |
-|----------|---|---|
-| **Server Components ↔ Client Components** | Props only (one-way data flow) | Render Server Component, pass data as props to Client Component children. |
-| **Client Components ↔ Server Actions** | Form action / useActionState hook | Client form calls Server Action, gets back response/error. |
-| **Cart Context ↔ Components** | useCart() hook | All cart-aware components consume context via hook. |
-| **Components ↔ lib/datocms** | Import fetch functions | Server Components import and call DatoCMS helpers. No direct API calls in components. |
+| File | Purpose |
+|------|---------|
+| lib/portfolio-data.ts | Hardcoded case studies, resume, engineering stack |
+| lib/contact.ts | Contact form Server Action |
+
+### New Pages
+
+| Route | File | Purpose |
+|-------|------|---------|
+| / | (portfolio)/page.tsx | Homepage with hero and featured content |
+| /engineering | (portfolio)/engineering/page.tsx | Tech stack listing |
+| /case-studies | (portfolio)/case-studies/page.tsx | Case studies grid/list |
+| /case-studies/[slug] | (portfolio)/case-studies/[slug]/page.tsx | Case study detail |
+| /resume | (portfolio)/resume/page.tsx | Resume page |
+| /contact | (portfolio)/contact/page.tsx | Contact form |
+
+### Modified Files
+
+| File | Changes |
+|------|---------|
+| app/layout.tsx | Add route-aware Navigation/Footer rendering |
+| app/globals.css | Add portfolio-* CSS classes |
+| app/lib/types.ts | Add CaseStudy, TechCategory, Resume types |
+| app/lib/constants.ts | Add portfolio constants if needed |
+
+### Data Sources
+
+| Data | Source | Freshness |
+|------|--------|-----------|
+| Case studies | lib/portfolio-data.ts | Deploy-time |
+| Resume | lib/portfolio-data.ts | Deploy-time |
+| Engineering stack | lib/portfolio-data.ts | Deploy-time |
+| Products (shop) | DatoCMS GraphQL | ISR (3600s) |
+| Contact submissions | Resend email | On-demand |
+
+---
+
+## Metadata & SEO Strategy
+
+### Root Metadata
+
+```typescript
+// app/layout.tsx
+
+export const metadata: Metadata = {
+  title: {
+    template: 'centimentalcomics: %s',
+    default: 'centimentalcomics'
+  },
+  description: 'Rails engineer portfolio with case studies, technical expertise, and resume.',
+  keywords: ['rails', 'engineer', 'portfolio', 'case studies', 'backend'],
+  authors: [{ name: 'ce manalang' }],
+  openGraph: {
+    type: 'website',
+    url: 'https://centimentalcomics.com',
+    title: 'centimentalcomics',
+    description: 'Rails engineer portfolio.',
+    images: [{
+      url: '/assets/images/og-image.jpg',
+      width: 1200,
+      height: 630
+    }],
+  },
+  robots: { index: true, follow: true },
+  metadataBase: new URL('https://centimentalcomics.com'),
+}
+```
+
+### Portfolio Page Metadata
+
+```typescript
+// app/(portfolio)/page.tsx
+export const metadata: Metadata = {
+  title: 'Rails Engineer Portfolio',
+  description: 'Professional Rails engineer portfolio with case studies, technical expertise, and resume.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'centimentalcomics — Rails Engineer',
+    description: 'Professional Rails engineer portfolio.',
+  },
+}
+
+// app/(portfolio)/case-studies/[slug]/page.tsx
+export async function generateMetadata({ params }) {
+  const { slug } = await params
+  const caseStudy = getCaseStudy(slug)
+
+  if (!caseStudy) {
+    return { title: 'Not Found' }
+  }
+
+  return {
+    title: caseStudy.title,
+    description: caseStudy.summary,
+    openGraph: {
+      title: caseStudy.title,
+      description: caseStudy.summary,
+      url: `/case-studies/${slug}`,
+    },
+  }
+}
+```
+
+---
+
+## Suggested Implementation Order
+
+### Phase 1: Foundation (Days 1-2)
+
+1. Create `(portfolio)` route group folder structure
+2. Create `(portfolio)/layout.tsx` with PortfolioNavigation and PortfolioFooter
+3. Create portfolio components: Navigation, Footer, CaseStudyCard, SkillBadge, ContactForm
+4. Create `lib/portfolio-data.ts` with TypeScript interfaces and stub data
+5. Create `lib/contact.ts` Server Action (stub)
+
+### Phase 2: Core Pages (Days 3-5)
+
+6. Create portfolio pages: `page.tsx`, `/engineering/page.tsx`, `/resume/page.tsx`, `/contact/page.tsx`
+7. Add content to `portfolio-data.ts`: case studies, resume, engineering stack
+8. Style with `portfolio-*` CSS classes in globals.css
+9. Test static generation: `next build`
+
+### Phase 3: Case Studies (Days 6-7)
+
+10. Create `/case-studies/page.tsx` (grid/list)
+11. Create `/case-studies/[slug]/page.tsx` with `generateStaticParams`
+12. Write 2-3 production case studies
+13. Test dynamic routing and metadata
+
+### Phase 4: Polish & Integration (Days 8-10)
+
+14. Implement contact form Server Action (submitContact)
+15. Test Resend email integration
+16. Add error handling and success messages
+17. Verify no full page reloads between portfolio and shop
+18. Deploy to Vercel and test production
+
+---
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Multiple Root Layouts
+
+**Don't:**
+```typescript
+// app/(portfolio)/layout.tsx
+export const metadata = { ... } // ❌ Can't export metadata
+
+// app/(shop)/layout.tsx
+export const metadata = { ... } // ❌ Conflict!
+```
+
+**Do:** Single `app/layout.tsx` exports metadata. Nested layouts in route groups don't export metadata.
+
+---
+
+### Anti-Pattern 2: Fetching Static Content from CMS
+
+**Don't:**
+```typescript
+export default async function ResumePage() {
+  const resume = await fetch('https://api.datocms.com/resume')
+  return <Resume data={resume} />
+}
+```
+
+**Do:**
+```typescript
+import { resume } from '@/app/lib/portfolio-data'
+
+export default function ResumePage() {
+  return <Resume data={resume} />
+}
+```
+
+---
+
+### Anti-Pattern 3: Client Hooks in Server Components
+
+**Don't:**
+```typescript
+export default async function ContactForm() {
+  const [sent, setSent] = useState(false) // ❌ Can't use hooks here
+  return <form>...</form>
+}
+```
+
+**Do:**
+```typescript
+'use client' // Mark as client component
+
+export default function ContactForm() {
+  const [sent, setSent] = useState(false) // ✓ OK in client component
+  return <form action={submitContact}>...</form>
+}
+```
+
+---
+
+### Anti-Pattern 4: Navigation Triggering Full Page Reloads
+
+**Don't:**
+Create separate root layouts that trigger page reloads when switching between them.
+
+**Do:**
+Use route groups with single `app/layout.tsx`. Next.js keeps the root layout in the DOM.
+
+---
+
+### Anti-Pattern 5: Inline Styles for Responsive Design
+
+**Don't:**
+```typescript
+<div style={{ fontSize: '1rem', paddingTop: '2rem' }} />
+```
+
+**Do:**
+```css
+.portfolio-hero {
+  padding: clamp(2rem, 5vw, 5rem) 0;
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+```
+
+---
 
 ## Scaling Considerations
 
-| Scale | Architecture Adjustments |
-|-------|---|
-| **0-100 users (MVP)** | Current architecture perfect. Single PostgreSQL/Supabase for orders. Context API for cart. No caching needed beyond ISR. |
-| **100-1k users** | Add Vercel KV for session cart backup (optional). Monitor DatoCMS query costs. Consider image optimization (next/image). |
-| **1k+ users** | Move order storage to dedicated database. Implement edge functions for geo-local checkout. Add CDN image caching. Consider moving from Context to Zustand if cart logic grows. |
+| Scale | Action | Notes |
+|-------|--------|-------|
+| **0–100 users** | No changes | Vercel free tier handles both portfolio and shop. |
+| **100–1k users** | Monitor build times | Case studies still few. Static generation is fast. |
+| **1k–10k users** | Consider pagination | If case studies grow to 30+, add pagination or categories. |
+| **10k+ users** | Separate portfolio site | Move shop to separate domain/repo if builds become slow. |
 
-### Scaling Priorities
+---
 
-1. **First bottleneck:** DatoCMS API rate limits. Solution: Implement request caching, batch queries, consider static generation for catalog.
-2. **Second bottleneck:** Image delivery. Solution: Use Next.js Image component with Vercel CDN, implement responsive image sizes.
-3. **Third bottleneck:** Order database storage. Solution: Archive old orders, implement database indexing on order date/email.
+## Implementation Checklist
 
-## Anti-Patterns
+- [ ] Create `(portfolio)` route group folder
+- [ ] Create `(portfolio)/layout.tsx`
+- [ ] Create portfolio components (Navigation, Footer, CaseStudyCard, SkillBadge, ContactForm)
+- [ ] Create `lib/portfolio-data.ts` with types and initial data
+- [ ] Create `lib/contact.ts` Server Action
+- [ ] Create portfolio pages (/, /engineering, /resume, /contact)
+- [ ] Create case study pages (/case-studies, /case-studies/[slug])
+- [ ] Add `portfolio-*` CSS to globals.css
+- [ ] Test `next build` (static generation)
+- [ ] Test navigation (no full page reloads)
+- [ ] Implement contact form Server Action
+- [ ] Test Resend email delivery
+- [ ] Deploy to Vercel
+- [ ] Verify on production
 
-### Anti-Pattern 1: Fetching in Client Components
-
-**What people do:** Use `useEffect` to fetch product data in a Client Component on mount.
-
-**Why it's wrong:**
-- Delays rendering (data fetching only starts after hydration)
-- Waterfalls (fetch in child delays render)
-- No streaming benefit from Server Components
-- Increases bundle size with fetch logic
-
-**Do this instead:** Fetch in Server Component, pass data as props to Client children.
-
-### Anti-Pattern 2: Server Actions with Heavy Business Logic
-
-**What people do:** Put complex order validation, inventory checks, payment logic in Server Actions.
-
-**Why it's wrong:**
-- Server Actions designed for simple data mutations
-- Complex logic belongs in service layer/database triggers
-- Harder to test and reuse
-
-**Do this instead:** Keep Server Actions thin (extract data), call service functions in lib/ that contain business logic.
-
-### Anti-Pattern 3: Storing All Cart Data in localStorage
-
-**What people do:** Store full product objects with images/descriptions in localStorage.
-
-**Why it's wrong:**
-- localStorage is limited (~5-10MB), bloats with images
-- No security for sensitive data
-- Stale data if products updated in CMS
-
-**Do this instead:** Store only `{ productId, quantity }` in localStorage. Fetch full product data from server when needed.
-
-### Anti-Pattern 4: Over-Fetching from DatoCMS
-
-**What people do:** Fetch all product fields (including heavy content) for list pages.
-
-**Why it's wrong:**
-- Waste API bandwidth and slow rendering
-- CMS quota costs increase
-- Worse UX (slower pages)
-
-**Do this instead:** Use GraphQL queries to fetch only needed fields. Separate queries for list (name, price, thumbnail) vs detail (full description, gallery).
-
-### Anti-Pattern 5: Mixing Server & Client State
-
-**What people do:** Fetch product in Server Component, then fetch again in Client useEffect to sync state.
-
-**Why it's wrong:**
-- Redundant requests
-- Risk of stale data mismatch
-- Defeats purpose of Server Components
-
-**Do this instead:** Single source of truth. Server fetches → passes to Client. Client can refetch if needed, but shouldn't duplicate server fetch.
-
-## Recommendations
-
-### For This Project
-
-Given the constraints (under 20 products, order form + meetup checkout, rebuilding from scratch):
-
-1. **Use Static Generation for product pages:** All 20 products fit in memory. generateStaticParams() pre-builds in ~1 second. DatoCMS webhook revalidates on publish.
-
-2. **Context API + localStorage for cart:** No backend cart persistence needed. Users can abandon cart during meetup. On checkout, submit items to Server Action which stores in database/email.
-
-3. **Database for orders:** Use Supabase (already in project) or simple JSON file + email notification. Order form just needs: name, email, items, timestamp. No complex fulfillment logic needed.
-
-4. **ISR for homepage featured products:** Refresh every 24 hours in case CMS updates. Fast rebuild since catalog is small.
-
-5. **No async client-side cart sync:** Cart lives locally in React Context. On checkout, form includes full item list (sent as JSON in hidden input). No need for server-side cart persistence during shopping.
-
-6. **Atomic components but simple:** Don't over-engineer. 3-level hierarchy (atoms/molecules/organisms) is enough. Start flat, refactor when duplication appears.
-
-### Build Order (Dependencies)
-
-1. **Layout + Navigation** (root layout, typography, color variables)
-   - Everything else depends on consistent styling
-
-2. **Product fetch + list page** (lib/datocms, getProducts)
-   - Data flow foundation. Unblock product pages.
-
-3. **Product detail page** (dynamic [slug], generateStaticParams)
-   - Validates DatoCMS fetch logic. Builds static files.
-
-4. **Cart Context + Add to Cart** (useCart hook, localStorage)
-   - Core e-commerce feature. Required before checkout.
-
-5. **Order form + Server Action** (OrderForm component, submitOrder action)
-   - Checkout flow. Depends on cart working.
-
-6. **Cart Drawer** (CartDrawer component, useCart hook)
-   - Polish. Depends on cart context existing.
-
-7. **Category pages + filtering** (optional, low priority)
-   - Nice-to-have. Shop functions without it.
-
-8. **About + FAQ pages** (static, no dependencies)
-   - Last. Marketing content.
-
-9. **ISR webhook** (revalidate API route)
-   - Final infrastructure. Everything works without it (manual revalidation always available).
-
-This order ensures testable, incremental progress. Each step delivers working functionality.
+---
 
 ## Sources
 
-- [Next.js App Router Documentation](https://nextjs.org/docs/app)
-- [Next.js Server and Client Components Guide](https://nextjs.org/docs/app/getting-started/server-and-client-components)
-- [Building a Next.js shopping cart app - LogRocket Blog](https://blog.logrocket.com/building-a-next-js-shopping-cart-app/)
-- [Next.js Forms and Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
-- [DatoCMS + Next.js Integration](https://www.datocms.com/docs/next-js)
-- [Next.js Incremental Static Regeneration (ISR)](https://nextjs.org/docs/app/guides/incremental-static-regeneration)
-- [The Ultimate Guide to Organizing Your Next.js 15 Project Structure - Wisp CMS](https://www.wisp.blog/blog/the-ultimate-guide-to-organizing-your-nextjs-15-project-structure)
-- [Mastering Next.js App Router: Best Practices - Medium](https://thiraphat-ps-dev.medium.com/mastering-next-js-app-router-best-practices-for-structuring-your-application-3f8cf0c76580)
-- [Building a Modern E-commerce System: Next.js 15+ Architecture - Medium](https://medium.com/@d_pt_m/building-a-modern-e-commerce-system-next-js-15-shopify-go-high-level-architecture-55b19ca23465)
-- [Next.js Commerce: A headless Shopify ecommerce template - Vercel](https://vercel.com/blog/introducing-next-js-commerce-2-0)
+- [Next.js 15 Route Groups](https://nextjs.org/docs/app/api-reference/file-conventions/route-groups)
+- [Next.js Layouts and Pages](https://nextjs.org/docs/app/getting-started/layouts-and-pages)
+- [Next.js Dynamic Routes with generateStaticParams](https://nextjs.org/docs/app/api-reference/functions/generate-static-params)
+- [Next.js ISR (Incremental Static Regeneration)](https://nextjs.org/docs/app/guides/incremental-static-regeneration)
+- [Next.js Server Actions and Forms](https://nextjs.org/docs/app/guides/forms)
+- [Next.js 15 Blog](https://nextjs.org/blog/next-15)
 
 ---
-*Architecture research for: Next.js 15 e-commerce shop with DatoCMS*
-*Researched: 2026-02-20*
+
+*Architecture research for: Rails-focused portfolio site with integrated e-commerce*
+*Researched: 2026-03-04*
+*Confidence: HIGH*
