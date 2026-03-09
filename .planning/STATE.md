@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: planning
-stopped_at: Completed 05-core-portfolio-pages-03-PLAN.md
-last_updated: "2026-03-09T12:53:28.999Z"
-last_activity: 2026-03-05 — Completed 04-03 verification checkpoint (approved)
+stopped_at: Completed 05-core-portfolio-pages-04-PLAN.md
+last_updated: "2026-03-09T12:55:11.515Z"
+last_activity: 2026-03-09 — Completed 05-03 execution
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State: Centimentalcomics
@@ -36,11 +36,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 5 of 6 (Core Portfolio Pages)
-**Plan:** 03 of 05 (in progress)
+**Plan:** 04 of 05 (in progress)
 **Status:** Executing Phase 5 plans
 **Last activity:** 2026-03-09 — Completed 05-03 execution
 
-Progress: [████████░░] 75%
+Progress: [█████████░] 88%
 
 ---
 
@@ -76,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 05-core-portfolio-pages]: Centralized homepage featured and timeline content in app/lib/portfolio-data.ts for consistency and reuse.
 - [Phase 05-core-portfolio-pages]: Engineering stack content is maintained as typed shared data to reduce copy drift.
 - [Phase 05-core-portfolio-pages]: Testing/code quality is presented as practice -> outcome pairs to emphasize delivery impact.
+- [Phase 05-core-portfolio-pages]: Kept resume content centralized in app/lib/portfolio-data.ts to synchronize homepage and resume chronology.
+- [Phase 05-core-portfolio-pages]: Aligned resume experience ordering to oldest-to-newest to match homepage timeline progression.
 
 ### Blockers/Concerns
 
@@ -101,12 +103,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P01 | 2min | 2 tasks | 6 files |
 | Phase 05-core-portfolio-pages P02 | 2min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P03 | 1min | 2 tasks | 3 files |
+| Phase 05-core-portfolio-pages P04 | 65min | 2 tasks | 3 files |
 
 ## Session Continuity
 
 **Last Action:** Phase 4 plans created — 3 plans (04-01 route architecture, 04-02 portfolio layout+pages, 04-03 verification)
 
-**Stopped At:** Completed 05-core-portfolio-pages-03-PLAN.md
+**Stopped At:** Completed 05-core-portfolio-pages-04-PLAN.md
 
 ---
 
