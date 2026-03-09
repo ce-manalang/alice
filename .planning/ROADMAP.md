@@ -51,6 +51,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 **Goal**: Hiring managers landing on the site can assess Rails engineering competence in under 30 seconds from the homepage and drill into engineering stack and resume for depth
 **Depends on**: Phase 4
 **Requirements**: HOME-01, HOME-02, HOME-03, HOME-04, ENG-01, ENG-02, RESM-01, RESM-02
+**Route ownership decision (2026-03-09):** `/` is the canonical portfolio homepage. Legacy comics homepage content moved to `/legacy-comics`.
 **Success Criteria** (what must be TRUE):
   1. Homepage hero immediately communicates Rails engineer positioning with two visible CTAs (View Case Studies, View Resume)
   2. Homepage shows a core strengths section covering Rails, system design, performance, deployment, and maintenance — each as a concise, outcome-oriented statement

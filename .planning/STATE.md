@@ -69,6 +69,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Portfolio routes use dedicated portfolio-* CSS tokens and system sans stack, distinct from shop Inter styling.
 - [Phase 04]: Portfolio navigation excludes shop; /shop appears in portfolio footer only.
 - [Phase 04]: Portfolio SEO baseline uses layout title template plus page-level metadata exports.
+- [Phase 05-01]: Homepage route ownership resolved: `/` is portfolio homepage authority; legacy comics homepage preserved at `/legacy-comics`.
 
 ### Blockers/Concerns
 
