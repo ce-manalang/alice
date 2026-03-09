@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: planning
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-05T08:21:55.535Z"
+stopped_at: Completed 05-core-portfolio-pages-01-PLAN.md
+last_updated: "2026-03-09T11:42:29.250Z"
 last_activity: 2026-03-05 — Completed 04-03 verification checkpoint (approved)
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 8
+  completed_plans: 4
   percent: 100
 ---
 
@@ -70,6 +70,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Portfolio navigation excludes shop; /shop appears in portfolio footer only.
 - [Phase 04]: Portfolio SEO baseline uses layout title template plus page-level metadata exports.
 - [Phase 05-01]: Homepage route ownership resolved: `/` is portfolio homepage authority; legacy comics homepage preserved at `/legacy-comics`.
+- [Phase 05-core-portfolio-pages]: Set / as canonical portfolio homepage route for Phase 5 HOME requirements.
+- [Phase 05-core-portfolio-pages]: Preserved prior comics homepage at /legacy-comics to retain existing content access.
 
 ### Blockers/Concerns
 
@@ -92,12 +94,13 @@ Recent decisions affecting current work:
 | Phase 04-portfolio-foundation P01 | 18min | 2 tasks | 12 files |
 | Phase 04 P02 | 1min | 2 tasks | 8 files |
 | Phase 04-portfolio-foundation P03 | 4min | 1 tasks | 1 files |
+| Phase 05-core-portfolio-pages P01 | 2min | 2 tasks | 6 files |
 
 ## Session Continuity
 
 **Last Action:** Phase 4 plans created — 3 plans (04-01 route architecture, 04-02 portfolio layout+pages, 04-03 verification)
 
-**Stopped At:** Phase 5 context gathered
+**Stopped At:** Completed 05-core-portfolio-pages-01-PLAN.md
 
 ---
 
