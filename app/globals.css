@@ -1522,6 +1522,121 @@
   line-height: 1.6;
 }
 
+.resume-summary {
+  max-width: 60ch;
+}
+
+.resume-section {
+  padding-top: 1.25rem;
+}
+
+.resume-experience-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.resume-experience-item {
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.resume-experience-header {
+  margin-bottom: 0.75rem;
+}
+
+.resume-period {
+  margin: 0 0 0.35rem;
+  color: var(--portfolio-color-text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resume-bullet-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+  color: var(--portfolio-color-text-muted);
+  line-height: 1.55;
+}
+
+.resume-skills-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.resume-chip-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resume-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-section-tight {
+  padding-top: 0;
+}
+
+.portfolio-engineering-category-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-engineering-category {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.portfolio-engineering-category-title {
+  margin-bottom: 0;
+}
+
+.portfolio-engineering-category-summary {
+  margin: 0;
+}
+
+.portfolio-engineering-capability-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.portfolio-engineering-capability-item {
+  border-top: 1px solid var(--portfolio-color-border);
+  padding-top: 0.9rem;
+}
+
+.portfolio-engineering-capability-capability {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.portfolio-engineering-capability-note {
+  margin: 0.4rem 0 0;
+}
+
 @media (min-width: 768px) {
   .portfolio-strengths-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1529,5 +1644,13 @@
 
   .portfolio-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portfolio-engineering-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resume-skills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
