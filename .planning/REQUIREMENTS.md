@@ -9,15 +9,15 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Homepage
 
-- [x] **HOME-01**: Visitor sees professional hero with Rails engineer positioning and CTAs (View Case Studies, View Resume)
-- [x] **HOME-02**: Visitor sees core strengths section (Rails, system design, performance, deployment, maintenance)
-- [x] **HOME-03**: Visitor sees 2-3 featured case study cards with links to full case studies
-- [x] **HOME-04**: Visitor sees condensed professional timeline showing career progression
+- [ ] **HOME-01**: Visitor sees professional hero with Rails engineer positioning and CTAs (View Case Studies, View Resume)
+- [ ] **HOME-02**: Visitor sees core strengths section (Rails, system design, performance, deployment, maintenance)
+- [ ] **HOME-03**: Visitor sees 2-3 featured case study cards with links to full case studies
+- [ ] **HOME-04**: Visitor sees condensed professional timeline showing career progression
 
 ### Engineering
 
-- [x] **ENG-01**: Visitor can view engineering page with full stack listing organized by category (backend, frontend, infra, tools)
-- [x] **ENG-02**: Engineering page emphasizes testing and code quality practices
+- [ ] **ENG-01**: Visitor can view engineering page with full stack listing organized by category (backend, frontend, infra, tools)
+- [ ] **ENG-02**: Engineering page emphasizes testing and code quality practices
 
 ### Case Studies
 
@@ -27,8 +27,8 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Resume
 
-- [x] **RESM-01**: Visitor can view clean, structured resume at /resume with experience, skills, and career progression
-- [x] **RESM-02**: Resume emphasizes career stability, team collaboration, and production systems
+- [ ] **RESM-01**: Visitor can view clean, structured resume at /resume with experience, skills, and career progression
+- [ ] **RESM-02**: Resume emphasizes career stability, team collaboration, and production systems
 
 ### Contact
 
@@ -82,17 +82,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HOME-01 | Phase 5 | Complete |
-| HOME-02 | Phase 5 | Complete |
-| HOME-03 | Phase 5 | Complete |
-| HOME-04 | Phase 5 | Complete |
-| ENG-01 | Phase 5 | Complete |
-| ENG-02 | Phase 5 | Complete |
+| HOME-01 | Phase 5 | Pending (verification failed 2026-03-09) |
+| HOME-02 | Phase 5 | Pending (verification failed 2026-03-09) |
+| HOME-03 | Phase 5 | Pending (verification failed 2026-03-09) |
+| HOME-04 | Phase 5 | Pending (verification failed 2026-03-09) |
+| ENG-01 | Phase 5 | Pending (verification failed 2026-03-09) |
+| ENG-02 | Phase 5 | Pending (verification failed 2026-03-09) |
 | CASE-01 | Phase 6 | Pending |
 | CASE-02 | Phase 6 | Pending |
 | CASE-03 | Phase 6 | Pending |
-| RESM-01 | Phase 5 | Complete |
-| RESM-02 | Phase 5 | Complete |
+| RESM-01 | Phase 5 | Pending (verification failed 2026-03-09) |
+| RESM-02 | Phase 5 | Pending (verification failed 2026-03-09) |
 | CTCT-01 | Phase 6 | Pending |
 | CTCT-02 | Phase 6 | Pending |
 | SITE-01 | Phase 4 | Complete |
@@ -108,4 +108,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-04 — Traceability complete, 18/18 mapped to Phases 4-6*
+*Last updated: 2026-03-09 — Phase 5 acceptance reset to pending after failed 05-05 verification checkpoint*

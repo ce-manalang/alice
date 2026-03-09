@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: planning
-stopped_at: Completed 05-core-portfolio-pages-04-PLAN.md
-last_updated: "2026-03-09T12:55:11.515Z"
-last_activity: 2026-03-09 — Completed 05-03 execution
+stopped_at: Completed 05-core-portfolio-pages-05-PLAN.md (failed checkpoint)
+last_updated: "2026-03-09T13:35:00.000Z"
+last_activity: 2026-03-09 — Completed 05-05 execution with failed human verification
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 88
 ---
 
@@ -18,7 +18,7 @@ progress:
 
 **Project:** Centimentalcomics Rails Portfolio (Tokyo Market)
 **Updated:** 2026-03-04
-**Status:** Ready to plan
+**Status:** Gap planning required
 
 ---
 
@@ -36,9 +36,9 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 5 of 6 (Core Portfolio Pages)
-**Plan:** 04 of 05 (in progress)
-**Status:** Executing Phase 5 plans
-**Last activity:** 2026-03-09 — Completed 05-03 execution
+**Plan:** 05 of 05 (executed; failed verification)
+**Status:** Phase 5 blocked - route ownership remediation required
+**Last activity:** 2026-03-09 — 05-05 verification failed (root route ownership mismatch)
 
 Progress: [█████████░] 88%
 
@@ -78,11 +78,13 @@ Recent decisions affecting current work:
 - [Phase 05-core-portfolio-pages]: Testing/code quality is presented as practice -> outcome pairs to emphasize delivery impact.
 - [Phase 05-core-portfolio-pages]: Kept resume content centralized in app/lib/portfolio-data.ts to synchronize homepage and resume chronology.
 - [Phase 05-core-portfolio-pages]: Aligned resume experience ordering to oldest-to-newest to match homepage timeline progression.
+- [Phase 05-05 verification]: Root route ownership decision from 05-01 was rejected; `/` must remain comics and portfolio home must move to `/portfolio` or equivalent prefixed route.
 
 ### Blockers/Concerns
 
 - [Phase 4]: Capture shop keyword rankings in Google Search Console before deploying portfolio (SEO migration baseline)
 - [Phase 6]: Case study tone needs to meet Tokyo hiring standards — measurable outcomes required, emotional language removed
+- [Phase 5]: Critical gap after failed checkpoint — restore comics home at `/` and relocate portfolio home path before phase can be accepted.
 
 ---
 
@@ -107,9 +109,9 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-**Last Action:** Phase 4 plans created — 3 plans (04-01 route architecture, 04-02 portfolio layout+pages, 04-03 verification)
+**Last Action:** Completed 05-05 verification checkpoint with failure report and gap follow-up requirement.
 
-**Stopped At:** Completed 05-core-portfolio-pages-04-PLAN.md
+**Stopped At:** Completed 05-core-portfolio-pages-05-PLAN.md (failed checkpoint; awaiting gap plan)
 
 ---
 
