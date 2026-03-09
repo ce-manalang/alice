@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { engineeringCategories } from '@/app/lib/portfolio-data'
+import { engineeringCategories, engineeringQualityPractices } from '@/app/lib/portfolio-data'
 
 export const metadata: Metadata = {
   title: 'Engineering',
@@ -38,6 +38,26 @@ export default function EngineeringPage() {
                     </li>
                   ))}
                 </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="portfolio-section">
+        <div className="portfolio-container">
+          <h2 className="portfolio-heading-2">Testing and Code Quality</h2>
+          <p className="portfolio-text-muted">
+            Quality work is framed as repeatable practice tied to delivery outcomes, not isolated process overhead.
+          </p>
+          <div className="portfolio-engineering-quality-grid">
+            {engineeringQualityPractices.map((entry) => (
+              <article className="portfolio-card" key={entry.practice}>
+                <h3 className="portfolio-heading-3">{entry.practice}</h3>
+                <p className="portfolio-engineering-quality-label">Practice</p>
+                <p className="portfolio-engineering-quality-body">{entry.approach}</p>
+                <p className="portfolio-engineering-quality-label">Outcome</p>
+                <p className="portfolio-text-muted portfolio-engineering-quality-body">{entry.outcome}</p>
               </article>
             ))}
           </div>

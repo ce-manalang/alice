@@ -1637,6 +1637,27 @@
   margin: 0.4rem 0 0;
 }
 
+.portfolio-engineering-quality-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-engineering-quality-label {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-engineering-quality-body {
+  margin: 0;
+  line-height: 1.55;
+}
+
 @media (min-width: 768px) {
   .portfolio-strengths-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1647,6 +1668,10 @@
   }
 
   .portfolio-engineering-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-engineering-quality-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

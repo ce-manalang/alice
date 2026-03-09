@@ -24,6 +24,12 @@ export type EngineeringCategory = {
   capabilities: EngineeringCapability[]
 }
 
+export type EngineeringQualityPractice = {
+  practice: string
+  approach: string
+  outcome: string
+}
+
 export type ResumeExperience = {
   period: string
   company: string
@@ -163,6 +169,29 @@ export const engineeringCategories: EngineeringCategory[] = [
         usageNote: 'Used to reduce manual drift and keep environment behavior predictable.',
       },
     ],
+  },
+]
+
+export const engineeringQualityPractices: EngineeringQualityPractice[] = [
+  {
+    practice: 'Test strategy per change set',
+    approach: 'Prioritize request-level and integration tests for behavior that can break user flows during release.',
+    outcome: 'Lower regression escapes and more predictable release confidence for production updates.',
+  },
+  {
+    practice: 'Code review with operational criteria',
+    approach: 'Review for rollback safety, failure handling, and data integrity before merge, not style-only concerns.',
+    outcome: 'Fewer post-release hotfixes and faster incident containment when issues surface.',
+  },
+  {
+    practice: 'Static checks in delivery routine',
+    approach: 'Run TypeScript and lint checks on each scoped update to catch boundary mismatches early.',
+    outcome: 'Reduced integration friction across pages and fewer late-stage defects in handoff windows.',
+  },
+  {
+    practice: 'Incident-driven hardening',
+    approach: 'Translate production failures into targeted tests and defensive guardrails in affected paths.',
+    outcome: 'Repeated failure modes stay resolved and reliability improves release over release.',
   },
 ]
 
