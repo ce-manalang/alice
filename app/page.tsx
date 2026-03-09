@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import PortfolioNavigation from '@/app/components/portfolio-navigation'
 import PortfolioFooter from '@/app/components/portfolio-footer'
+import { featuredCaseStudies, professionalTimeline } from '@/app/lib/portfolio-data'
 
 export const metadata: Metadata = {
   title: 'Rails Engineer Portfolio',
@@ -68,27 +69,15 @@ export default function HomePage() {
             <h2 className="portfolio-heading-2">Featured Case Studies</h2>
             <p className="portfolio-text-muted">Selected production projects and technical outcomes.</p>
             <div className="portfolio-grid">
-              <article className="portfolio-card">
-                <h3 className="portfolio-heading-3">Case Study 01</h3>
-                <p className="portfolio-text-muted">End-to-end Rails delivery with checkout and fulfillment workflows.</p>
-                <Link className="portfolio-link" href="/case-studies">
-                  Read full case study
-                </Link>
-              </article>
-              <article className="portfolio-card">
-                <h3 className="portfolio-heading-3">Case Study 02</h3>
-                <p className="portfolio-text-muted">Portfolio route architecture and SEO baseline migration.</p>
-                <Link className="portfolio-link" href="/case-studies">
-                  Read full case study
-                </Link>
-              </article>
-              <article className="portfolio-card">
-                <h3 className="portfolio-heading-3">Case Study 03</h3>
-                <p className="portfolio-text-muted">Application maintenance practices for sustained production quality.</p>
-                <Link className="portfolio-link" href="/case-studies">
-                  Read full case study
-                </Link>
-              </article>
+              {featuredCaseStudies.map((caseStudy) => (
+                <article className="portfolio-card" key={caseStudy.title}>
+                  <h3 className="portfolio-heading-3">{caseStudy.title}</h3>
+                  <p className="portfolio-text-muted">{caseStudy.description}</p>
+                  <Link className="portfolio-link" href={caseStudy.href}>
+                    {caseStudy.linkLabel}
+                  </Link>
+                </article>
+              ))}
             </div>
           </div>
         </section>
@@ -96,10 +85,14 @@ export default function HomePage() {
         <section id="timeline" className="portfolio-section">
           <div className="portfolio-container">
             <h2 className="portfolio-heading-2">Professional Timeline</h2>
-            <ul className="portfolio-list">
-              <li>Early career: web fundamentals, delivery ownership, and client collaboration.</li>
-              <li>Rails specialization: backend architecture, data modeling, and testing workflows.</li>
-              <li>Current focus: production systems, portfolio case studies, and engineering rigor.</li>
+            <ul className="portfolio-timeline-list">
+              {professionalTimeline.map((entry) => (
+                <li className="portfolio-timeline-item" key={entry.title}>
+                  <p className="portfolio-timeline-period">{entry.period}</p>
+                  <h3 className="portfolio-heading-3">{entry.title}</h3>
+                  <p className="portfolio-text-muted">{entry.summary}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
