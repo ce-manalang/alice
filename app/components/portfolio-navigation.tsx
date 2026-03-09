@@ -6,13 +6,13 @@ export default function PortfolioNavigation() {
       <div className="portfolio-container">
         <nav className="portfolio-nav" aria-label="Portfolio navigation">
           <div className="portfolio-nav-brand">
-            <Link href="/" className="portfolio-nav-brand-link">
+            <Link href="/portfolio" className="portfolio-nav-brand-link">
               centimentalcomics
             </Link>
           </div>
           <ul className="portfolio-nav-list">
             <li>
-              <Link href="/" className="portfolio-nav-link">home</Link>
+              <Link href="/portfolio" className="portfolio-nav-link">home</Link>
             </li>
             <li>
               <Link href="/engineering" className="portfolio-nav-link">engineering</Link>

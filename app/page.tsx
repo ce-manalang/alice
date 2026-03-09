@@ -1,103 +1,109 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import PortfolioNavigation from '@/app/components/portfolio-navigation'
-import PortfolioFooter from '@/app/components/portfolio-footer'
-import { featuredCaseStudies, professionalTimeline } from '@/app/lib/portfolio-data'
+import Image from "next/image";
+import Link from "next/link";
+import { getPosts, type Post } from "@/app/lib/posts";
+import { Suspense } from "react";
+import { Pagination } from "./components/pagination";
+import { LoadingSkeleton } from "./components/loading-skeleton";
+import type { Metadata } from "next"
+import { formatDate } from "@/app/lib/utils";
 
 export const metadata: Metadata = {
-  title: 'Rails Engineer Portfolio',
-  description: 'Rails engineer portfolio with case studies, engineering details, and resume.',
+  title: "centimentalcomics",
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   openGraph: {
-    title: 'Rails Engineer Portfolio',
-    description: 'Rails engineer portfolio with case studies, engineering details, and resume.',
+    title: "centimentalcomics",
+    description: "some comics about art and internet",
   },
 }
 
-export default function HomePage() {
+interface HomeProps {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const params = await searchParams
+  const currentPage = params.page ? Number.parseInt(params.page) : 1
+
+  return (
+    <div className="container">
+      <header className="header">
+        <h1 className="title">
+          <a href="/">centimentalcomics</a>
+        </h1>
+        <h2>some comics about art and internet</h2>
+        <div className="value-props row"></div>
+      </header>
+      <div className="navbar-spacer"></div>
+      <nav className="navbar">
+        <div className="container">
+          <ul className="navbar-list">
+            <li className="navbar-item">
+              <a className="navbar-link" href="/">
+                home
+              </a>
+            </li>
+            <li className="navbar-item">
+              <a className="navbar-link" href="https://instagram.com/centimentalcomics" target="_blank" rel="noopener noreferrer">
+                shop
+              </a>
+            </li>
+            <li className="navbar-item">
+              <a className="navbar-link" href="about">
+                about
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <Suspense fallback={<LoadingSkeleton />}>
+        <ComicsList page={currentPage} />
+      </Suspense>
+
+      <section className="footer">
+        <h3 className="u-text-center">© 2025 | made in ph 💘</h3>
+      </section>
+    </div>
+  );
+}
+
+async function ComicsList({ page }: { page: number }) {
+  const { posts, totalPages, currentPage } = await getPosts(page);
+
   return (
     <>
-      <PortfolioNavigation />
-      <main className="portfolio-page">
-        <section id="hero" className="portfolio-section">
-          <div className="portfolio-container">
-            <h1 className="portfolio-heading-1">Rails Engineer Delivering Stable, Maintainable Production Systems</h1>
-            <p className="portfolio-text-muted">I ship and operate Rails applications that stay reliable under growth, changing requirements, and day-to-day production pressure.</p>
-            <div className="portfolio-button-row">
-              <Link className="portfolio-button-primary" href="/case-studies">
-                View Case Studies
-              </Link>
-              <Link className="portfolio-button-secondary" href="/resume">
-                View Resume
-              </Link>
-            </div>
-          </div>
-        </section>
+      {posts.map((post: Post, index: number) => (
+        <article key={index} className="docs-section">
+          {
+            post.image_urls.map((image_url, index) => (
+              <div key={index}>
+                <Link href={`/${post.slug}`}>
+                  <Image
+                    src={image_url}
+                    alt={post.title}
+                    width="0"
+                    height="0"
+                    sizes="100vw"
+                    priority={index === 0}
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </Link>
+              </div>
+            ))
+          }
+          <h3 className="u-pull-right">
+            <strong>{formatDate(post.date)}</strong>
+          </h3>
+          <h2 className="docs-header">
+            <Link href={`/${post.slug}`}>{post.title}</Link>
+          </h2>
+          <div dangerouslySetInnerHTML={{ __html: post.blurb.replace('</p>', ' <a href="/' + post.slug + '">read more</a></p>') }} />
+        </article>
+      ))}
 
-        <section id="strengths" className="portfolio-section">
-          <div className="portfolio-container">
-            <h2 className="portfolio-heading-2">Core Strengths</h2>
-            <ul className="portfolio-strengths-list">
-              <li className="portfolio-strength-card">
-                <h3 className="portfolio-heading-3">Rails</h3>
-                <p className="portfolio-text-muted">Delivered Rails features from planning through production support with predictable release cadence.</p>
-              </li>
-              <li className="portfolio-strength-card">
-                <h3 className="portfolio-heading-3">System Design</h3>
-                <p className="portfolio-text-muted">Designed service boundaries and data flows that reduced complexity and improved team handoffs.</p>
-              </li>
-              <li className="portfolio-strength-card">
-                <h3 className="portfolio-heading-3">Performance</h3>
-                <p className="portfolio-text-muted">Improved request and query performance with targeted profiling, indexing, and caching decisions.</p>
-              </li>
-              <li className="portfolio-strength-card">
-                <h3 className="portfolio-heading-3">Deployment</h3>
-                <p className="portfolio-text-muted">Managed deployments and environment changes with rollback-ready practices and release safety checks.</p>
-              </li>
-              <li className="portfolio-strength-card">
-                <h3 className="portfolio-heading-3">Maintenance</h3>
-                <p className="portfolio-text-muted">Kept production systems healthy through incident response, bug triage, and long-term code stewardship.</p>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <section id="featured-case-studies" className="portfolio-section">
-          <div className="portfolio-container">
-            <h2 className="portfolio-heading-2">Featured Case Studies</h2>
-            <p className="portfolio-text-muted">Selected production projects and technical outcomes.</p>
-            <div className="portfolio-grid">
-              {featuredCaseStudies.map((caseStudy) => (
-                <article className="portfolio-card" key={caseStudy.title}>
-                  <h3 className="portfolio-heading-3">{caseStudy.title}</h3>
-                  <p className="portfolio-text-muted">{caseStudy.description}</p>
-                  <Link className="portfolio-link" href={caseStudy.href}>
-                    {caseStudy.linkLabel}
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="timeline" className="portfolio-section">
-          <div className="portfolio-container">
-            <h2 className="portfolio-heading-2">Professional Timeline</h2>
-            <ul className="portfolio-timeline-list">
-              {professionalTimeline.map((entry) => (
-                <li className="portfolio-timeline-item" key={entry.title}>
-                  <p className="portfolio-timeline-period">{entry.period}</p>
-                  <h3 className="portfolio-heading-3">{entry.title}</h3>
-                  <p className="portfolio-text-muted">{entry.summary}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      </main>
-      <PortfolioFooter />
+      <Pagination currentPage={currentPage} totalPages={totalPages} />
     </>
-  )
+  );
 }
