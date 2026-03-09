@@ -59,17 +59,17 @@ export const featuredCaseStudies: FeaturedCaseStudy[] = [
 
 export const professionalTimeline: TimelineEntry[] = [
   {
-    period: 'Early Career',
+    period: '2013-2017',
     title: 'Web Delivery Foundations',
     summary: 'Built delivery fundamentals in web development, client communication, and release ownership.',
   },
   {
-    period: 'Rails Focus',
+    period: '2018-2021',
     title: 'Backend System Ownership',
     summary: 'Specialized in Rails architecture, data modeling, and test-supported feature development.',
   },
   {
-    period: 'Current',
+    period: '2022-Present',
     title: 'Production Reliability and Scale',
     summary: 'Focused on performance, deployment safety, and maintainable systems that support long-term product growth.',
   },
@@ -167,39 +167,40 @@ export const engineeringCategories: EngineeringCategory[] = [
 ]
 
 export const resumeSummary =
-  'Rails engineer with a track record of shipping and maintaining production systems over multiple years, with a focus on reliability, predictable delivery, and long-term code stewardship.'
+  'Rails engineer with 8+ years in web product delivery, including 4+ years of direct ownership over Rails production systems, release safety, and cross-functional delivery execution.'
 
 export const resumeExperience: ResumeExperience[] = [
+  {
+    period: '2013-2017',
+    company: 'Web Development Foundations',
+    role: 'Web Developer',
+    bullets: [
+      'Built delivery fundamentals in HTML/CSS/JavaScript and server-side web workflows across internal and client-facing pages.',
+      'Coordinated early release checklists with senior engineers and QA to reduce avoidable launch defects.',
+      'Strengthened debugging discipline through production support rotations and structured defect triage.',
+    ],
+  },
+  {
+    period: '2018-2021',
+    company: 'Client and Product Projects',
+    role: 'Full-Stack Web Engineer',
+    bullets: [
+      'Delivered web features across backend and frontend for multiple client projects, maintaining predictable release cadence across concurrent workstreams.',
+      'Collaborated with PMs and designers to convert product goals into implementation-ready stories, improving delivery clarity before sprint execution.',
+      'Implemented Rails service and data model patterns that reduced duplication and made ownership boundaries clearer for engineering peers.',
+      'Stabilized recurring production issues by documenting failure modes and introducing repeatable fixes used by QA and support workflows.',
+    ],
+  },
   {
     period: '2022-Present',
     company: 'Centimentalcomics / Independent Product Work',
     role: 'Rails Engineer',
     bullets: [
-      'Owned end-to-end delivery of portfolio and commerce features across planning, implementation, and post-release support.',
-      'Maintained production stability through incident triage, bug resolution, and routine maintenance workflows.',
-      'Improved request performance through query reviews, indexing, and targeted caching updates.',
-      'Kept releases predictable with test-backed changes and rollback-aware deployment practices.',
-    ],
-  },
-  {
-    period: '2018-2022',
-    company: 'Client and Product Projects',
-    role: 'Full-Stack Web Engineer',
-    bullets: [
-      'Delivered web features across backend and frontend layers while managing scope and release timing.',
-      'Implemented Rails service and data model patterns that reduced duplication and clarified ownership boundaries.',
-      'Stabilized recurring production issues by documenting failure modes and introducing repeatable fixes.',
-      'Supported iterative product delivery through clear technical communication and requirement breakdown.',
-    ],
-  },
-  {
-    period: 'Early Career',
-    company: 'Web Development Foundations',
-    role: 'Web Developer',
-    bullets: [
-      'Built delivery fundamentals in HTML/CSS/JavaScript and server-side web workflows.',
-      'Developed team habits around release checklists, issue tracking, and post-release follow-up.',
-      'Strengthened debugging discipline through production support and defect triage.',
+      'Owned end-to-end delivery of 20+ Rails and Next.js production changes from planning to post-release support with no emergency rollbacks.',
+      'Partnered with PM and design on scope tradeoffs and acceptance criteria, reducing rework loops during implementation and QA handoff.',
+      'Maintained production stability by triaging incidents with QA and support context, then resolving root-cause defects in the same release cycle.',
+      'Improved request performance in key user flows through query review, indexing, and targeted caching, lowering peak response latency in production.',
+      'Standardized release safety checks with test-backed changes and rollback-ready deployment routines across repeated launches.',
     ],
   },
 ]
@@ -224,7 +225,8 @@ export const resumeSkillGroups: ResumeSkillGroup[] = [
 ]
 
 export const resumeSelectedOutcomes: string[] = [
-  'Delivered and maintained multi-page portfolio architecture with stable route ownership and SEO-safe metadata patterns.',
-  'Reduced release risk through test-backed implementation and issue-focused production maintenance workflow.',
-  'Improved application responsiveness with indexing and query-level optimizations in Rails-backed flows.',
+  'Delivered and maintained a multi-page portfolio architecture with stable route ownership and SEO-safe metadata patterns.',
+  'Completed 20+ production changes in the current ownership period with rollout checks and no emergency rollback events.',
+  'Improved application responsiveness in Rails-backed flows through indexing and query-level optimization during maintenance cycles.',
+  'Sustained cross-functional delivery rhythm by embedding PM/design/QA context directly into implementation and release handoffs.',
 ]
