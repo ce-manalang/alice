@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: executing
-stopped_at: Completed 05-core-portfolio-pages-06-PLAN.md
-last_updated: "2026-03-11T12:54:24.876Z"
-last_activity: 2026-03-11 — 05-06 completed (route ownership/link contracts validated)
+stopped_at: Completed 05-core-portfolio-pages-07-PLAN.md
+last_updated: "2026-03-11T13:12:36.468Z"
+last_activity: 2026-03-11 — 05-07 completed (human rerun passed; Phase 5 accepted)
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State: Centimentalcomics
 
 **Project:** Centimentalcomics Rails Portfolio (Tokyo Market)
 **Updated:** 2026-03-04
-**Status:** Phase 5 in progress
+**Status:** Phase 5 complete
 
 ---
 
@@ -28,19 +28,19 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Visitors can quickly assess Rails engineering competence through clear case studies, structured resume, and technical documentation.
 
-**Current focus:** v2.0 Portfolio — Phase 5: Core Portfolio Pages
+**Current focus:** v2.0 Portfolio — Phase 6: Case Studies + Contact
 
 ---
 
 ## Current Position
 
 **Milestone:** v2.0 Portfolio
-**Phase:** 5 of 6 (Core Portfolio Pages)
-**Plan:** 06 of 07 (completed; 05-07 pending)
-**Status:** Gap remediation executed; pending follow-on plan and verification rerun
-**Last activity:** 2026-03-11 — 05-06 completed (route ownership/link contracts validated)
+**Phase:** 6 of 6 (Case Studies + Contact) — ready to start
+**Plan:** 00 of ? (planning not started)
+**Status:** Phase 5 accepted after successful human rerun; ready for Phase 6 planning/execution
+**Last activity:** 2026-03-11 — 05-07 completed (human rerun passed; Phase 5 accepted)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ---
 
@@ -81,12 +81,13 @@ Recent decisions affecting current work:
 - [Phase 05-05 verification]: Root route ownership decision from 05-01 was rejected; `/` must remain comics and portfolio home must move to `/portfolio` or equivalent prefixed route.
 - [Phase 05-core-portfolio-pages]: Gap-closure plan 05-06 completed as verification-only because root/portfolio routing contract was already compliant.
 - [Phase 05-core-portfolio-pages]: Retained atomic task-level commits as explicit validation checkpoints despite zero code diffs.
+- [Phase 05-07 verification rerun]: Human rerun approved all route ownership, navigation contract, and HOME/ENG/RESM requirement gates; Phase 5 accepted complete.
 
 ### Blockers/Concerns
 
 - [Phase 4]: Capture shop keyword rankings in Google Search Console before deploying portfolio (SEO migration baseline)
 - [Phase 6]: Case study tone needs to meet Tokyo hiring standards — measurable outcomes required, emotional language removed
-- [Phase 5]: Critical gap after failed checkpoint — restore comics home at `/` and relocate portfolio home path before phase can be accepted.
+- [Phase 5]: Resolved 2026-03-11 — route ownership and verification gates passed in 05-07 rerun.
 
 ---
 
@@ -109,12 +110,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P03 | 1min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P04 | 65min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P06 | 8 min | 2 tasks | 0 files |
+| Phase 05-core-portfolio-pages P07 | 17 min | 2 tasks | 4 files |
 
 ## Session Continuity
 
-**Last Action:** Completed 05-06 gap-closure validation and updated planning state.
+**Last Action:** Completed 05-07 human verification rerun closure and synchronized planning artifacts.
 
-**Stopped At:** Completed 05-core-portfolio-pages-06-PLAN.md
+**Stopped At:** Completed 05-core-portfolio-pages-07-PLAN.md
 
 ---
 

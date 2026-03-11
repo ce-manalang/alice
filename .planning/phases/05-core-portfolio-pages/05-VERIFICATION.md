@@ -1,8 +1,8 @@
 ---
 phase: 05-core-portfolio-pages
-plan: "05"
-status: failed
-verified_on: 2026-03-09
+plan: "07"
+status: passed
+verified_on: 2026-03-11
 verifier: human-checkpoint
 ---
 
@@ -10,39 +10,48 @@ verifier: human-checkpoint
 
 ## Outcome
 
-Verification failed. Phase 5 is not accepted and must not be marked complete.
+Verification passed. Phase 5 is accepted and can be marked complete.
 
-## Critical Failure
+## Rerun Scope
 
-- Root route ownership is incorrect for project intent.
-- Expected: `/` remains comics homepage; portfolio/CV home moves to `/portfolio` (or equivalent portfolio-prefixed route).
-- Actual: `/` currently serves portfolio homepage and comics content was moved to `/legacy-comics`.
+Targeted gap-closure rerun after 05-06 remediation, focused on route ownership, navigation/link contracts, and requirement regressions.
+
+## Route Ownership Gates
+
+| Gate | Result | Evidence |
+| --- | --- | --- |
+| `/` renders comics homepage | PASS | Root shows comics metadata/content (`some comics about art and internet`); portfolio hero/CTA content not present at root. |
+| `/portfolio` renders portfolio homepage | PASS | Portfolio hero, CTA buttons, strengths, featured case studies, and timeline present at `/portfolio`. |
+
+## Navigation/Link Contract Gates
+
+| Gate | Result | Evidence |
+| --- | --- | --- |
+| Portfolio Home nav target is `/portfolio` | PASS | Portfolio nav brand/home links resolve to `/portfolio`. |
+| Portfolio nav links resolve correctly | PASS | `/engineering`, `/case-studies`, `/resume`, `/contact` links present and route successfully. |
+| Homepage CTA/featured links resolve without stale root assumptions | PASS | Portfolio CTAs and featured links route to `/case-studies` and `/resume` from `/portfolio`. |
 
 ## Requirement Evidence Map
 
 | Requirement | Result | Evidence |
 | --- | --- | --- |
-| HOME-01 | FAIL | Blocked by route ownership mismatch at `/`. |
-| HOME-02 | FAIL | Blocked by route ownership mismatch at `/`. |
-| HOME-03 | FAIL | Blocked by route ownership mismatch at `/`. |
-| HOME-04 | FAIL | Blocked by route ownership mismatch at `/`. |
-| ENG-01 | PASS (content-only) | `/engineering` content present, but phase acceptance still blocked by critical route gap. |
-| ENG-02 | PASS (content-only) | `/engineering` testing/code-quality section present. |
-| RESM-01 | PASS (content-only) | `/resume` structure present. |
-| RESM-02 | PASS (content-only) | `/resume` production/stability emphasis present. |
+| HOME-01 | PASS | `/portfolio` hero communicates Rails engineer positioning with visible CTAs. |
+| HOME-02 | PASS | `/portfolio` includes core strengths section for Rails/system design/performance/deployment/maintenance. |
+| HOME-03 | PASS | `/portfolio` shows featured case study cards with links to case studies. |
+| HOME-04 | PASS | `/portfolio` includes condensed professional timeline section. |
+| ENG-01 | PASS | `/engineering` renders full stack categories and technical detail content. |
+| ENG-02 | PASS | `/engineering` includes testing and code quality emphasis. |
+| RESM-01 | PASS | `/resume` renders structured experience/skills/career progression. |
+| RESM-02 | PASS | `/resume` emphasizes production systems stability and collaboration. |
 
-## Regression Checks
+## Regression Checks (Rerun)
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| Portfolio nav renders on portfolio pages | PASS | Verified on `/`, `/engineering`, `/resume`. |
-| Homepage CTA/card link health | PASS | Automated checks: `/case-studies`, `/resume` returned HTTP 200. |
-| Mobile readability | NOT VERIFIED | Deferred because critical route ownership failure already blocks acceptance. |
+| Portfolio nav renders on portfolio pages | PASS | Verified on `/portfolio`, `/engineering`, `/resume`, `/case-studies`, `/contact`. |
+| Homepage CTA/card link health | PASS | `/portfolio` CTAs and featured links resolve as expected. |
+| Route ownership contract | PASS | `/` remains comics authority; portfolio home is `/portfolio`. |
 
-## Follow-up Required
+## Decision
 
-Create gap/remediation plan to:
-1. Restore comics homepage ownership at `/`.
-2. Move portfolio home experience to `/portfolio` (or approved equivalent prefixed route).
-3. Update navigation, CTA links, and requirement wording if route contracts change.
-4. Re-run full human verification after remediation.
+Phase 05 is accepted as complete based on successful 2026-03-11 human rerun and requirement evidence closure.

@@ -82,17 +82,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HOME-01 | Phase 5 | Pending (verification failed 2026-03-09) |
-| HOME-02 | Phase 5 | Pending (verification failed 2026-03-09) |
-| HOME-03 | Phase 5 | Pending (verification failed 2026-03-09) |
-| HOME-04 | Phase 5 | Pending (verification failed 2026-03-09) |
-| ENG-01 | Phase 5 | Pending (verification failed 2026-03-09) |
-| ENG-02 | Phase 5 | Pending (verification failed 2026-03-09) |
+| HOME-01 | Phase 5 | Complete (verified 2026-03-11) |
+| HOME-02 | Phase 5 | Complete (verified 2026-03-11) |
+| HOME-03 | Phase 5 | Complete (verified 2026-03-11) |
+| HOME-04 | Phase 5 | Complete (verified 2026-03-11) |
+| ENG-01 | Phase 5 | Complete (verified 2026-03-11) |
+| ENG-02 | Phase 5 | Complete (verified 2026-03-11) |
 | CASE-01 | Phase 6 | Pending |
 | CASE-02 | Phase 6 | Pending |
 | CASE-03 | Phase 6 | Pending |
-| RESM-01 | Phase 5 | Pending (verification failed 2026-03-09) |
-| RESM-02 | Phase 5 | Pending (verification failed 2026-03-09) |
+| RESM-01 | Phase 5 | Complete (verified 2026-03-11) |
+| RESM-02 | Phase 5 | Complete (verified 2026-03-11) |
 | CTCT-01 | Phase 6 | Pending |
 | CTCT-02 | Phase 6 | Pending |
 | SITE-01 | Phase 4 | Complete |
@@ -108,4 +108,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-09 — Phase 5 acceptance reset to pending after failed 05-05 verification checkpoint*
+*Last updated: 2026-03-11 — Phase 5 requirements accepted after successful 05-07 verification rerun*

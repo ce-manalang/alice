@@ -30,7 +30,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 #### Phases
 
 - [x] **Phase 4: Portfolio Foundation** - Route groups, navigation architecture, SEO baseline — the structural prerequisite for all portfolio content
-- [ ] **Phase 5: Core Portfolio Pages** - Homepage, engineering stack, and resume pages fully built with professional tone and content
+- [x] **Phase 5: Core Portfolio Pages** - Homepage, engineering stack, and resume pages fully built with professional tone and content
 - [ ] **Phase 6: Case Studies + Contact** - Case study pages with written content and contact form backed by Resend
 
 #### Phase Details
@@ -51,7 +51,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 **Goal**: Hiring managers landing on the site can assess Rails engineering competence in under 30 seconds from the homepage and drill into engineering stack and resume for depth
 **Depends on**: Phase 4
 **Requirements**: HOME-01, HOME-02, HOME-03, HOME-04, ENG-01, ENG-02, RESM-01, RESM-02
-**Verification status (2026-03-09):** Human checkpoint rejected current route ownership. `/` must remain comics; portfolio home must move to `/portfolio` (or equivalent prefixed route) via follow-up gap plan.
+**Verification status (2026-03-11):** Human rerun checkpoint passed after 05-06/05-07 gap-closure execution. Route ownership and navigation contracts accepted (`/` comics, `/portfolio` portfolio home).
 **Success Criteria** (what must be TRUE):
   1. Homepage hero immediately communicates Rails engineer positioning with two visible CTAs (View Case Studies, View Resume)
   2. Homepage shows a core strengths section covering Rails, system design, performance, deployment, and maintenance — each as a concise, outcome-oriented statement
@@ -82,9 +82,9 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 | 2. Shopping Cart | v1.0 | 3/3 | Complete | 2026-03-01 |
 | 3. Checkout & Order Form | v1.0 | 2/2 | Complete | 2026-03-03 |
 | 4. Portfolio Foundation | v2.0 | 3/3 | Complete | 2026-03-05 |
-| 5. Core Portfolio Pages | v2.0 | 4/5 | In Progress | - |
+| 5. Core Portfolio Pages | v2.0 | 5/5 | Complete | 2026-03-11 |
 | 6. Case Studies + Contact | v2.0 | 0/? | Not started | - |
 
 ---
 
-_Last updated: 2026-03-11 — Phase 5 gap closure plan 05-06 completed; one plan remaining (05-07) before phase completion_
+_Last updated: 2026-03-11 — Phase 5 completed after successful 05-07 human verification rerun_
