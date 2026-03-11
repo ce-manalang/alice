@@ -58,7 +58,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
   3. Homepage shows 2-3 case study cards with title, brief description, and link to full case study
   4. Engineering page lists the full tech stack organized by category (backend, frontend, infrastructure, tools) and includes a testing and code quality section
   5. Resume page at /resume renders experience, skills, and career progression in a clean single-page layout that emphasizes career stability and production systems
-**Plans**: 05-01 (homepage route ownership + scaffold), 05-02 (homepage content completion), 05-03 (engineering page completion), 05-04 (resume completion), 05-05 (verification checkpoint)
+**Plans**: 05-01 (homepage route ownership + scaffold), 05-02 (homepage content completion), 05-03 (engineering page completion), 05-04 (resume completion), 05-05 (verification checkpoint), 05-06 (route ownership gap closure), 05-07 (final verification rerun)
 
 ### Phase 6: Case Studies + Contact
 **Goal**: Visitors can read 2-3 production case studies that demonstrate Rails depth with specific technical outcomes, and send a contact message that reaches the site owner
@@ -87,4 +87,4 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 
 ---
 
-_Last updated: 2026-03-09 — Phase 5 verification failed at 05-05 checkpoint; gap plan required before completion_
+_Last updated: 2026-03-11 — Phase 5 gap closure plan 05-06 completed; one plan remaining (05-07) before phase completion_

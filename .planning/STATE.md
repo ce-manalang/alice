@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
-status: planning
-stopped_at: Completed 05-core-portfolio-pages-05-PLAN.md (failed checkpoint)
-last_updated: "2026-03-09T13:35:00.000Z"
-last_activity: 2026-03-09 — Completed 05-05 execution with failed human verification
+status: executing
+stopped_at: Completed 05-core-portfolio-pages-06-PLAN.md
+last_updated: "2026-03-11T12:54:24.876Z"
+last_activity: 2026-03-11 — 05-06 completed (route ownership/link contracts validated)
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 8
-  completed_plans: 8
-  percent: 88
+  total_plans: 10
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State: Centimentalcomics
 
 **Project:** Centimentalcomics Rails Portfolio (Tokyo Market)
 **Updated:** 2026-03-04
-**Status:** Gap planning required
+**Status:** Phase 5 in progress
 
 ---
 
@@ -36,11 +36,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 5 of 6 (Core Portfolio Pages)
-**Plan:** 05 of 05 (executed; failed verification)
-**Status:** Phase 5 blocked - route ownership remediation required
-**Last activity:** 2026-03-09 — 05-05 verification failed (root route ownership mismatch)
+**Plan:** 06 of 07 (completed; 05-07 pending)
+**Status:** Gap remediation executed; pending follow-on plan and verification rerun
+**Last activity:** 2026-03-11 — 05-06 completed (route ownership/link contracts validated)
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 90%
 
 ---
 
@@ -79,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase 05-core-portfolio-pages]: Kept resume content centralized in app/lib/portfolio-data.ts to synchronize homepage and resume chronology.
 - [Phase 05-core-portfolio-pages]: Aligned resume experience ordering to oldest-to-newest to match homepage timeline progression.
 - [Phase 05-05 verification]: Root route ownership decision from 05-01 was rejected; `/` must remain comics and portfolio home must move to `/portfolio` or equivalent prefixed route.
+- [Phase 05-core-portfolio-pages]: Gap-closure plan 05-06 completed as verification-only because root/portfolio routing contract was already compliant.
+- [Phase 05-core-portfolio-pages]: Retained atomic task-level commits as explicit validation checkpoints despite zero code diffs.
 
 ### Blockers/Concerns
 
@@ -106,12 +108,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P02 | 2min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P03 | 1min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P04 | 65min | 2 tasks | 3 files |
+| Phase 05-core-portfolio-pages P06 | 8 min | 2 tasks | 0 files |
 
 ## Session Continuity
 
-**Last Action:** Completed 05-05 verification checkpoint with failure report and gap follow-up requirement.
+**Last Action:** Completed 05-06 gap-closure validation and updated planning state.
 
-**Stopped At:** Completed 05-core-portfolio-pages-05-PLAN.md (failed checkpoint; awaiting gap plan)
+**Stopped At:** Completed 05-core-portfolio-pages-06-PLAN.md
 
 ---
 

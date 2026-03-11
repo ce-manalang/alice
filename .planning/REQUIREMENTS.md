@@ -9,15 +9,15 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Homepage
 
-- [ ] **HOME-01**: Visitor sees professional hero with Rails engineer positioning and CTAs (View Case Studies, View Resume)
-- [ ] **HOME-02**: Visitor sees core strengths section (Rails, system design, performance, deployment, maintenance)
-- [ ] **HOME-03**: Visitor sees 2-3 featured case study cards with links to full case studies
-- [ ] **HOME-04**: Visitor sees condensed professional timeline showing career progression
+- [x] **HOME-01**: Visitor sees professional hero with Rails engineer positioning and CTAs (View Case Studies, View Resume)
+- [x] **HOME-02**: Visitor sees core strengths section (Rails, system design, performance, deployment, maintenance)
+- [x] **HOME-03**: Visitor sees 2-3 featured case study cards with links to full case studies
+- [x] **HOME-04**: Visitor sees condensed professional timeline showing career progression
 
 ### Engineering
 
-- [ ] **ENG-01**: Visitor can view engineering page with full stack listing organized by category (backend, frontend, infra, tools)
-- [ ] **ENG-02**: Engineering page emphasizes testing and code quality practices
+- [x] **ENG-01**: Visitor can view engineering page with full stack listing organized by category (backend, frontend, infra, tools)
+- [x] **ENG-02**: Engineering page emphasizes testing and code quality practices
 
 ### Case Studies
 
@@ -27,8 +27,8 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Resume
 
-- [ ] **RESM-01**: Visitor can view clean, structured resume at /resume with experience, skills, and career progression
-- [ ] **RESM-02**: Resume emphasizes career stability, team collaboration, and production systems
+- [x] **RESM-01**: Visitor can view clean, structured resume at /resume with experience, skills, and career progression
+- [x] **RESM-02**: Resume emphasizes career stability, team collaboration, and production systems
 
 ### Contact
 
