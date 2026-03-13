@@ -1,178 +1,564 @@
-# Domain Pitfalls: Next.js 15 E-Commerce Shop Rebuild
+# Pitfalls: Adding Portfolio Features to Existing Next.js E-Commerce Site
 
-**Domain:** Next.js 15 e-commerce shop rebuild (DatoCMS + small catalog + meetup fulfillment)
-**Researched:** 2026-02-20
-**Confidence:** HIGH (multiple official sources, recent 2026 guidance, direct Next.js/DatoCMS documentation)
+**Domain:** Rails-focused portfolio integrated into existing Next.js 15 e-commerce shop
+**Researched:** 2026-03-04
+**Confidence:** HIGH (route conflicts, SEO migration best practices from official sources) → MEDIUM (Tokyo cultural tone specifics)
+
+## Executive Summary
+
+Adding portfolio features to an existing e-commerce site is a high-risk **integration** problem, not a new-site problem. The primary danger is **route/slug conflicts** causing either portfolio or product pages to become unreachable. Secondary risks include **navigation confusion** (visitors unsure whether to hire or shop), **CSS style bleeding** (Tailwind utilities from two design systems colliding), and **SEO turbulence** from changing site primary purpose. Tokyo market adds a cultural risk: **tone misalignment** (emotional portfolio language contradicts the precision-focused tone Japanese tech hiring culture expects).
+
+Unlike building a portfolio from scratch, adding to an existing shop means existing shop traffic is at risk. Missteps here can break e-commerce functionality or tank search engine visibility—a much higher cost than launching portfolio-only.
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Silent Data Staleness from Fetch Caching in App Router
+### Pitfall 1: Route/Slug Conflicts Between Portfolio and Products
 
 **What goes wrong:**
-Product pages display outdated prices, inventory status, or descriptions because fetched data is cached when it shouldn't be. Customers see information that was rendered at build time or previous deployment, leading to wrong purchase decisions or broken product descriptions.
+Both portfolio case studies and shop products use dynamic `[slug]` routes. Without explicit routing separation, a product slug and case study slug can collide (e.g., both a product category AND a case study named "rails-case-study"). This causes one content type to shadow the other—either the case study becomes unreachable (404) or the product page breaks (wrong component renders).
 
 **Why it happens:**
-Next.js App Router caches `fetch` requests by default (unless explicitly disabled). Developers migrating from Pages Router assume all requests are fresh, or they don't realize ISR + fetch caching interact unexpectedly. When data source caching is also enabled upstream (e.g., DatoCMS fetch with `useCdn: true`), double-caching masks the problem until deployment.
+Your codebase currently has a unified `[slug]` route that handles both products and category pages. Adding case studies to this same route without changing the routing architecture creates a collision risk. Developers assume Next.js will "just figure it out," but the router matches first-come-first-serve. If a case study slug matches a product slug, whichever route is defined first wins.
 
 **How to avoid:**
-- Use `cache: "no-store"` for all dynamic product/inventory data: `fetch(url, { cache: "no-store" })`
-- Disable upstream CDN caching in DatoCMS when pulling product data: `useCdn: false` in the client
-- Never rely on static generation for product data that changes (prices, availability)
-- Use `revalidatePath()` or `revalidateTag()` immediately after any data mutation (cart submission, product updates)
-- Test in production-like deployment; local dev server hides caching issues
+- **Strategy 1 (Recommended for this project):** Explicit routing hierarchy—Use route groups to separate concerns:
+  ```
+  /app
+    /shop
+      /[slug]           → product pages only
+    /(portfolio)
+      /case-studies
+        /[slug]         → case study pages
+      /resume
+      /contact
+  ```
+  This ensures no collision: products at `/[slug]`, case studies at `/case-studies/[slug]`.
+
+- **Strategy 2:** Slug prefixing—If restructuring routes is too invasive, ensure no product slug can collide with case study paths:
+  - Product slugs: auto-add "product-" prefix or use UUIDs
+  - Case study slugs: auto-add "cs-" prefix or use UUID
+  - Collision still possible but less likely; requires discipline
+
+- **Strategy 3:** Content-type dispatch in route—In a single `[slug]` route, fetch from both product and case study data sources server-side:
+  ```typescript
+  const product = await getProduct(slug);
+  const caseStudy = await getCaseStudy(slug);
+
+  if (product) return <ProductPage data={product} />;
+  if (caseStudy) return <CaseStudyPage data={caseStudy} />;
+  return <NotFound />;
+  ```
+  Works but creates ambiguity: which content type "owns" a slug? Risk of returning wrong content.
 
 **Warning signs:**
-- Product page shows old data after updates in DatoCMS
-- Price changes or new product descriptions don't appear for hours
-- Manual Vercel rebuild fixes the problem temporarily
-- Team reports "works locally, broken on production"
+- Two different pages appearing at the same URL during preview or local testing
+- 404 errors for case studies that exist in your content source
+- Products vanishing from shop after portfolio routes deployed
+- Search Console showing duplicate content warnings or unexpected URL consolidation
 
 **Phase to address:**
-Phase 1 (Core Shop) — Establish fetch caching strategy before building product pages. Document every API call with its cache policy.
+**Phase 1 (Portfolio Foundation):** Establish clear routing architecture BEFORE writing case study pages. Test matrix: every planned case study slug checked against existing product slugs to ensure no collision.
 
 ---
 
-### Pitfall 2: Cart State Lost Across Page Navigation
+### Pitfall 2: Navigation Confusion—Visitors Unsure If They're Shopping or Evaluating a Professional
 
 **What goes wrong:**
-Customer adds items to cart, navigates away (e.g., to product details), returns to homepage, and cart is empty. Trust erodes quickly. Or cart persists but shows stale prices/availability from old session.
+The site becomes schizophrenic: primary nav says "Home | Engineering | Case Studies | Resume | Contact" (professional language) but shop is still accessible via old cart icon, product links, or footer "Shop" link. A hiring manager clicks from a case study to another section, encounters an "Add to Cart" button, and loses confidence—the site doesn't know what it is.
+
+Tokyo hiring managers especially will find this tone-jarring. Mixing professional portfolio language with e-commerce interface signals confusion about site purpose, which undermines credibility for a person pitching themselves as an engineer.
 
 **Why it happens:**
-Team stores cart in `useState` without persistence, or uses context without localStorage. Next.js App Router doesn't auto-persist client state between navigations. If persistence is added later with localStorage, hydration mismatches occur (server renders empty cart, client hydrates with saved data, UI flickers). With external sources (Supabase), teams forget to sync client state with server on component mount.
+Your codebase preserves shop routes for backward compatibility and existing traffic. Navigation wasn't originally designed to distinguish between "hiring context" (portfolio pages) and "shopping context" (shop pages). Shop nav elements (cart, product links) are globally visible, creating cognitive dissonance on portfolio pages.
 
 **How to avoid:**
-- Choose persistence strategy upfront: localStorage (simplest, <5MB limit) or IndexedDB (if cart grows complex)
-- Implement state hydration correctly: use `useEffect` to load from storage only on client, after mount. Avoid hydration mismatches.
-- For small catalogs with <20 products, localStorage is sufficient; avoid Supabase overhead
-- Use Zustand or similar minimal state library with built-in persistence middleware (`persist` plugin)
-- Test cart flow: add item, hard-refresh page, verify cart still present with correct quantity/price
-- Never store prices in cart—fetch fresh on checkout from product database
+- **Strategy 1 (Recommended):** Conditional navigation per route—Show different nav depending on current route:
+  - On portfolio routes (`/case-studies`, `/resume`, `/contact`, `/engineering`, `/`): Hide cart icon, show "Engineering | Case Studies | Resume | Contact | About"
+  - On shop routes (`/shop/*`, `/cart`): Show "Shop | Cart" icon, minimal portfolio links (only in footer)
+  - Implementation: Check route in layout or nav component; render conditionally
+
+  ```typescript
+  const isPortfolioRoute = pathname.startsWith('/case-studies') ||
+                           pathname === '/' ||
+                           pathname === '/resume';
+
+  if (isPortfolioRoute) {
+    return <PortfolioNav />;
+  } else {
+    return <ShopNav />;
+  }
+  ```
+
+- **Strategy 2:** Visual zone demarcation—Keep unified nav but visually separate zones:
+  - Portfolio pages: minimal, monochrome design
+  - Shop pages: colorful zine-like aesthetic (current)
+  - Breadcrumb or location indicator on every page ("You're in: Portfolio" vs. "You're in: Shop")
+  - Result: visitor always knows the context
+
+- **Strategy 3:** Soft redirect pattern—Homepage `/` directs to portfolio hero. Shop accessible at `/shop/` but not featured in primary nav. Use breadcrumbs on shop pages to clarify location. Portfolio is primary; shop is secondary.
 
 **Warning signs:**
-- Console errors: "text content does not match server-rendered HTML" (hydration mismatch)
-- Cart empties on refresh or navigation
-- Cart shows old prices that don't match current product data
-- localStorage/IndexedDB grows unbounded over time (no cleanup strategy)
+- Users clicking "Add to Cart" from a case study page (shop intent leaks)
+- Mixed language in nav (professional + e-commerce jargon on same page)
+- Bounce rate spiking on case study pages after encountering shop-like elements
+- Recruiter feedback: "Wasn't sure what this site was selling me—a product or your expertise?"
 
 **Phase to address:**
-Phase 2 (Cart System) — Implement and test persistence layer before shipping. Hydration issues surface only after deployment.
+**Phase 1 (Navigation Restructure):** Before shipping portfolio, audit nav on every template. Create conditional nav logic. Portfolio pages should NOT display cart icon, product category links, or shop-specific language. Shop pages should NOT display resume download link or engineering-focused language.
 
 ---
 
-### Pitfall 3: SEO Ranking Loss from URL/Slug Changes During Rebuild
+### Pitfall 3: CSS/Tailwind Style Conflicts Between Portfolio and Shop
 
 **What goes wrong:**
-Shop is rebuilt with a new URL structure (e.g., `/products/zine-101` becomes `/shop/zines/101`). Google's rankings for old product pages drop 40-60%. Even with 301 redirects, AI search systems take weeks to reassess link graphs, internal authority distribution, and topical relationships. In the meantime, organic traffic and conversions tank.
+Shop uses Tailwind CSS with a `shop-*` CSS prefix convention. Portfolio adds new Tailwind utilities and custom styles. Conflicts occur where:
+- Case study headings inherit `h2` styling from shop product cards (wrong size/color on portfolio)
+- Utility class names collide (both trying to set `text-xs` with different meanings)
+- Responsive breakpoints designed for e-commerce grids break case study text layout on mobile
+- Inherited styles cascade unexpectedly (portfolio `body` reset affects shop)
 
 **Why it happens:**
-Teams focus on feature completeness during rebuild and treat SEO as an afterthought. Product slug changes seem minor. Redirects are added but internal linking structure is flattened or reorganized ("we'll clean this up later"). Category pages disappear. Supporting content (FAQs, guides) is dropped because they generate low direct traffic—but they provide topical authority that validates the main product pages.
+Tailwind CSS generates a single CSS bundle across the entire app. With two distinct design systems (playful zine-like for shop, minimal/professional for portfolio), managing specificity and inheritance becomes complex. The `shop-*` prefix convention doesn't extend uniformly to all shop styles, leaving gaps. Developers add portfolio utilities without checking for naming collisions.
 
 **How to avoid:**
-- Map every old product URL to new slug before rebuild; maintain 1:1 relationship where possible
-- Keep category structure unchanged; categories are often high-traffic commercial keywords
-- Implement 301 redirects in `next.config.js` redirects array for ALL old URLs
-- Preserve all supporting content (FAQ, about, guides); they reinforce topical authority
-- Audit internal linking: ensure product detail pages link to related products, categories link up/down hierarchically
-- Test redirect chains; broken redirects (→ → →) are flagged by search engines instantly in 2026
-- Stage rebuild on separate domain/environment; use GSC (Google Search Console) staging verification to dry-run indexing
-- Add structured data (schema.org/Product) to all product pages; helps search systems remap content
+- **Strategy 1 (Best practice):** Use `important` directive for portfolio-specific utilities—In `tailwind.config.js`:
+  ```javascript
+  module.exports = {
+    important: '!', // Add ! to all utilities
+  };
+  ```
+  Then portfolio-specific classes get higher specificity:
+  ```html
+  <h2 className="!text-base !font-normal">Case Study Title</h2>
+  ```
+  Ensures portfolio styles override shop defaults on portfolio pages.
+
+- **Strategy 2:** CSS Modules for portfolio—Portfolio components use `.module.css` (scoped styles), shop uses Tailwind utilities. Eliminates all collision by design.
+  ```typescript
+  // portfolio/case-study.module.css
+  .heading {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  // usage
+  <h2 className={styles.heading}>
+  ```
+
+- **Strategy 3:** Explicit class prefixing—Continue `shop-*` convention for shop, add `portfolio-*` prefix for all portfolio classes:
+  ```html
+  <!-- shop: -->
+  <button className="shop-add-to-cart">Add to Cart</button>
+
+  <!-- portfolio: -->
+  <a className="portfolio-case-study-link">View Case Study</a>
+  ```
+  Requires discipline but prevents collision by naming convention.
+
+- **Strategy 4:** Tailwind Merge utility—Use `clsx` or `tailwind-merge` to intelligently merge conflicting utilities:
+  ```typescript
+  import { clsx } from 'clsx';
+
+  <h2 className={clsx(
+    'text-lg font-bold',  // shop default
+    isPortfolio && 'text-base font-normal'  // portfolio override
+  )}>
+  ```
 
 **Warning signs:**
-- Google Search Console shows 404s for old product URLs
-- Organic traffic drops post-launch, particularly for product category pages
-- "Discover" traffic vanishes (weak topical authority signals)
-- Redirect chain broken (301 → 302 → 404)
+- Portfolio page headings have unexpected color/size from shop styles
+- Portfolio buttons have rounded corners when they should be sharp (shop default leaked)
+- Font sizes inconsistent between shop and portfolio on same breakpoint
+- Tailwind merge conflicts visible in browser DevTools (conflicting utilities applied)
 
 **Phase to address:**
-Phase 1 (Core Shop) — Finalize URL structure before building. Phase 3 (Pre-Launch) — audit all redirects and internal links before going live.
+**Phase 2 (Portfolio Styling):** Before shipping portfolio pages, choose and implement CSS conflict resolution strategy. Test portfolio on pages that might load both shop and portfolio styles. Run Lighthouse on portfolio pages to verify no style breakage.
 
 ---
 
-### Pitfall 4: DatoCMS Integration Schema Drift and Outdated Queries
+### Pitfall 4: SEO Turbulence from Changing Site Primary Purpose (E-Commerce → Portfolio + Shop)
 
 **What goes wrong:**
-DatoCMS schema is updated (field renamed, new field added, field deprecated) but Next.js app still uses old query. GraphQL queries fail silently or return `null` for missing fields. Product pages break with "Cannot read property 'title' of undefined." Multiple developers edit schema in DatoCMS UI without updating TypeScript types or coordinating with backend.
+Search engines (Google, Bing) currently see centimentalcomics.com as an e-commerce shop for zines. When portfolio becomes primary content and shop is demoted, Google reprocesses the site's purpose. This can trigger:
+- **Ranking drop** on existing product pages (shop traffic may drop 20-40% initially as authority redistributes)
+- **Indexing confusion** (Google drops some shop URLs from index, reindexes inconsistently, takes weeks to stabilize)
+- **Authority redistribution** (domain authority shifts from "zine shop" keywords to "Rails engineer" keywords; old backlinks become less relevant)
+- **Category page impact** (shop category pages may drop harder than products)
+
+This is especially risky because shop pages have existing inbound links and search visibility—losing them has immediate business impact.
 
 **Why it happens:**
-DatoCMS offers convenient UI-based schema editing, which is great for content editors but dangerous when developers don't sync changes. The generated `schema.graphql` file (used by `gql.tada`) falls out of sync. TypeScript types become unreliable. Small teams don't have a schema versioning/review process.
+Search engines use content volume, link anchor text, and primary content type to understand a site's purpose. If portfolio content suddenly outnumbers shop content, ranking algorithms recalibrate over 4-8 weeks. Google's systems see the site's topical relevance shift and downrank content that doesn't fit the new purpose.
 
 **How to avoid:**
-- Establish schema change protocol: schema updates must be pull requests, not UI-only edits
-- Always run `pnpm datocms:generate` (or equivalent) after any DatoCMS schema change to update `schema.graphql`
-- Use `gql.tada` for GraphQL queries to get real-time type checking; it will error if query doesn't match current schema
-- Don't hand-write TypeScript interfaces; generate them from schema
-- Store DatoCMS schema changes in Git; use DatoCMS environment branching (dev/staging/prod)
-- Add `schema.graphql` to version control; reviewers can see what schema changed
-- Test product page queries in both DatoCMS GraphQL playground AND in deployed app after schema changes
+- **Strategy 1 (Recommended):** Phased rollout with monitoring—Ship portfolio to full domain but use `robots.txt` to control crawl budget:
+  ```
+  User-agent: *
+  Disallow: /shop/  # Temporarily hide shop from crawl
+  Allow: /         # Index portfolio
+  ```
+  Monitor shop rankings for 2-3 weeks in Google Search Console (they'll still appear if previously indexed). After portfolio stabilizes, remove the Disallow and re-open shop to crawl. Or use phased redirect strategy (see Strategy 2).
+
+- **Strategy 2:** Staged domain split (if resources allow)—Ship portfolio to portfolio subdomain (`portfolio.centimentalcomics.com`), keep shop at main domain. After portfolio gains traction and authority, gradually shift. Avoids all turbulence but more work.
+
+- **Strategy 3:** Explicit SEO signals—Use structured data and metadata to signal site type:
+  ```html
+  <!-- portfolio page -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "name": "Rails Engineer Portfolio"
+  }
+  </script>
+
+  <!-- shop page -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Zine Title"
+  }
+  </script>
+  ```
+  Helps search systems understand that site has two distinct sections with different purposes.
+
+- **Strategy 4:** Monitor and redirect—In `next.config.js`, don't remove shop URLs, but use `canonical` tags on shop pages:
+  ```typescript
+  // On shop product pages:
+  <head>
+    <link rel="canonical" href="https://centimentalcomics.com/shop/[product]" />
+  </head>
+  ```
+  Signals to Google: "This page belongs here, it's not duplicate." Prevents consolidation with portfolio content.
+
+- **Strategy 5:** Monitor search console for 90+ days—After launch, track:
+  - Shop keyword rankings (set baseline now)
+  - Shop page CTR in GSC
+  - Shop pages dropped from index (monitor "Excluded" URLs)
+  - Portfolio keyword rankings (should improve)
+  - Set alert: if shop CTR drops >25%, investigate
 
 **Warning signs:**
-- "Cannot read property 'X' of undefined" errors on product pages
-- GraphQL errors like "Cannot query field 'oldFieldName'" in logs
-- `schema.graphql` is out of date compared to DatoCMS actual schema
-- Schema changes work in UI but break deployed app
-- Multiple developers editing schema without communication
+- Google Search Console shows shop "Excluded" URLs (not indexed)
+- Shop keyword rankings dropping in GSC 2-4 weeks post-launch
+- Shop page CTR in Google drops >25%
+- Homepage CTR in Google drops post-launch
+- Bing/other search engines show old shop rankings while Google has recomputed
 
 **Phase to address:**
-Phase 0 (Setup) — configure DatoCMS schema generation in build process. Phase 1 (Core Shop) — document schema change process before first content editor touches CMS.
+**Phase 1 (Portfolio Foundation):** BEFORE launch, create detailed SEO migration plan. Document baseline shop rankings using Google Search Console. Plan phased rollout strategy. Phase 3 (Pre-Launch): Execute robots.txt strategy or canonical tag placement. Phase 4 (Post-Launch): Monitor GSC for 90 days, adjust if needed.
 
 ---
 
-### Pitfall 5: Route Handler Caching Hides Stale Data in Checkout Flow
+### Pitfall 5: Tokyo Market Tone Misalignment—Emotional Language, Vague Outcomes
 
 **What goes wrong:**
-Build a Route Handler (API route) to fetch product data for checkout: `GET /api/products/123`. It works locally. In production, Route Handlers are cached by default in App Router. Customer sees stale product price or availability. If cart submission submits to another Route Handler, the `POST` isn't cached (good), but the product fetch for verification WAS cached (bad). Inventory oversells or prices charge incorrectly.
+Portfolio case studies are written with enthusiasm ("I love building meaningful software," "exciting technical journey") or vague outcomes ("improved performance," "better architecture"). Japanese hiring managers (especially CTOs at conservative SaaS firms) see this as unprofessional, immature, or lacking rigor. Precision and measurable outcomes are expected; emotional language signals inexperience.
+
+Result: Hiring manager reads case study, loses confidence in your technical credibility.
 
 **Why it happens:**
-Developers assume Route Handlers behave like Pages Router API routes (no caching). Next.js 15 changed this: GET requests are cached by default unless `revalidate` is set. Teams don't realize caching applies even to dynamic endpoints. No explicit `cache` policy is set.
+Web portfolio conventions in English-speaking markets emphasize narrative, personality, and storytelling. Japanese tech hiring culture values evidence-based assessment—credentials, specific metrics, and formal tone. These cultures have different communication norms; what reads as engaging in US portfolios reads as unprofessional in Tokyo.
 
 **How to avoid:**
-- Never use Route Handlers for dynamic data without explicit caching strategy
-- Set `export const revalidate = 0` (no caching) for any endpoint that serves real-time data (inventory, pricing, cart validation)
-- Or use `fetch(..., { cache: "no-store" })` inside the handler
-- For truly dynamic endpoints, consider not using Route Handlers at all; call server actions directly from components
-- Test every Route Handler in production: verify cache headers with `curl -i` and check response timestamps
-- Document cache policy in code: `// Cache disabled: inventory is real-time` near the handler
+- **Strategy 1 (Recommended):** Template-driven case study structure—Require every case study to follow:
+  ```markdown
+  # [Project Name]: [One-sentence outcome with metric]
+
+  ## Context
+  - Team size: [X] people
+  - Timeline: [start] to [end]
+  - Business problem: [specific problem, not vague]
+  - Business impact: [revenue, user growth, cost]
+
+  ## Technical Challenge
+  - What constraint existed? (be specific)
+  - Why was it hard?
+  - What's at stake if unsolved?
+
+  ## Approach
+  - What technical decisions were made?
+  - Why those decisions? (mention tradeoffs—can't optimize everything)
+  - Key technologies: [list with purpose]
+
+  ## Results
+  - Measurable outcome (latency reduced by X%, throughput increased by Y%, cost decreased Z%)
+  - Timeline: [how quickly did impact appear?]
+
+  ## Reflection
+  - What worked well?
+  - What didn't work? (be honest—shows maturity)
+  - If rebuilding, what would you change?
+  ```
+
+  **Tone rules for Tokyo market:**
+  - Remove: "love," "exciting," "passion," "amazing," "cutting-edge"
+  - Add: "reduced," "improved by X%," "maintained," "validated," "tested"
+  - Example: ❌ "Built a robust Rails API" → ✅ "Rebuilt legacy API serving 50k DAU; reduced p99 latency from 2400ms to 340ms, enabling 40% faster feature iteration"
+
+- **Strategy 2:** Specificity checklist—Before publishing, every case study must have:
+  - [ ] At least one specific metric (numbers, not adjectives)
+  - [ ] Business context explained (why this project mattered)
+  - [ ] At least one technical decision with tradeoff discussed
+  - [ ] At least one reflection on what didn't work or could improve
+  - [ ] Zero emotional language
+  - [ ] Zero vague claims ("improved," "better," "great")
+
+- **Strategy 3:** Japanese intro section (optional but impactful)—Add short Japanese-language intro ("エンジニアリングの品質と信頼性に焦点を当てたレールスエンジニア") demonstrates respect for local hiring culture. Doesn't need to be fluent, just respectful.
+
+- **Strategy 4:** Have Tokyo tech person review—Before shipping any case study, have someone from Japan's tech community review for tone. They'll catch cultural misalignments that Western authors miss.
 
 **Warning signs:**
-- Checkout page shows outdated product price
-- Inventory doesn't decrement properly on order submission
-- Manual cache clear in Vercel fixes intermittent checkout failures
-- Route Handler returns same response for repeated calls over time
+- Recruiter feedback: "This sounds like marketing, not engineering"
+- Case studies read like sales copy ("our amazing team built the best solution")
+- Missing business context (technical decisions explained without why it mattered)
+- Vague metrics ("significantly improved," "much faster")
+- Zero mention of what didn't work or learnings
 
 **Phase to address:**
-Phase 2 (Cart System) → Phase 3 (Checkout) — validate all Route Handlers have explicit cache policies before shipping.
+**Phase 2 (Case Study Writing):** BEFORE writing any case studies, establish tone guidelines and template. Review first 2-3 case studies with someone from Tokyo tech community if possible. Make tone part of code review/acceptance criteria.
 
 ---
 
-### Pitfall 6: Over-Engineering for a Small Catalog (Unnecessary Complexity)
+### Pitfall 6: Contact Form Spam Targeting a Small Professional Portfolio Site
 
 **What goes wrong:**
-Team implements advanced patterns designed for 10k+ product catalogs: microservices, headless architecture with separate payment gateway, complex state management (Redux + sagas), server-driven UI, or image optimization frameworks. With <20 products, this adds 4+ weeks of overhead. Simple features take 10x longer. Maintenance burden explodes. Small team burns out.
+Adding a professional contact form for recruiting inquiries attracts automated spam bots. Without proper defenses, inbox is flooded with:
+- Recruitment spam ("Hire React developers")
+- Scraped email list sellers ("Let's get you 10k leads")
+- Link-building spam ("Add our link to your resources")
+- Automated quote/service requests
+
+This pollutes the contact channel and makes it harder to notice real hiring inquiries.
 
 **Why it happens:**
-Developers follow "best practices" from large e-commerce case studies (built for scale) or cargo-cult copying from bigger codebases. Supabase is set up "for future expansion" but barely used. Zustand + Redux + Context all in one app. ISR is implemented when static build is simpler. Every endpoint is a Route Handler "for API consistency" instead of direct server actions.
+Contact pages are high-value scraping targets. Bots specifically target portfolio sites because they assume owners are freelancers or small businesses likely to respond to vendor pitches. As of 2026, simple CAPTCHAs are insufficient—bots use headless browsers and AI behavioral analysis to bypass them.
 
 **How to avoid:**
-- Right-size architecture to 20 products: static HTML build per product, simple localStorage cart, Vercel serverless functions only if needed
-- Explicitly defer: payment gateways, user accounts, inventory sync, email notifications (all v2)
-- Use SSG (static site generation) for product catalog: build once per deployment, cache forever
-- Cart state: localStorage + Zustand or plain context; Supabase is overkill
-- Image optimization: Next.js `<Image>` component is sufficient; don't build custom optimization
-- Use DatoCMS drafts/publish flow instead of building approval workflows in app
-- Single rendering strategy (SSG) beats ISR complexity for fixed product list
-- Count LOC (lines of code): if cart implementation is >200 lines, you're over-engineering
+- **Strategy 1 (Recommended):** Server-side validation + Akismet:
+  - Validate email format strictly (reject `+spam` variations)
+  - Use Akismet API (free tier available) to score submissions
+  - Rate-limit per IP: max 5 submissions per day
+  - Log all submissions with timestamp, IP, referer for pattern detection
+
+  ```typescript
+  // Example in Server Action
+  const isSpam = await akismet.verify(formData);
+  if (isSpam) return { error: 'Form submission flagged as spam' };
+
+  const recentCount = await db.contacts.count({
+    where: { ip: clientIp, createdAt: { gte: oneDayAgo } }
+  });
+  if (recentCount >= 5) return { error: 'Too many submissions, try later' };
+  ```
+
+- **Strategy 2:** Honeypot field—Add a hidden field that legitimate users won't fill:
+  ```html
+  <input type="text" name="website" style="display:none" />
+  ```
+  Bots fill all fields; users skip the hidden one. Reject if populated.
+
+- **Strategy 3:** Email verification flow—Send verification link; only process if user clicks it:
+  1. User submits contact form
+  2. Email sent with verification link
+  3. Only after click is form marked "verified"
+  4. Real recruiters click; spam bots don't
+
+  Result: inbox only shows verified inquiries.
+
+- **Strategy 4:** No email display on contact page—Don't auto-display your email on `/contact`. Require form submission only. Reduces harvesting value.
 
 **Warning signs:**
-- Product pages take 3 weeks to ship because of architecture design
-- Zustand, Redux, and Context are all used in same feature
-- Supabase connection exists but unused for checkout
-- ISR revalidate logic is more complex than product data itself
-- Team debates "should we use a headless architecture?" for 15 products
+- Inbox receives >50% spam submissions within first month of launch
+- Spam patterns (same sender, similar content) visible in logs
+- Real recruiter inquiries buried or missed
+- Contact form conversion rate low despite traffic
 
 **Phase to address:**
-Phase 0 (Setup) → Phase 1 (Core Shop) — decide architecture early. Smaller = faster. Phase 3 (Pre-Launch) — audit codebase; delete unused abstractions.
+**Phase 3 (Contact & Lead Management):** Before shipping contact form, implement Akismet or equivalent spam filter. Add rate-limiting and honeypot. Monitor first 30 days; adjust thresholds if spam volume increases.
+
+---
+
+### Pitfall 7: Case Study Content Too Vague or Overly Promotional
+
+**What goes wrong:**
+Case studies fail to convince hiring managers because:
+- **Vague claims:** "Improved system reliability" with no metrics
+- **No business context:** Technical decisions explained without business impact ("Used Docker" with no explanation of why or impact)
+- **Overly promotional tone:** Reads like sales copy ("Our amazing team built the best solution") instead of engineering documentation
+- **Missing learnings:** What went wrong? What would you do differently? Absence of reflection signals lack of maturity
+
+Result: Hiring manager closes case study thinking "sounds nice, but I don't know if this person can actually ship code or learn from mistakes."
+
+**Why it happens:**
+Portfolio authors conflate "marketing case study" with "engineering retrospective." Marketing emphasizes benefits and emotion. Engineering requires context, tradeoffs, measurable impact, and honest reflection.
+
+**How to avoid:**
+- **Strategy 1 (Recommended):** Enforce template structure (from Pitfall 5, but emphasized here):
+  - Context: business problem, team size, timeline
+  - Technical challenge: specific constraint, why hard
+  - Approach: decisions made, tradeoffs
+  - Results: measurable outcome with numbers
+  - Reflection: what worked, what didn't, what you'd change
+
+- **Strategy 2:** Specificity checklist—Before publishing:
+  - [ ] Business problem stated clearly (not vague like "improve reliability")
+  - [ ] At least one specific metric in results (latency reduced 340ms, throughput +30%, cost -$50k/yr)
+  - [ ] At least one tradeoff discussed (can't optimize everything; what did you choose?)
+  - [ ] At least one thing that didn't work (shows maturity)
+  - [ ] Code sample or diagram if possible (proof you understand the tech)
+
+- **Strategy 3:** Avoid marketing language—Checklist to remove:
+  - ❌ "amazing," "best," "cutting-edge," "revolutionary," "world-class"
+  - ✓ "reduced," "improved by X%," "maintained," "validated," "tested"
+
+- **Strategy 4:** Third-party validation if possible—If client allows, include:
+  - Quote from manager or colleague
+  - Measurable business impact (revenue, user growth, cost savings)
+  - Timeline (how quickly did impact appear?)
+
+**Warning signs:**
+- Case study reads like marketing copy (superlatives, no metrics)
+- Reader still unsure what problem was solved after reading
+- No mention of tradeoffs or what didn't work
+- Tokyo tech recruiter feedback: "Sounds like everyone's case study"
+
+**Phase to address:**
+**Phase 2 (Case Study Writing):** Before writing any case studies, finalize template. Have first 2-3 case studies reviewed by someone with Rails/backend experience. Make specificity part of acceptance criteria.
+
+---
+
+### Pitfall 8: Mobile Responsiveness Mismatch Between Portfolio and Shop
+
+**What goes wrong:**
+Portfolio and shop optimize for different mobile experiences:
+- **Shop:** Prioritizes product discovery (cards, grids, filters, add-to-cart buttons)
+- **Portfolio:** Prioritizes case study readability (article layout, code blocks, long-form text)
+
+Using the same responsive design strategy causes:
+- Case study code samples unreadable on mobile (text too small, horizontal scroll)
+- Case study images appear too small on small screens
+- Navigation cramped (portfolio nav + shop nav conflict on mobile)
+- Touch targets inconsistent (buttons in shop are larger than resume links in portfolio)
+- Font hierarchy unclear on mobile
+
+Result: Portfolio appears unprofessional on mobile (undermining the "precise engineer" brand). Shop may become harder to use.
+
+**Why it happens:**
+Tailwind's default breakpoints (sm: 640px, md: 768px, lg: 1024px) work for generic layouts. Portfolio case studies with code, diagrams, and long-form text may need different breakpoints or different strategies entirely. Developers copy shop's responsive approach without considering content type differences.
+
+**How to avoid:**
+- **Strategy 1 (Recommended):** Content-specific breakpoints for portfolio—Use shop breakpoints for shop. Define portfolio-specific media queries:
+  ```css
+  /* portfolio/case-study.css */
+  @media (max-width: 768px) {
+    .case-study-code {
+      font-size: 0.875rem;  /* slightly larger for readability */
+      overflow-x: auto;
+      padding: 1rem;
+      line-height: 1.6;
+    }
+
+    .case-study-image {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  ```
+
+- **Strategy 2:** Test matrix by device—Before shipping, test on:
+  - iPhone 12 (390px): Portfolio nav legible? Code readable? CTAs tappable (44px min)?
+  - iPad (768px): Case study layout intact? Images clear?
+  - Desktop (1024px+): Full width used well?
+  - Compare against shop pages on same devices—ensure no regression
+
+- **Strategy 3:** Collapsible code blocks on mobile—If code sample is long (>20 lines), collapse on mobile:
+  ```tsx
+  <details>
+    <summary>View Code (12 lines)</summary>
+    <pre><code>...</code></pre>
+  </details>
+  ```
+
+- **Strategy 4:** Different component order for mobile—Portfolio pages might reorder sections on mobile:
+  - Desktop: Overview → Code → Results
+  - Mobile: Results → Overview → Collapsible Code
+
+**Warning signs:**
+- Case study code requires horizontal scrolling on iPhone
+- Portfolio nav collapses into hamburger menu AND shop nav is visible (confusing)
+- Font size in code samples smaller than body text (hard to read)
+- Touch targets (resume button, contact link) smaller than 44px (hard to tap)
+- Lighthouse mobile score <80 on portfolio pages
+
+**Phase to address:**
+**Phase 2 (Portfolio Styling) and Phase 3 (Case Studies):** When styling portfolio pages, test on actual mobile devices (not just browser DevTools). Create mobile testing checklist. Ensure case study code blocks are readable without horizontal scroll.
+
+---
+
+### Pitfall 9: Client Consent Not Obtained for Case Study Disclosure
+
+**What goes wrong:**
+Case studies mention client names, business metrics, or architectural decisions without explicit written consent. Clients (especially startups or stealth companies) may object post-publication:
+- Startup doesn't want architecture public (competitive risk)
+- Client doesn't want revenue figures disclosed
+- Client objects to being associated with publicized tech stack
+- Former employer claims confidentiality breach
+
+Result: Forced case study removal, credibility loss, potential legal friction or cease-and-desist.
+
+**Why it happens:**
+Portfolio authors assume public information (company website, tech blog, press release) means case study disclosure is allowed. They don't obtain explicit written client consent for detailed technical writing. Small risk feels acceptable until client objects.
+
+**How to avoid:**
+- **Strategy 1 (Recommended):** Consent template—Before writing each case study, email client:
+  ```
+  Hi [Client],
+
+  I'd like to feature [Project] as a case study on my portfolio to showcase
+  the technical work we did together. May I:
+
+  - Mention your company name publicly?
+  - Describe the technical architecture?
+  - Share performance metrics or results?
+
+  Which details are OK to share? Which should stay confidential?
+
+  Thanks,
+  [Your name]
+  ```
+  Get written approval (email reply acceptable). Document in project.
+
+- **Strategy 2:** Anonymize when needed—If client declines full disclosure, write case study with anonymized company name:
+  - ❌ "Rebuilt TechCo's Rails API"
+  - ✓ "Rebuilt legacy API for Series A SaaS platform serving 50k users"
+
+  Disclose technical challenge without naming client.
+
+- **Strategy 3:** Check employment contracts—Review past employer agreements and NDAs:
+  - Some contracts prohibit disclosing client names or technical details without consent
+  - Some allow publicly available information only
+  - Document findings per client
+
+- **Strategy 4:** Document consent—In project docs, create a case study consent checklist:
+  ```markdown
+  Case Study: [Project Name]
+  Client: [Company]
+  Consent obtained: [Date/Email]
+  Approved disclosures: [Company name, architecture, metrics, stack]
+  Off-limits: [Anything client marked confidential]
+  ```
+
+**Warning signs:**
+- Former client contacts you requesting case study removal
+- Legal inquiry from client
+- Client publicly criticizes case study for oversharing
+
+**Phase to address:**
+**Phase 2 (Case Study Writing):** Before publishing any case study mentioning a real client, obtain and document written consent. Make consent a gate for publication—no case study ships without it.
 
 ---
 
@@ -180,14 +566,13 @@ Phase 0 (Setup) → Phase 1 (Core Shop) — decide architecture early. Smaller =
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| **Storing prices in cart instead of fetching fresh** | Faster checkout, no server calls | Charges wrong price if product changes, oversells | Never — prices must be real-time |
-| **No redirect mapping from old URLs** | Saves time, "we'll add redirects later" | 40-60% organic traffic loss, weeks to recover | Never — do redirects before launch |
-| **Disable DatoCMS schema versioning** | Editors can freely modify schema | Type errors, silent bugs, schema drift | Never — enforce schema reviews |
-| **Use ISR instead of static build for small catalog** | Handles future growth, "more flexible" | Complexity, revalidation bugs, stale data risk | Only if catalog is 100+ products and changes hourly |
-| **Supabase for checkout/orders** | "Future-proof", team familiar with it | Overkill for meetup-only fulfillment, unnecessary ops burden | When actual online payments or user accounts needed (v2+) |
-| **localStorage without versioning/cleanup** | Cart works immediately | Storage bloat, migration headaches, stale data | Only acceptable if you commit to versioning strategy now |
-| **Hand-written TypeScript types for DatoCMS queries** | No generation tool setup | Types drift from schema, bugs in production | Never — use gql.tada or similar |
-| **No 404 error page** | "We'll add it later" | Search engines confused, poor UX, no error tracking | Never — design 404 page early |
+| Single `[slug]` route for products + case studies | Fast to implement, one route handler | Route conflicts, hard to debug, SEO mixed signals | Never—spend 30 min on route restructure, prevents hours of debugging |
+| No contact form spam protection | Fewer dependencies, simpler code | Inbox polluted, real inquiries missed | Never—Akismet free tier trivial to add |
+| Portfolio responsive design copies shop without testing | Faster launch | Portfolio broken on mobile, credibility damaged | Never—mobile testing 1-2 hours, returns professional appearance |
+| Case studies published without client consent | Faster to ship | Legal friction, client relations damaged, forced removal | Never—send email, document consent, costs 5 minutes |
+| Keeping both shop nav and portfolio nav visible on all pages | Simpler code, no conditional rendering | Navigation confusion, site purpose unclear | Only during transition period (max 1 sprint) |
+| Not updating `robots.txt` or `canonical` tags before launch | Simpler deployment | SEO confusion, shop traffic at risk | Never—add canonical/robots immediately before portfolio launch |
+| Case studies written with marketing language instead of engineering tone | Faster to write | Tokyo recruiters lose confidence, applications drop | Never—follow template, have Tokyo tech person review first 2-3 |
 
 ---
 
@@ -195,12 +580,13 @@ Phase 0 (Setup) → Phase 1 (Core Shop) — decide architecture early. Smaller =
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| **DatoCMS → Next.js** | Schema changes in UI without syncing `schema.graphql` or TypeScript types | Run `pnpm datocms:generate` after every schema change. Test queries in GraphQL playground. Use gql.tada for type safety. |
-| **Product data (Notion/spreadsheet → DatoCMS)** | Assume DatoCMS migration scripts handle content. Only handle schema changes. | Write custom script to bulk-import products from spreadsheet. DatoCMS scripts only handle schema, not data. Migrate once, carefully. |
-| **Fetch requests → DatoCMS API** | Enable upstream caching (`useCdn: true`). Double-caching with App Router fetch caching hides changes. | Use `useCdn: false` in DatoCMS client. Use `cache: "no-store"` or `revalidate: 0` in fetch. |
-| **Cart state → localStorage/IndexedDB** | Assume state syncs automatically across tabs. Store sensitive data (prices, user ID). | Use explicit sync mechanism. Only store IDs and quantities. Fetch fresh prices on checkout. Use Safari Private window testing. |
-| **Google Analytics / GTM** | Migrate tracking without updating event names. Old reports break. | Re-implement tracking in new app with NEW event names. Archive old reports. Don't reuse old event names. Version your event schema. |
-| **Vercel deployment** | Assume production caching works like dev server. Test only locally. | Test in preview deployment. Check response headers: `Cache-Control`, `x-vercel-cache`. Verify ISR revalidation works post-deploy. |
+| **Zustand cart + portfolio pages** | Cart persists and displays on portfolio pages; "Add to Cart" shows in portfolio nav | Scope cart initialization to shop routes only. Use conditional: `if (isShopRoute) { initCart() }`. Hide cart UI on portfolio pages. |
+| **DatoCMS (shop data) + hardcoded case studies** | Portfolio accidentally calls DatoCMS queries, increasing latency; case study data fetches graphql | Separate data sources by design. Case studies: local JSON files or hardcoded data. Never call DatoCMS API from portfolio pages. Different fetch patterns = different optimization. |
+| **Supabase orders + portfolio contact form** | Contact form accidentally writes to `orders` table; contact info and order data mixed | Create separate `contacts` table in Supabase with different schema. Establish naming: `orders` for shop, `contacts` for portfolio. Document in schema comments. |
+| **Resend email templates** | Contact form sends order-confirmation email template; recruiting inquiry gets zine receipt | Create distinct email templates: `contact-inquiry-template` vs. `order-confirmation-template`. Use environment variable to select template: `CONTACT_EMAIL_TEMPLATE` vs. `ORDER_EMAIL_TEMPLATE`. |
+| **Next.js Server Actions overlap** | Shop checkout and contact form both use `/api/form`, conflicts | Separate Server Actions by feature: `submitCheckout` for shop, `submitContact` for portfolio. Different functions, different error handling. |
+| **Tailwind config shared between shop + portfolio** | Both systems try to override `tailwind.config.js` (colors, spacing, fonts); last edit wins | Lock `tailwind.config.js` to core defaults. Portfolio overrides use CSS Modules or `important` flag, not config changes. Prevents config conflicts. |
+| **Font loading across zones** | Shop has Inter font scoped; portfolio needs different font; both load on same page, bloat | Load portfolio font conditionally: only on portfolio routes. Check current implementation—Inter already scoped to shop. Keep it. Use system fonts for portfolio, or load different font on portfolio routes only. |
 
 ---
 
@@ -208,23 +594,23 @@ Phase 0 (Setup) → Phase 1 (Core Shop) — decide architecture early. Smaller =
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| **Image optimization missing** | Product images load slowly, layout shifts, no lazy loading | Use Next.js `<Image>` component for all product photos. Set `placeholder="blur"` for LCP. | Immediately visible; impacts LCP (Core Web Vitals). Even 20 products matter if images are unoptimized. |
-| **Cart re-renders on every keystroke** | Typing in quantity field is laggy. Cart icon updates slowly. | Memoize cart components. Debounce quantity changes. Use Zustand instead of context for cart state. | Noticeable at ~3+ items. Small catalog means fewer components, but bad patterns still hurt UX. |
-| **Fetching full product list on every page load** | Each page load requires HTTP request. No caching. | Build static catalog at deploy time. Use `generateStaticParams` if using dynamic routes. Cache product list server-side for 24h if dynamic. | Becomes obvious at 10+ daily users. Vercel logs show repeated requests. |
-| **ISR revalidation too aggressive** | Vercel shows "Function execution timeout" or "Build requests exceed tier". Cost spikes. | For <20 products: use SSG (no revalidation needed). If ISR: set `revalidate: 3600` (1 hour minimum). Profile revalidation cost. | Happens silently. Vercel bill spikes. Performance dashboard shows > rebuild time than code change time. |
-| **No image CDN for DatoCMS images** | DatoCMS serves images directly. Every product page loads all images. No resizing. | Use DatoCMS image API: `?w=400&h=300&fit=crop`. Or use Next.js `<Image>` component pointing to DatoCMS CDN URL. | Page load time 3-5 seconds for 3-4 product pages. Mobile users most impacted. |
+| **Oversized case study images** | Portfolio pages slow on mobile, Lighthouse score <80 | Optimize images: convert to `.webp`, lazy load with `loading="lazy"`, provide responsive sizes (`srcset`). Test on 4G connection. | At >100KB image per case study on mobile; 4G load >5s |
+| **Portfolio nav route calculation on every page load** | Mobile nav flicker, route check runs on all 100+ shop pages | Memoize nav state. Use CSS `display: none` for conditional visibility, not JavaScript. Avoid `usePathname()` on every render. | At 10K+ shop page loads; users notice flicker on older phones |
+| **DatoCMS revalidation triggers full cache refresh** | Portfolio update causes shop cache thrash; shop revalidates unnecessarily | Use `tags` in revalidation: tag shop with `"shop"`, portfolio with `"portfolio"`. Revalidate selectively with `revalidateTag("portfolio")`. | At 100+ concurrent shop visitors post-portfolio-update; latency spike |
+| **Unoptimized code block syntax highlighting** | Client-side highlighting runs on every case study, browser hangs on mobile | Pre-render syntax highlighting at build time using Prism or Shiki. Use `<pre><code>` with pre-rendered CSS classes, not runtime highlighters. | At 5+ code blocks per case study on mobile; <50ms first paint |
+| **Portfolio case study images not lazy loaded** | LCP (Largest Contentful Paint) high; portfolio page feels slow | Add `loading="lazy"` to all case study images. Prioritize hero image (LCP): use `loading="eager"`. Test with Lighthouse. | At 5+ images per case study; LCP >2.5s |
 
 ---
 
 ## Security Mistakes
 
 | Mistake | Risk | Prevention |
-|---------|------|------------|
-| **Storing user info or payment data in localStorage** | If browser is compromised, attacker gets customer names, emails, addresses, or worse. | Never persist PII to client storage. Collect contact info only at checkout, submit immediately to backend. Use secure HTTPOnly cookies if auth needed. |
-| **Exposing DatoCMS API key in client-side code** | Attacker can read/modify all content. Entire product catalog becomes editable. | DatoCMS keys belong only in `env.local` (server-side). Use GraphQL Proxy or API route wrapper to hide keys. Rotate keys after rebuild. |
-| **No validation on cart quantity/prices** | Attacker sends cart with 0 price or negative quantity. Fulfillment gets invalid order. | Validate all cart data server-side. Re-fetch prices from DatoCMS on checkout, not from client. Check quantity > 0. |
-| **Order form accepts any data without sanitization** | XSS attacks via order form. Malicious script stored in order notes. | Sanitize all form inputs. Use libraries like `xss` or `DOMPurify` if storing user content. Don't render order data without escaping. Better: don't accept free-form text, use select/radio for options. |
-| **No CSRF protection on checkout form** | Attacker crafts fake form, redirects customer to submit order with wrong contact info. | Add CSRF tokens to form. Next.js Server Actions handle CSRF automatically. If using Route Handlers, check `Content-Type` header, validate origin. |
+|---------|------|-----------|
+| **Contact form accepts raw input, no sanitization** | XSS injection via contact form; malicious script sent in email | Sanitize all inputs server-side: remove HTML tags, validate format. Use `sanitize-html` npm package or equivalent. Log all inputs. |
+| **Email address harvested from `/contact` page** | Email added to spam lists, inbox polluted with unwanted mail | Don't display raw email on `/contact` page. Use contact form as only channel. If email must display, obfuscate with image or encoded format. |
+| **Case study reveals sensitive infrastructure details** | Competitor gains deployment insights; security misconfiguration exposed | Scrub case studies for: database names, server IPs, API endpoints, internal tool names, employee names. Peer review before publish. |
+| **Resume page discloses too much personal info** | Identity theft risk, stalking, phishing | Resume should list: skills, experience, employment dates. Exclude: home address, phone number, birth date, visa status, family info. Keep minimal. |
+| **Portfolio subdomain/route exposes shop data** | Shop data (orders, customer emails) accessible via portfolio API calls | Test CORS and authorization headers. Ensure portfolio routes cannot call shop APIs. Use separate API keys if possible. Test with curl to verify isolation. |
 
 ---
 
@@ -232,80 +618,79 @@ Phase 0 (Setup) → Phase 1 (Core Shop) — decide architecture early. Smaller =
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| **Cart counter not updating when item added** | User adds item, sees no feedback. Thinks add didn't work. Adds again. Double order. | Update cart counter immediately (optimistic UI). Show toast/notification "Added to cart". Cart icon badge increments visibly. |
-| **Broken product image fallback** | Product page shows broken image. No alt text. Accessibility broken. | Provide `alt` text for all images. Fallback placeholder for failed image loads. Test images are accessible via keyboard. |
-| **No inventory status displayed** | Product says "available" but checkout form says "out of stock". Trust breaks. | Show "In Stock" / "Out of Stock" / "Pre-order" prominently. Update in real-time if inventory is DatoCMS field. Disable "Add to Cart" if out of stock. |
-| **Confusing product filtering with few products** | With 15 products, filtering by category shows empty results because not all products tagged. | With <50 products, consider no filtering. Or simple category tabs. Ensure all products tagged in DatoCMS. Show "No products in this category" clearly. |
-| **Form validation missing on order checkout** | User submits incomplete form (no email). Order lost. Email bounces. | Validate form client-side (required fields) and server-side (real email, valid phone). Show error messages inline. Re-populate form if validation fails. |
-| **Mobile layout breaks cart or checkout** | Mobile user can't add quantity, sees payment form off-screen. Cart unusable on phone. | Mobile-first design. Test checkout form on iPhone SE and Android. Responsive cart layout (vertical stacking). Tap targets ≥44px. |
-| **No loading state during checkout submission** | User taps submit, no feedback. Taps again. Form submits twice. | Disable submit button while loading. Show spinner. Display "Processing..." message. Prevent double-submission. |
+| **Case study has no CTA or unclear next step** | Recruiter reads case study, wants to contact, but unsure how | End every case study with: "Interested in working together? Use the contact form or email [email@domain]." Make path obvious. |
+| **Portfolio pages have no breadcrumb or context** | Reader jumps case study → resume → engineering, loses location sense | Add breadcrumb: "Home > Case Studies > [Case Study Name]." Helps navigation and SEO. Use consistent breadcrumb style. |
+| **Resume page is overwhelming text wall** | Recruiter skims resume, misses key skills due to poor formatting | Structure with clear sections (Skills, Experience, Education). Use typography hierarchy (sizes, weights). Consider 1-2 sentence summary at top. |
+| **Back button from case study goes to browser history, not case studies list** | Reader clicks back, returns to previous site (maybe shop), loses context | Use Next.js `<Link>` with explicit path: `<Link href="/case-studies">Back to Cases</Link>`. Avoid browser back button for navigation. |
+| **Portfolio and shop share same visual language** | Recruiter doesn't realize they left portfolio and are now seeing e-commerce | Use distinct visual language: portfolio is minimal/monochrome, shop is colorful zine-like. Make zone transition visually obvious. |
+| **Nav confuses users with mixed portfolio + shop links** | Mobile user clicks through nav, encounters mix of "Resume" and "Products" | Separate nav entirely. If portfolio route, show portfolio nav only. If shop route, show shop nav. Test on mobile—no mixing. |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Product pages:** Include OG meta tags, product image, price, category, availability. Test with Twitter/Discord preview.
-- [ ] **Cart:** Works on mobile, persists after hard-refresh, empty state clear, total price visible, item removal works.
-- [ ] **Checkout form:** All fields labeled, validation messages clear, submit button obvious, success/error message shown.
-- [ ] **SEO:** Each product page has unique title (not generic), meta description (under 160 chars), schema.org/Product structured data.
-- [ ] **404 page:** Custom 404 designed, suggests alternatives or back button. Not error stack trace.
-- [ ] **Redirects:** Old product URLs (if migrating) redirect with 301 to new URLs. Test with `curl -I`.
-- [ ] **Images:** All product images optimized, lazy-loaded, alt text present, no layout shift on load.
-- [ ] **DatoCMS sync:** Schema changes documented, types generated, no stale queries in codebase.
-- [ ] **Cart edge cases:** Add same product twice (quantity increments?). Remove last item. Navigate away and return. Hardcoded prices vs. real prices matched.
-- [ ] **Analytics:** GA / GTM events firing correctly (product page view, add to cart, checkout). Not firing duplicate events.
-- [ ] **Dark mode (if applicable):** Test all pages in dark mode. Images still visible. Text contrast OK. No flicker on page load.
-- [ ] **Lighthouse:** Aim for green across FCP, LCP, CLS on mobile. Core Web Vitals passing.
+- [ ] **Route conflicts tested:** Created test matrix with 20+ sample case study slugs and 20+ product slugs. Verified no collisions. Both route types tested and accessible.
+- [ ] **Navigation tested on all pages:** Verified portfolio pages don't show cart icon, shop pages don't show resume link. Tested on 5+ pages of each type. Conditional nav logic confirmed working.
+- [ ] **CSS conflicts resolved:** Ran Tailwind utilities through checker. Verified no class name collision. Tested portfolio pages load without shop CSS affecting them. Tested shop pages load without portfolio CSS affecting them.
+- [ ] **SEO signals clear:** Added `canonical` tags to shop pages (point to themselves). Updated `robots.txt`. Set monitoring for shop rankings. Baseline documented before launch.
+- [ ] **Case study tone reviewed:** All case studies reviewed for: (1) measurable metrics present, (2) zero emotional language, (3) business context clear, (4) reflection on what didn't work included. Obtained client consent documented.
+- [ ] **Contact form protected:** Akismet integrated, honeypot field functional, rate-limiting at 5/day/IP. Tested with spam probe. Verified rate-limiting blocks repeated submissions.
+- [ ] **Mobile tested thoroughly:** Portfolio pages tested on iPhone 12 (390px) and iPad (768px). Code blocks readable without horizontal scroll. Images clear. Nav functional. Lighthouse score ≥80.
+- [ ] **Client consent documented:** For each case study mentioning real clients, documented consent in project (email approval acceptable). Checklist showing which details approved for each case study.
+- [ ] **Data sources separated:** Verified portfolio never calls DatoCMS queries. Cart Zustand state doesn't initialize on portfolio routes. Contact form uses separate Supabase table. Different fetch patterns confirmed.
+- [ ] **Monitoring plan established:** Google Search Console shop rankings baselined. Alert configured for >25% CTR drop on shop keywords. Post-launch monitoring plan documented. First 90 days tracked.
 
 ---
 
 ## Recovery Strategies
 
-If pitfalls occur despite prevention:
-
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| **Data staleness discovered post-launch** | MEDIUM (1-2 days) | 1. Add `cache: "no-store"` to affected fetch calls. 2. Deploy hotfix. 3. Vercel purges cache automatically. 4. Verify fresh data appears. |
-| **Cart lost on refresh (no persistence implemented)** | HIGH (2-3 days) | 1. Add localStorage persistence to cart state. 2. Implement hydration carefully to avoid mismatch errors. 3. Migrate users with saved carts (JSON in localStorage). 4. Communicate to users "carts now save". |
-| **SEO traffic dropped (URL structure changed, bad redirects)** | HIGH (2-4 weeks) | 1. Audit old → new URL mapping. 2. Add 301 redirects for any missing. 3. Submit updated sitemap to GSC. 4. Wait for re-crawl (days to weeks). 5. Monitor rankings in GSC. |
-| **DatoCMS schema broken queries in production** | MEDIUM (1 day) | 1. Revert DatoCMS schema change. 2. Or fix queries immediately, redeploy. 3. Regenerate `schema.graphql`. 4. Test in staging before prod. 5. Implement schema review process. |
-| **Cart shows wrong price (stored price instead of real-time)** | HIGH (1-2 days + manual support) | 1. Fetch fresh prices server-side on checkout, don't use cart prices. 2. Refund/re-charge customers affected. 3. Audit checkout logic. 4. Test with product price changes mid-checkout. |
-| **Vercel function timeout (ISR revalidation too aggressive)** | LOW (hours) | 1. Increase `revalidate` time (e.g., 3600 instead of 60). 2. Batch revalidations. 3. Use on-demand revalidation instead of time-based. 4. Monitor function execution time. |
-| **localStorage data corruption (outdated format)** | MEDIUM (1-2 days) | 1. Add version number to localStorage data. 2. Implement migration from old → new format. 3. Clear old data if no migration possible. 4. Release as hotfix. 5. Users re-add items to cart (acceptable for small catalogs). |
+| **Route collision discovered post-launch** | HIGH | (1) Roll back portfolio pages. (2) Rename case study routes (e.g., `/case-studies/[slug]` instead of `[slug]`). (3) Verify collisions resolved via test matrix. (4) Relaunch. ~4 hours. |
+| **Case studies appear unprofessional to Tokyo recruiters** | MEDIUM | (1) Audit case study tone against template. (2) Rewrite vague sections with metrics. (3) Remove emotional language. (4) Have Tokyo tech person review. (5) Re-publish. ~2-3 hours per case study. |
+| **SEO rankings dropped >25% on shop** | HIGH | (1) Analyze GSC for affected keywords. (2) Check for redirect/noindex errors. (3) Verify canonical tags are correct. (4) Refresh sitemaps. (5) Request re-crawl in GSC. (6) Monitor for 4-6 weeks for recovery. Could take weeks. |
+| **Contact form flooded with spam** | LOW | (1) Enable/increase Akismet spam threshold if not already. (2) Add rate-limiting if missing. (3) Clear spam submissions from inbox. (4) Review logs for patterns. ~1 hour. |
+| **CSS conflicts broke portfolio visual appearance** | LOW | (1) Identify conflicting utility in DevTools. (2) Add `important` flag or CSS Module override. (3) Test on multiple pages. (4) Verify Lighthouse score >80. ~30 minutes. |
+| **Navigation confusion reported by users** | MEDIUM | (1) Add visual distinction: portfolio minimal/monochrome, shop colorful. (2) Hide cart on portfolio pages. (3) Add breadcrumbs or location indicator. (4) Test with stakeholder for clarity. ~2-3 hours. |
 
 ---
 
-## Phase-Specific Warnings
+## Pitfall-to-Phase Mapping
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|----------------|------------|
-| **Phase 0: Setup** | Over-engineering architecture for <20 products | Decide early: SSG for products, localStorage for cart. Skip Supabase. |
-| **Phase 1: Core Shop** | Fetch caching misunderstanding. URL slugs not finalized. DatoCMS schema not versioned. | Establish fetch policy NOW: document every API call. Lock product URLs. Set up schema.graphql in Git. |
-| **Phase 1: Core Shop** | Old product URLs not redirected (if migrating) | Create URL mapping spreadsheet. Implement redirects in `next.config.js`. Test with `curl -I`. |
-| **Phase 2: Cart System** | Cart state lost on page refresh. Hydration mismatches. | Implement localStorage persistence. Test with hard-refresh. Verify no console hydration errors. |
-| **Phase 3: Checkout** | Route Handler caching hides stale product data. Prices wrong. | Set `revalidate: 0` on checkout-related Route Handlers. Fetch fresh prices. Test in production preview. |
-| **Phase 3: Checkout** | Order form accepts any input without validation | Sanitize inputs. Validate server-side. Limit free-form text fields. Use select dropdowns. |
-| **Phase 3: Pre-Launch** | SEO metadata missing or broken. Redirects incomplete. | Audit every product page: title, meta description, OG tags, schema.org. Test redirects. Verify structured data with Google's tool. |
-| **Phase 3: Pre-Launch** | Image optimization overlooked | Ensure all product images use Next.js `<Image>`. Test Lighthouse mobile score. Aim for green LCP. |
-| **Post-Launch Monitoring** | Undetected caching bugs or data staleness | Monitor Vercel logs for cache misses. Set up alerts for function errors. Monthly audit of product prices vs. DatoCMS. |
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| Route/slug conflicts | Phase 1 (Portfolio Foundation) | Test matrix: 20+ case study + product slugs, confirm no collisions. Search console shows correct pages indexed, no consolidation. |
+| Navigation confusion | Phase 1 (Navigation Restructure) | Recruiter walkthrough: "Is it clear this is a professional site, not a shop?" Confirm yes. Every portfolio page: no cart icon. Every shop page: no resume link. |
+| CSS style conflicts | Phase 2 (Portfolio Styling) | Lighthouse score on portfolio pages ≥90. No visual regression on shop. DevTools shows no conflicting utilities. Manual visual test on 5+ pages each type. |
+| SEO ranking turbulence | Phase 1 (Portfolio Foundation) | Google Search Console shop rankings stable ±5 positions for 90 days post-launch. No "Excluded" shop URLs from index. Shop CTR stable (not >25% drop). |
+| Tokyo tone misalignment | Phase 2 (Case Study Writing) | All case studies: (1) metrics present, (2) zero emotional language, (3) technical depth sufficient for Rails tech lead. Tokyo tech community feedback positive on first 3 case studies. |
+| Contact spam | Phase 3 (Contact & Lead Management) | Akismet enabled, honeypot field functional, rate-limiting 5/day/IP. Test spam submission rejected. Monitor: <10% spam rate after 30 days. |
+| Case study vagueness | Phase 2 (Case Study Writing) | Template compliance: all case studies have [Context], [Challenge], [Approach], [Results], [Reflection]. Zero "improved/better/significant" claims without numbers. |
+| Mobile responsiveness mismatch | Phase 2 (Portfolio Styling) + Phase 3 (Case Studies) | Portfolio tested iPhone 12 (390px), iPad (768px). Code readable, images clear, nav functional. No horizontal scroll. Lighthouse mobile ≥80. |
+| Client consent not obtained | Phase 2 (Case Study Writing) | Signed consent (email acceptable) for each case study mentioning real client. Checklist: which details approved, which off-limits. Zero case studies shipped without documented consent. |
 
 ---
 
 ## Sources
 
-- [Vercel: Common mistakes with the Next.js App Router](https://vercel.com/blog/common-mistakes-with-the-next-js-app-router-and-how-to-fix-them)
-- [App Router Pitfalls in Next.js](https://imidef.com/en/2026-02-11-app-router-pitfalls)
-- [State Management in React 2026: Best Practices](https://www.c-sharpcorner.com/article/state-management-in-react-2026-best-practices-tools-real-world-patterns/)
-- [Next.js SEO Migration Guide 2026](https://next-cart.com/blog/seo-ecommerce-migration-guide-in-the-ai-era-2026/)
-- [SEO Migration Checklist 2026](https://www.shopify.com/enterprise/blog/replatforming-seo-strategies)
-- [E-commerce Cart Persistence: localStorage vs IndexedDB](https://rxdb.info/articles/localstorage-indexeddb-cookies-opfs-sqlite-wasm.html)
-- [DatoCMS and Next.js Integration Documentation](https://www.datocms.com/docs/next-js)
-- [Small E-commerce Shop Over-engineering Pitfalls](https://www.bigcommerce.com/articles/ecommerce-website-development/ecommerce-architecture/)
-- [ISR Pitfalls in Next.js 15](https://github.com/vercel/next.js/issues/72456)
-- [Next.js App Router Caching Guide](https://nextjs.org/learn/seo/url-structure)
-- [Cart State Management Mistakes (Adobe Commerce PWA Studio)](https://developer.adobe.com/commerce/pwa-studio/guides/general-concepts/state-management/)
+- [Next.js Dynamic Routes Documentation](https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes)
+- [Next.js Route Groups & Organization](https://nextjs.org/docs/app/building-your-application/routing/route-groups)
+- [Catch-all Routes and Routing Conflicts in Next.js App Router](https://github.com/vercel/next.js/discussions/80747)
+- [SEO Site Migration Checklist 2026](https://www.shopify.com/enterprise/blog/replatforming-seo-strategies)
+- [The Silent SEO Killer: Rebrand Migration Guide](https://sitebulb.com/resources/guides/the-silent-seo-killer-rebrand-migration/)
+- [7 Steps to Rebrand Without Losing SEO Value](https://www.bluefrogdm.com/blog/rebrand-maintain-seo-value)
+- [Tailwind CSS Responsive Design Guide](https://tailwindcss.com/docs/responsive-design)
+- [Mastering Tailwind CSS: Overcome Styling Conflicts](https://dev.to/sheraz4194/mastering-tailwind-css-overcome-styling-conflicts-with-tailwind-merge-and-clsx-1dol)
+- [How to Stop Contact Form Spam in 2026](https://webdezign.co.uk/how-to-stop-contact-form-spam-in-2026-7-proven-methods/)
+- [Contact Form Spam Prevention: 7-Step Guide](https://orbitforms.ai/blog/contact-form-spam-prevention/)
+- [How to Write a Winning B2B Tech Case Study in 2026](https://www.a88lab.com/blog/how-to-write-a-winning-b2b-saas-case-study)
+- [Case Study Mistakes: How to Avoid Common Pitfalls](https://loyaltysurf.io/blog/customer-case-study-mistakes)
+- [Japanese Business Culture: Complete Guide](https://culturalatlas.sbs.com.au/japanese-culture/japanese-culture-business-culture)
+- [Japanese Business Etiquette and Formality](https://shinkamanagement.com/japanese-business-etiquette-guide/)
+- [Japan's Tech Job Market 2025-2026](https://blog.lewagon.com/career/japan-tech-job-market-2025-2026/)
+- [How to Recruit Top IT Engineers in Japan](https://www.isfnet.com/how-to-recruit-engineer-in-jp.html)
 
 ---
 
-*Pitfalls research for: Next.js 15 e-commerce shop rebuild (DatoCMS + small catalog + meetup fulfillment)*
-*Researched: 2026-02-20*
+*Pitfalls research for: Adding portfolio to existing Next.js 15 e-commerce site (Rails-focused, Tokyo market)*
+*Researched: 2026-03-04*

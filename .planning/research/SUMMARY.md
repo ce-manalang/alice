@@ -1,19 +1,19 @@
-# Project Research Summary
+# Portfolio v2.0 Research Summary
 
-**Project:** Centimentalcomics Indie E-Commerce Shop Rebuild
-**Domain:** Small e-commerce shop (educational zines, apparel, stationery, pins) with meetup-based fulfillment
-**Researched:** 2026-02-20
+**Project:** Professional Rails Engineer Portfolio (Tokyo Market Focus)
+**Domain:** Portfolio + E-Commerce Integration (Next.js 15)
+**Researched:** 2026-03-04
 **Confidence:** HIGH
 
 ---
 
 ## Executive Summary
 
-Centimentalcomics is rebuilding its shop as a modern Next.js 15 headless e-commerce platform optimized for a small product catalog (<20 items) with no payment processing and meetup-based order fulfillment. This is fundamentally different from traditional e-commerce: the shop's job is to showcase educational products, capture customer intent (name, email, items), and facilitate in-person meetings—not to process payments or manage inventory. The recommended stack prioritizes developer experience and performance over enterprise features: Next.js 15 App Router with Server Components for static product pages, DatoCMS as the product catalog CMS, Zustand for lightweight cart state, Server Actions for order form handling, and Resend for transactional emails.
+The v2.0 portfolio milestone adds a professional portfolio section to an existing Next.js 15 e-commerce shop with minimal stack additions and moderate architectural complexity. **The core challenge is integration, not implementation.** The recommended approach is to use Next.js route groups to cleanly separate portfolio and shop as distinct hierarchies, preventing route/slug conflicts while maintaining a single global layout and CSS bundle.
 
-The critical success factor is keeping architecture simple. Over-engineering is the primary risk: teams often implement patterns designed for 10k+ product catalogs (Supabase, Redux, ISR revalidation logic, payment gateways) which adds 4+ weeks of unnecessary overhead. This project benefits from static site generation (build once per deployment, cache forever), simple localStorage cart persistence, and no backend inventory tracking. Following this simplified approach, the shop can launch with core functionality in 2-3 phases and be production-ready within reasonable timelines.
+All core technologies already exist in the shop (Next.js 15, TypeScript, Tailwind CSS, Resend). Portfolio additions require only 2-3 form libraries (react-hook-form, zod—already in the shop) and optional diagram support (mermaid). No new data sources needed; portfolio content is hardcoded in TypeScript. The highest risks are **route conflicts between product and case study slugs**, **navigation confusion** (hiring vs. shopping context), **SEO turbulence** from shifting site primary purpose, and **tone misalignment** with Japanese hiring culture that demands precise, metrics-driven case studies.
 
-Key risks center on data management: fetch caching misconceptions can result in stale product prices being displayed; cart state loss between page navigations causes trust erosion; SEO slug changes during rebuild can cause 40-60% organic traffic loss if redirects aren't implemented carefully. These are all preventable with explicit policies established upfront and tested in production-like environments before launch.
+Success depends on: (1) explicit routing architecture established in Phase 1, (2) conditional navigation showing portfolio/shop UI separately, (3) careful SEO migration planning before launch, and (4) case studies written with metrics and technical depth (no vague claims).
 
 ---
 
@@ -21,271 +21,246 @@ Key risks center on data management: fetch caching misconceptions can result in 
 
 ### Recommended Stack
 
-**Next.js 15 App Router with Server Components** is the foundation. React 19 with TypeScript ensures type safety across forms, API handling, and component boundaries. Tailwind CSS 4 provides small bundle size and matches the zine aesthetic. DatoCMS (already integrated) serves as the single source of truth for product catalog, with GraphQL API for efficient querying. Product pages use static generation with `generateStaticParams()` + on-demand revalidation via DatoCMS webhooks—not Partial Prerendering (PPR), which remains experimental and is not recommended for production.
+The portfolio requires **minimal stack additions** to the existing Next.js 15 + TypeScript + Tailwind + Resend foundation. All required capabilities exist.
 
-**Core technologies:**
-- **Next.js 15 + React 19:** App Router with Server Components, ISR support, built-in image optimization
-- **TypeScript 5:** Type safety for form validation, API routes, and component props
-- **Tailwind CSS 4:** Small bundle, matches playful zine brand aesthetic, JIT compilation
-- **DatoCMS GraphQL API:** Headless CMS with webhook support for real-time cache invalidation
-- **Server Actions + Zod:** Form handling without API routes; Zod for schema validation with 14x performance improvements in v4
-- **Zustand 4:** Client-side cart state (1KB footprint), localStorage persistence, no boilerplate
-- **React Hook Form 7.7:** Minimal re-renders, integrates with Zod, uncontrolled component pattern
-- **ShadCN UI + Radix UI:** Pre-built accessible components; Field component handles form labels/errors
-- **Resend + React Email:** Transactional emails (order confirmations) with free tier sufficient for small shop
-- **Vercel:** Hosting with first-class Next.js support, edge caching, automatic ISR handling
+**Core dependencies (already in shop, reuse):**
+- **React Hook Form 7.71.x** — Contact form state management. Lightweight (8.6 KB gzipped), same library used in checkout, pattern proven.
+- **Zod 3.x** — Schema validation for contact form. Already in shop, single validation schema reusable across client/server.
+- **Next.js 15 App Router** — Portfolio pages use Server Components, static generation via `generateStaticParams`, Server Actions for contact form submission.
 
-**Critical non-recommendations:**
-- Avoid Redux (overkill for cart), Prisma ORM (unnecessary; DatoCMS + simple storage), Pages Router (legacy), Partial Prerendering (experimental), Stripe (out of scope for meetup model), or Serverless databases (DatoCMS is single source of truth).
+**Built-in capabilities (no packages needed):**
+- `@next/mdx` — For optional case study markdown if needed (but TypeScript objects recommended instead).
+- Next.js metadata API — JSON-LD schemas, dynamic sitemap generation, OpenGraph tags.
+- Resend v0.x (existing) — Contact form email delivery, same API key.
 
----
+**Optional additions (add only if needed):**
+- **Mermaid 11.12.x** — Text-based architecture diagrams for case studies (100 KB gzipped, loaded only on relevant pages).
+- **@fontsource-variable/noto-sans-jp 5.x** — Self-hosted variable font for Japanese text rendering (200 KB, CSS-only, no JS overhead).
+
+**Portfolio data storage:** Hardcoded TypeScript objects in `lib/portfolio-data.ts` (no CMS needed—content is stable). Type-safe, version-controlled, no external dependencies.
+
+**Total homepage bundle impact:** ~0 KB additional JavaScript. Portfolio pages add ~140 KB gzipped across form and diagram libraries, spread across pages (not homepage).
 
 ### Expected Features
 
-**Must-have for launch (P1 — Table Stakes):**
-All table-stake features are required for a functional shop; missing any = product feels incomplete. Implement cart persistence and mobile responsiveness first; they enable everything else.
+**Must have (table stakes for credible Rails portfolio targeting Tokyo market):**
+- Professional homepage with clear Rails positioning and 30-second clarity (hiring managers spend 30 seconds evaluating)
+- 2-3 production case studies with context, challenges, architecture, and measurable outcomes
+- Engineering/Stack page organized by layer (backend: Rails, PostgreSQL; frontend: React; DevOps: Docker, etc.)
+- Single-page resume (structured, concise, no PDF)
+- Contact page with email visible + contact form (low friction for recruiter outreach)
+- Clear navigation (Home → Engineering → Case Studies → Resume → Contact)
+- Social credibility signals (GitHub link, LinkedIn link, professional tone)
 
-| Feature | Why Critical |
-|---------|-------------|
-| **Product Catalog with Images** | Users must see products to buy them; multi-angle images crucial for zines/apparel |
-| **Category Browsing** | Users need to filter by product type (Zines, Apparel, Stationery, Pins) |
-| **Product Detail Pages** | Price, description, availability, size/color variants must be visible |
-| **Shopping Cart** | Standard requirement; users expect to review items before checkout |
-| **Checkout Form** | Order submission (name, email, phone, items, meetup details) — no payment processing |
-| **Mobile Responsiveness** | 60%+ of e-commerce traffic is mobile; missing this = 85% cart abandonment on phone |
-| **Product Availability Status** | "In Stock" / "Out of Stock" / "Pre-order" badges prevent wasted checkout attempts |
-| **About Page** | Establishes mission, builds trust, aligns with educational positioning (low cost, high impact) |
-| **FAQ** | 77% of customers prefer self-service; comprehensive FAQ (fulfillment, delivery, returns) prevents support overload |
-| **Clear Navigation** | Breadcrumbs and category links enable users to understand product universe instantly |
+**Should have (competitive differentiators, implement in v2.1-2.x):**
+- Technical depth in case studies: architecture diagrams + code examples + rationale (separates competent engineers from great ones)
+- Measurable impact/outcomes: "Reduced N+1 queries by 40%" vs. "Optimized database" (Tokyo hiring emphasizes quantifiable results)
+- Code quality signals: GitHub repos with visible test suite, documentation (Rails community values testing + maintainability)
+- Brief Japanese language intro (optional, signals Tokyo market intent and respect for local hiring culture)
+- Career progression clarity (deliberate trajectory, not job-hopping; show Rails expertise depth over breadth)
+- Problem-solving narrative (show diagnosis process, options evaluated, chosen approach with tradeoff analysis)
 
-**Should-have for v1.x (P2 — Competitive Advantage):**
-These differentiators set Centimentalcomics apart from generic merch stores. Implement after core shop validates.
-
-| Feature | Value | When to Add |
-|---------|-------|------------|
-| **Playful, Whimsical Design** | Hand-drawn illustrations, micro-interactions, zine aesthetic = brand trust with creative communities | Phase 1 (low cost, high impact) |
-| **Product Learning Content** | Sample zine pages, learning objectives, CS concepts tie products to educational mission | Phase 2 (requires content curation) |
-| **Event/Meetup Promotion** | Calendar, countdown timers, location details create urgency ("order by X for Y meetup") | Phase 2 (directly supports fulfillment model) |
-| **Social Proof & Testimonials** | Classroom use cases, educator testimonials | Phase 2 (collect feedback first) |
-| **Visual Product Previews** | Lightbox galleries, zine page samples, apparel mockups | Phase 2 (high effort, wait for feedback) |
-| **Newsletter for Restocks** | Email notifications when sold-out items restock | Phase 2 (optional, low priority) |
-
-**Explicitly defer (v2+):**
-Online payment (out of scope — meetup-based model), user accounts (public shop, no auth needed), inventory tracking (manual in CMS), admin panel (products edited in DatoCMS), multi-language support (low priority unless demand emerges).
-
----
+**Defer to v3+ (scope creep, maintenance burden):**
+- Blog/writing section (stale content = abandoned site; medium/dev.to links instead)
+- Interactive project demos (distracts from assessment purpose)
+- PDF resume download (HTML single-page with print-to-PDF better, always current)
+- Animations/design flourishes (engineering portfolio ≠ design portfolio; Tokyo values simplicity)
+- Testimonials (not credible on self-hosted site; LinkedIn recommendations credible instead)
+- Full site multi-language support (English + light Japanese greeting sufficient, 200-300 words max)
 
 ### Architecture Approach
 
-**Server Components for data fetching + Client Components for interactivity.** Product pages fetch DatoCMS data on the server, pass immutable props to Client Components for "Add to Cart" buttons. This reduces JavaScript bundle, keeps secrets secure, and eliminates hydration issues. Cart state lives in React Context with localStorage persistence; order form uses Server Actions (no API routes needed) validated with Zod.
+Use **Next.js route groups** to separate portfolio `(portfolio)` and shop `(shop)` as independent layout hierarchies sharing a single `app/layout.tsx`. This prevents route collisions, allows conditional navigation per section, and maintains single global CSS bundle with prefixed utilities (`portfolio-*` vs `shop-*`).
 
-Project structure uses route groups (`(shop)`, `(marketing)`) to organize without affecting URLs, underscore-prefixed component folders (`_cart`, `_shop`) to colocate logic without creating routes, and a centralized `lib/datocms.ts` for all API calls. This prevents view/data coupling and enables easy schema changes.
+**Architecture structure:**
+- `app/layout.tsx` — Root: metadata, providers, GTM, global styles
+- `(portfolio)/layout.tsx` — Portfolio section: nav, footer, typography
+- `(shop)/layout.tsx` — Shop section: existing, unchanged
+- `(portfolio)/*` — Routes: `/`, `/engineering`, `/case-studies/[slug]`, `/resume`, `/contact`
+- `(shop)/*` — Routes: `/shop`, `/shop/[slug]`, `/shop/about` (existing, unmoved)
+- `app/lib/portfolio-data.ts` — Hardcoded case studies, resume, stack (TypeScript objects, type-safe)
+- `app/lib/contact.ts` — Server Action for contact form submission + Resend email
 
-**Major components & boundaries:**
-1. **Server Components (Product Pages, Layouts):** Fetch from DatoCMS, render HTML, pass data to Client children
-2. **Client Components (Cart, Forms):** Handle interactivity, form state, localStorage persistence
-3. **Server Actions (Order Submission):** Validate form data, save orders, send emails—all server-side with CSRF protection built-in
-4. **Cart Context (useCart hook):** Shared state across cart drawer, buttons, checkout form; persists to localStorage
-5. **DatoCMS GraphQL client:** Centralized data fetching with revalidation via webhooks
+**Key components:**
+1. PortfolioNavigation — Route-aware nav showing only on portfolio pages
+2. PortfolioFooter — Footer with GitHub/LinkedIn links, shop link relegated to footer
+3. CaseStudyCard — Featured case study preview
+4. ContactForm — Client component wrapping Server Action
+5. SkillBadge — Tech stack tag component
 
-**Data flow:**
-- Product browsing: User navigates → Server fetches products → Renders static HTML from ISR cache
-- Adding to cart: User clicks button → Client dispatches to Context → localStorage updated → UI reflects change
-- Checkout: User fills form → Submit button triggers Server Action → Validation on server → Email sent + order stored → Response returned to client → Cart cleared
-
-**Build order priorities:**
-1. Layout + Navigation (unblocks everything)
-2. Product fetch + list page (data foundation)
-3. Product detail page (validates static generation)
-4. Cart Context + Add to Cart (core feature)
-5. Order form + Server Action (checkout flow)
-6. Cart Drawer (polish)
-7. Category pages (nice-to-have)
-8. About + FAQ (marketing content)
-9. ISR webhook (final infrastructure)
-
----
+**Patterns:**
+- Static generation with `generateStaticParams()` for case study pages (known at build time)
+- Server Actions for contact form (no separate API route, progressive enhancement)
+- Hardcoded content in TypeScript (no CMS, version-controlled, type-safe)
+- CSS prefixing (`portfolio-*`, `shop-*`) to prevent Tailwind collisions
+- Route-aware conditional rendering for nav/footer (portfolio pages show portfolio nav, shop pages show shop nav)
 
 ### Critical Pitfalls
 
-**1. Silent fetch caching = stale product data displayed.** Next.js App Router caches fetch requests by default. Product pages display outdated prices, inventory status, or descriptions. DatoCMS also has upstream caching, creating double-caching that masks problems until production. Prevention: use `cache: "no-store"` for all dynamic product data; set `useCdn: false` in DatoCMS client; test in production-like deployment, not local dev. Verify with `curl -I` to check cache headers.
+**Top 7 pitfalls identified with prevention strategies:**
 
-**2. Cart state lost on page refresh.** Customer adds items, navigates away, returns with empty cart. Or cart persists with stale prices. Prevention: implement localStorage persistence upfront; use Zustand with persist middleware; test cart with hard-refresh; avoid hydration mismatches by loading storage only on client mount via `useEffect`. For small catalogs, localStorage is sufficient (don't use Supabase).
+1. **Route/Slug Conflicts Between Portfolio and Products** (CRITICAL)
+   - Problem: Without explicit separation, case study slugs collide with product slugs (both at `[slug]`).
+   - Prevention: Use route groups—products at `/shop/[slug]`, case studies at `/case-studies/[slug]`. Test matrix of case study slugs vs. existing product slugs before deployment.
 
-**3. SEO ranking loss from URL structure changes.** If product URLs change during rebuild (e.g., `/products/zine-101` → `/shop/zines/101`), Google rankings drop 40-60%. Recovery takes weeks. Prevention: map all old URLs to new slugs before launch; implement 301 redirects in `next.config.js`; preserve category pages; maintain internal linking structure; preserve supporting content (FAQ, guides); add schema.org/Product structured data.
+2. **Navigation Confusion—Hiring vs. Shopping Context** (CRITICAL)
+   - Problem: Portfolio pages display "Add to Cart" buttons or shop language, confusing hiring managers about site purpose.
+   - Prevention: Implement conditional navigation logic—portfolio routes show `PortfolioNavigation`, shop routes show `ShopNavigation`. Cart icon hidden on portfolio pages.
 
-**4. DatoCMS schema drift.** Schema is updated in DatoCMS UI without syncing TypeScript types or GraphQL queries. Queries fail silently or return `null`. Production breaks with "Cannot read property 'X' of undefined." Prevention: establish schema change protocol (pull requests, not UI-only edits); run `pnpm datocms:generate` after every schema change; use `gql.tada` for real-time query validation; store schema changes in Git; test queries in GraphQL playground after schema updates.
+3. **CSS/Tailwind Style Conflicts** (HIGH)
+   - Problem: Shop and portfolio have different design systems. Tailwind utilities collide (h2 styling differs, responsive breakpoints conflict).
+   - Prevention: Use `portfolio-*` prefix convention for all portfolio classes, maintain `shop-*` for shop. Consider CSS Modules for portfolio if conflicts persist.
 
-**5. Over-engineering for <20 products.** Teams implement patterns designed for 10k+ catalogs: microservices, complex state management (Redux), Supabase for orders, ISR instead of static builds. This adds 4+ weeks overhead. Prevention: use static site generation (build once, cache forever) for fixed product list; use simple localStorage cart; defer Supabase/payment/admin until needed; count lines of code — if cart is >200 LOC, you're over-engineering.
+4. **SEO Turbulence from Shifting Site Purpose** (HIGH)
+   - Problem: Google sees site as e-commerce shop. When portfolio becomes primary, search authority redistributes; shop rankings drop 20-40% during recomputation (4-8 weeks).
+   - Prevention: (a) Phase rollout—hide shop from crawl initially via `robots.txt`, monitor shop rankings in GSC, (b) Use explicit structured data (`@type: ProfilePage` for portfolio, `@type: Product` for shop), (c) Monitor GSC for 90+ days post-launch, (d) Document baseline shop rankings NOW.
+
+5. **Tokyo Market Tone Misalignment** (HIGH)
+   - Problem: Emotional language ("love building," "exciting journey") and vague outcomes ("improved performance") signal inexperience to Japanese CTOs. Precision and metrics are expected.
+   - Prevention: (a) Template-driven case studies with measurable outcomes required ("Reduced p99 latency from 2400ms to 340ms"), (b) Specificity checklist before publishing (every case must have ≥1 metric, ≥1 technical decision with tradeoff, honest reflection), (c) Remove emotional language ("love," "amazing," "passion"), (d) Have Tokyo tech person review for tone.
+
+6. **Contact Form Spam Targeting Professional Portfolio** (MEDIUM)
+   - Problem: Contact form attracts recruitment spam, link-building spam, bot submissions flooding inbox.
+   - Prevention: (a) Akismet API + server-side validation, (b) Rate-limiting (5 submissions/IP/day), (c) Honeypot field (hidden input to catch bots), (d) Email verification flow (real recruiters click link, bots don't).
+
+7. **Case Study Content Too Vague or Overly Promotional** (MEDIUM)
+   - Problem: "Improved reliability" without metrics, missing business context, promotional tone ("amazing team") instead of engineering rigor.
+   - Prevention: Template-driven structure (context → challenge → approach → measurable results → reflection). Enforce presence of: specific metrics, business impact, technical tradeoffs, honest learnings about what didn't work.
 
 ---
 
 ## Implications for Roadmap
 
-Research reveals a shop with minimal dependencies and clear feature ordering. The critical path is: product visibility → shopping → checkout → polish. Static generation + simple cart means most of the complexity is in content management (DatoCMS) and display, not backend logic.
+Based on research, recommend **4 distinct phases** with clear dependencies and milestones.
 
-### Phase 1: Core Shop Foundation
-**Rationale:** Product catalog is the prerequisite for everything. No cart without products; no checkout without items to order. Also requires upfront decisions on fetch caching, URL structure, and DatoCMS schema.
+### Phase 1: Portfolio Foundation + Routing Architecture
+**Rationale:** Establish routing separation before any portfolio pages written. Route conflicts will break launch if not resolved first. Navigation architecture sets tone for site identity.
 
 **Delivers:**
-- Product list page (all products with category filtering)
-- Product detail pages (generated statically via `generateStaticParams`)
-- Navigation + About + FAQ pages
-- DatoCMS integration validated
+- `(portfolio)` and `(shop)` route group structure (no route conflicts)
+- PortfolioNavigation and PortfolioFooter components (conditional rendering based on route)
+- `lib/portfolio-data.ts` skeleton with TypeScript interfaces (type-safe data structure ready)
+- `lib/contact.ts` Server Action skeleton (form handling ready)
+- CSS prefix convention documented and initial `portfolio-*` styles in globals.css
+- SEO migration plan documented (baseline shop rankings captured in GSC)
 
-**Addresses (Features):**
-- Product Catalog with Images
-- Category Browsing
-- Product Detail Pages
-- Product Pricing Transparency
-- Clear Navigation
-- About Page
-- FAQ
-- Product Availability Status
-- Playful Design aesthetic
-
-**Stack elements:**
-- Next.js App Router + Server Components
-- DatoCMS GraphQL client
-- Static generation (`generateStaticParams` + ISR)
-- Tailwind CSS
-- ShadCN UI
+**Addresses features:**
+- Professional navigation/information architecture (table stakes)
+- No route collisions with existing products
 
 **Avoids pitfalls:**
-- Finalize product URL slugs NOW (prevents SEO loss later)
-- Establish fetch caching policy: `cache: "no-store"` for product data
-- Set up DatoCMS schema.graphql in Git; document schema change process
-- Test static generation locally and in preview deployment
+- Route/slug conflicts (prevented by explicit `(portfolio)` and `(shop)` groups)
+- Navigation confusion (conditional nav logic prevents shopping language on portfolio)
+- SEO turbulence (baseline measured, migration plan ready)
 
-**Research flags:** None — Next.js + DatoCMS integration patterns are well-documented.
+**Research flag:** None—route group pattern is well-documented, standard Next.js 15 practice.
 
 ---
 
-### Phase 2: Cart System
-**Rationale:** Cart state is required before checkout. Also unblocks testing of "Add to Cart" user flow end-to-end.
+### Phase 2: Core Portfolio Pages + Case Study Template
+**Rationale:** Write portfolio pages and establish case study template before authoring full content. Template enforces Tokyo market tone and metric requirements.
 
 **Delivers:**
-- Cart Context with localStorage persistence
-- "Add to Cart" button (Client Component)
-- Cart counter in header
-- Cart Drawer / modal showing items, quantities, total, remove actions
-- Cart persistence across sessions and page navigations
+- Homepage (`/`) with hero, positioning, featured cases, timeline
+- Engineering Stack page (`/engineering`) organized by layer (backend, frontend, DevOps, testing)
+- Resume page (`/resume`) single-page, concise, metrics-driven
+- Contact page (`/contact`) with form
+- `/case-studies` grid/list page
+- Case study template with required sections: context, technical challenge, approach, results (metrics), reflection
+- Specificity checklist for case studies (metric requirement, tradeoff discussion, learnings)
+- CSS styles for all portfolio components (`portfolio-hero`, `portfolio-nav`, `portfolio-case-card`, etc.)
 
-**Uses (Stack elements):**
-- React Context API (or Zustand if preferred)
-- localStorage with hydration
-- Client Components with hooks
-
-**Implements (Architecture):**
-- Client-side cart state management
-- Context provider wrapping app
-- useCart hook for components
+**Addresses features:**
+- Professional homepage (table stakes)
+- Engineering/Stack page (table stakes)
+- Resume page (table stakes)
+- Contact form (table stakes)
+- Navigation structure (table stakes)
+- Template for measurable outcomes (differentiator, prevents vague claims)
 
 **Avoids pitfalls:**
-- Use localStorage for persistence; Supabase is overkill for <20 products
-- Avoid hydration mismatches: load from storage in `useEffect`, not on initial render
-- Test cart with hard-refresh, multiple tabs, mobile
-- Store only `{ productId, quantity }` in localStorage; fetch fresh prices on checkout
-- Use Zustand (1KB, minimal, with persist middleware) OR plain Context; avoid mixing both
+- Tokyo tone misalignment (template enforces metrics, eliminates emotional language)
+- Case study vagueness (specificity checklist required before acceptance)
+- Contact form spam (Akismet + rate-limiting + honeypot implemented)
 
-**Research flags:** None — cart state management patterns are standard.
+**Research flag:** **Case study tone/structure** — Have someone from Tokyo tech community review first 2-3 case studies. Tokyo hiring norms differ from US; cultural review prevents tone misalignment.
 
 ---
 
-### Phase 3: Checkout & Order Form
-**Rationale:** Completes the e-commerce flow. Once cart works, order form follows directly.
+### Phase 3: Case Studies + Dynamic Routing
+**Rationale:** Write 2-3 production-quality case studies. Implement dynamic routing with static generation. Quality >> quantity; 2-3 strong cases better than 5 weak ones.
 
 **Delivers:**
-- Checkout page with order form
-- Form validation (client-side + server-side)
-- Server Action to handle submission
-- Order storage (JSON file, database, or email notification)
-- Order confirmation email (Resend + React Email)
-- Success/error messaging
-- Clear call-to-action for meetup fulfillment
+- 2-3 production case studies (Rails backend, full-stack, or DevOps focus) following template
+- Each case study includes: context, technical decisions, measurable outcomes, reflection on learnings
+- `/case-studies/[slug]` dynamic route with `generateStaticParams()` (all pages pre-rendered at build)
+- generateMetadata per case study (OpenGraph tags for social sharing, SEO)
+- Architecture diagrams in cases (optional, Mermaid if applicable; low priority if time-constrained)
+- Case study content review & tone validation against Tokyo market standards
 
-**Uses (Stack elements):**
-- Server Actions (`'use server'`)
-- Zod schema validation
-- React Hook Form for client-side state
-- Resend API for emails
-- ShadCN Field components for form UX
-
-**Implements (Architecture):**
-- Server Action: `submitOrder` in `app/actions/order.ts`
-- Form Component (Client) with `useActionState`
-- Email template with React Email
+**Addresses features:**
+- Case studies with technical depth (differentiator)
+- Measurable impact documentation (differentiator)
+- Optional: architecture diagrams (differentiator, Phase 2.1+)
 
 **Avoids pitfalls:**
-- Route Handlers: avoid if possible; use Server Actions directly for simpler code
-- If Route Handlers used: set `export const revalidate = 0` for dynamic endpoints
-- Validate all cart data server-side; re-fetch prices from DatoCMS, don't trust client cart prices
-- Sanitize form inputs; use select dropdowns for options (not free-form text)
-- Include CSRF protection (Server Actions handle automatically)
-- Test checkout form on mobile; ensure tap targets ≥44px
-- Show loading state during form submission; disable submit button to prevent double-submission
-- Test order submission with real Resend API; verify email arrives
+- Case study vagueness (template + review enforces specificity)
+- Route collisions (route structure from Phase 1 ensures no overlaps)
 
-**Research flags:** None — Server Actions + Zod patterns are canonical in Next.js 15.
+**Research flag:** **Tokyo market validation** — Before shipping, have 1-2 Tokyo-based hiring managers or tech leads review cases for tone and credibility. Feedback on "does this convince you this engineer can ship?" is gold.
 
 ---
 
-### Phase 4: Pre-Launch & Polish
-**Rationale:** Final validation before public launch. Focus on SEO, performance, and edge cases.
+### Phase 4: Pre-Launch SEO + Contact Form Hardening
+**Rationale:** Pre-launch integration testing, SEO preparation, and contact form spam filtering. Launch phase is highest-risk; prevent problems now.
 
 **Delivers:**
-- SEO optimization: metadata, OG tags, structured data (schema.org/Product)
-- Image optimization: all product images using Next.js `<Image>` component, Lighthouse green
-- Redirect mapping: old product URLs (if migrating) → new URLs (301 redirects)
-- DatoCMS webhook for ISR revalidation
-- 404 error page
-- Lighthouse audit: mobile score ≥90, Core Web Vitals passing
-- Final security audit: no exposed API keys, input validation, CSRF protection
-- Edge case testing: empty cart, out-of-stock product, form validation errors, mobile layout
+- Contact form fully integrated: Resend email + Zod validation + error handling + success messages
+- Akismet spam filtering + rate-limiting + honeypot field implemented and tested
+- No full-page reloads when navigating between portfolio and shop (verify in dev tools)
+- robots.txt strategy for phased SEO rollout (shop hidden from crawl initially, visible after stabilization)
+- Google Search Console baseline captured: shop keyword rankings, shop page CTR recorded NOW
+- Structured data (JSON-LD) for portfolio pages (`@type: Person`, `@type: ProfilePage`, `@type: Article` for cases)
+- Canonical tags on all pages (avoid duplicate content warnings)
+- Lighthouse audit on portfolio pages (performance, accessibility, SEO scores)
+- Pre-launch QA: case study slug matrix tested against products, nav rendering verified on all routes, CSS conflicts resolved
+
+**Addresses features:**
+- Contact form (table stakes)
+- SEO foundation (prevents migration disasters)
 
 **Avoids pitfalls:**
-- SEO: verify each product page has unique title, meta description <160 chars, OG image, schema.org/Product
-- Test redirects with `curl -I`; fix broken redirect chains (301 → 302 → 404)
-- Images: use Next.js `<Image>` with `placeholder="blur"`; ensure no layout shift on load
-- Test cart edge cases: add same product twice (quantity increments?), remove last item, navigate away and return
-- Verify analytics events fire correctly (no duplicates)
-- Test dark mode if applicable
-- Set up error tracking (Sentry) for production monitoring
+- Contact form spam (Akismet + rate-limiting + honeypot)
+- SEO turbulence (phased rollout, monitoring, baseline captured)
+- Route/slug collisions (final validation before launch)
+- Navigation confusion (nav rendering verified on all routes)
 
-**Research flags:**
-- **SEO migration:** If migrating from old shop, needs careful redirect audit. Reference PITFALLS.md Pitfall 3.
-- **Analytics:** May need custom event schema if migrating from old shop.
+**Research flag:** None—SEO best practices are well-documented. Monitoring plan is standard practice.
 
 ---
 
-### Phase 5: Post-Launch Features (v1.x)
-**Rationale:** Only after core validation, add differentiators and enhancements.
+### Phase Ordering Rationale
 
-**Delivers:**
-- Product Learning Content (sample pages, CS concepts)
-- Event/Meetup Promotion (calendar, countdown timers)
-- Enhanced About Page (testimonials, mission expansion)
-- Social Proof section (curated customer testimonials)
-- Newsletter signup (optional, low priority)
+1. **Phase 1 first (Architecture):** Routing and navigation architecture must be locked down before portfolio content written. Moving routes after content exists creates rework risk.
 
-**Why deferred:**
-- Requires content curation and customer feedback
-- Doesn't block core shop functionality
-- Adds polish after validating demand
+2. **Phase 2 before Phase 3 (Pages before Case Studies):** Pages (home, engineering, resume, contact) establish portfolio identity. Case studies are secondary content that should fit the established structure. Template definition in Phase 2 prevents case study rework.
 
----
+3. **Phase 3 before Phase 4 (Content before QA):** Case studies must exist to validate routing, test SEO, test static generation. Phase 3 produces content that Phase 4 validates.
 
-## Phase Ordering Rationale
+4. **Phase 4 last (Pre-Launch):** Integration, SEO hardening, and monitoring setup happen after all content ready. Represents final validation before shipping to production.
 
-1. **Phase 1 (Core Shop) comes first** because product visibility is the prerequisite for everything else. Also forces upfront decisions on fetch caching, URL structure, and schema management that would be expensive to change later.
+### Research Flags
 
-2. **Phase 2 (Cart) before checkout** because adding to cart is the primary user interaction; testing this flow unblocks form design.
+Phases needing deeper research during planning:
 
-3. **Phase 3 (Checkout)** depends on cart working. Also allows time for order storage infrastructure decision (JSON, database, email).
+- **Phase 2: Tokyo market tone validation** — Have Tokyo-based senior engineer or hiring manager review proposed case study template. Tokyo and US hiring cultures differ in tone and metrics emphasis. Early validation prevents rework.
 
-4. **Phase 4 (Pre-Launch)** is final validation, not new features. Catches data staleness bugs, redirect issues, and performance problems before public launch.
+- **Phase 3: Case study content review** — First 2-3 case studies should undergo review with Tokyo market context. Feedback loop: write → review → refine → publish.
 
-5. **Phase 5 (Enhancements)** deferred to v1.x because these are differentiators, not table stakes. Allows feedback loop before investing in content curation.
+Phases with standard patterns (can proceed directly to planning, no additional research needed):
+
+- **Phase 1: Route groups and Next.js patterns** — Well-documented, standard Next.js 15 practice. Proceed directly to design.
+- **Phase 4: SEO and form validation** — Industry best practices established. Google Search Console monitoring standard. Proceed directly to implementation.
 
 ---
 
@@ -293,61 +268,40 @@ Research reveals a shop with minimal dependencies and clear feature ordering. Th
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| **Stack** | HIGH | Official Next.js 15 docs, DatoCMS integration guide, Zod v4 stable, community consensus on App Router patterns |
-| **Features** | HIGH | Direct analysis of shop.bubblesort.io, Baymard Institute cart abandonment data, NN/G e-commerce UX guidelines, Centimentalcomics' own goals |
-| **Architecture** | HIGH | Next.js App Router patterns well-documented, Server Components + Actions canonical, multiple real-world references |
-| **Pitfalls** | HIGH | Vercel blog on App Router mistakes, Next.js GitHub issues, DatoCMS schema versioning guides, production deployment experience documented |
-| **Phase structure** | HIGH | Feature dependencies clear from FEATURES.md, build order inferred from ARCHITECTURE.md recommendations |
+| Stack | HIGH | All technologies already in shop (Next.js 15, React, TypeScript, Tailwind, Resend). No experimental packages. react-hook-form + zod proven in checkout. Mermaid mature, optional. |
+| Features | HIGH | Portfolio feature landscape well-researched via multiple 2026 sources. Tokyo hiring expectations validated with Japan Dev, CTO magazines, Tokyo SaaS hiring guides. Table stakes/differentiators clear. |
+| Architecture | HIGH | Route groups and Next.js App Router patterns fully documented by Vercel. Static generation, Server Actions, dynamic routing all standard Next.js 15. No novel patterns. |
+| Pitfalls | HIGH | Route conflicts, SEO migration, CSS collision, form spam—all well-known integration risks with documented solutions. Tokyo tone misalignment validated with cultural research. |
 
 **Overall confidence: HIGH**
 
-All four research areas have high-confidence sources (official docs, production experience guides, recent 2026 community standards). No major gaps or uncertainties identified.
+### Gaps to Address
 
----
+1. **Tokyo hiring manager feedback on case study tone** — Research identifies Tokyo tone expectations, but real hiring manager validation during Phase 2 is needed. Action during Phase 2: Have 1-2 Tokyo CTOs or tech leads review case study templates and first 2-3 cases before Phase 3 completion.
 
-## Gaps to Address
+2. **SEO baseline shop rankings** — Critical for measuring migration impact. Action during Phase 1: Capture shop keyword rankings in Google Search Console, export top 20 products by traffic. Use as baseline for Phase 4 monitoring.
 
-**During Phase 1 Implementation:**
-- **DatoCMS data bulk import:** PITFALLS.md notes that DatoCMS migration scripts handle schema, not data. If importing products from Notion/spreadsheet, write custom import script. Test import on staging environment.
-- **Product URL finalization:** Confirm slug strategy with stakeholders NOW. Once Phase 1 ships, changing slugs requires redirects. Reference PITFALLS.md Pitfall 3 (SEO loss).
+3. **Contact form spam threshold** — Akismet configuration depends on actual spam patterns. Unknown until form deployed. Action during Phase 4: Monitor first 30 days aggressively. Adjust Akismet sensitivity and rate-limit thresholds based on real data.
 
-**During Phase 2 Implementation:**
-- **Cart persistence edge cases:** Test localStorage behavior on Safari Private mode, in-app browsers, cleared browser data. Some environments block localStorage. Have fallback strategy (session-only cart if localStorage unavailable).
-
-**During Phase 3 Implementation:**
-- **Order storage decision:** ARCHITECTURE.md assumes database or email notification. Decide: JSON file + email, Supabase, or external service? This is low-risk decision (can change in v1.x) but clarify early.
-
-**During Phase 4 Pre-Launch:**
-- **Redirect audit (if migrating):** Map every old product URL to new slug. Test all redirects in staging. If this is a rebuild from existing shop, needs careful SEO planning.
+4. **Route collision validation** — Theoretical risk, but must validate against actual shop data. Action during Phase 1: Export all product slugs, test against planned case study slugs. Generate matrix showing no collisions before writing any case study content.
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- **Next.js 15 Official Docs** — App Router, Server Components, Forms & Server Actions, ISR/caching (https://nextjs.org/docs)
-- **DatoCMS + Next.js Integration** — Official integration guide, API docs (https://www.datocms.com/docs/next-js)
-- **Zod Documentation** — Schema validation, v4 performance improvements (https://zod.dev/)
-- **React Hook Form + Zod** — Integration patterns (https://react-hook-form.com/)
-- **Zustand** — State management, persistence middleware (https://github.com/pmndrs/zustand)
-- **Vercel Blog: Common Mistakes with Next.js App Router** — Fetch caching, Route Handler pitfalls (https://vercel.com/blog)
-- **Shop.bubblesort.io** — Direct competitor analysis (https://shop.bubblesort.io/)
-- **Baymard Institute: Cart Abandonment Rate Statistics** — Mobile abandonment data (https://baymard.com/)
-- **NN/G UX Guidelines** — E-commerce product pages, mobile design (https://www.nngroup.com/)
+- **STACK-PORTFOLIO-ADDITIONS.md** — Comprehensive stack research including react-hook-form, zod, mermaid, font choices with version specificity and Next.js 15 compatibility notes
+- **PORTFOLIO-FEATURES.md** — Feature landscape for Rails engineer portfolios targeting Tokyo market, including table stakes vs. differentiators, Tokyo-specific hiring signals, and competitor analysis
+- **ARCHITECTURE.md** — Detailed architecture research for route groups, static generation, Server Actions, hardcoded content patterns, CSS strategy, implementation order
+- **PITFALLS.md** — Critical pitfall identification: route conflicts (Strategy 1-3), navigation confusion (Strategy 1-4), CSS conflicts (Strategy 1-4), SEO migration (Strategy 1-5), Tokyo tone (Strategy 1-4), spam (Strategy 1-4), content vagueness (Strategy 1-2)
 
-### Secondary (MEDIUM confidence)
-- React Email + Resend integration patterns
-- Next.js 15 caching guide (https://nextjs.org/learn/seo/url-structure)
-- E-commerce SEO migration best practices (Shopify enterprise blog)
-- ISR pitfalls in Next.js 15 (GitHub issues, Reddit discussions)
-
-### Community Standards (HIGH confidence)
-- 2026 e-commerce best practices: SSG for fixed catalogs, Zustand/Context for cart, Server Actions for forms
-- DatoCMS schema versioning via Git (industry standard)
-- Mobile-first design (60%+ of traffic)
+### Secondary (MEDIUM confidence, community sources)
+- Next.js official docs (route groups, Server Actions, generateStaticParams)
+- Resend documentation (email API, integration patterns)
+- Tokyo hiring culture sources (Japan Dev, CTO Magazine, DEV Community posts on Japan work culture)
+- 2026 portfolio best practices (Lovable, Elementor, Site Builder Report articles)
 
 ---
 
-**Research completed:** 2026-02-20
-**Next step:** Roadmap creation using SUMMARY.md as input
-**Ready for requirements:** YES
+*Research synthesized: 2026-03-04*
+*Status: Ready for roadmap and requirements definition*

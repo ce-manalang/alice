@@ -1,12 +1,25 @@
-# Centimentalcomics Shop
+# Centimentalcomics
 
 ## What This Is
 
-An online store for centimentalcomics (shop.centimentalcomics.com) selling educational zines about computer science concepts, along with apparel, stationery, pins, and accessories. Features a complete browse-to-order flow with product catalog, shopping cart, and meetup-based checkout. The shop makes technical topics approachable and fun for ages 8-100, with a playful illustrated aesthetic.
+A professional Rails engineer portfolio at centimentalcomics.com targeting the Tokyo job market. Engineering competence is the headline — case studies, technical stack, and resume are primary. The creative/comics identity and shop become supporting layers (footer link). Built with Next.js 15 on the existing codebase.
 
 ## Core Value
 
-Customers can browse the product catalog and submit orders for educational CS products — if nothing else works, browsing and ordering must.
+Visitors (engineering managers, tech leads, CTOs in Tokyo) can quickly assess Rails engineering competence through clear case studies, structured resume, and technical documentation — if nothing else works, the case studies and resume must be compelling and accessible.
+
+## Current Milestone: v2.0 Portfolio
+
+**Goal:** Transform centimentalcomics.com into a Rails-focused portfolio with case studies, engineering page, resume, and contact — optimized for Tokyo hiring culture.
+
+**Target features:**
+- Homepage with professional hero, core strengths, featured case studies, timeline
+- Engineering page with clear stack listing (backend, frontend, infra, tools)
+- Case study pages with context, architecture, technical challenges, code quality, reflection
+- Resume page (clean, structured, no illustration-heavy design)
+- Contact page
+- Japanese-language short intro (optional but impactful)
+- Tone adjustment: precision over emotion, outcomes over ambition
 
 ## Requirements
 
@@ -28,51 +41,60 @@ Customers can browse the product catalog and submit orders for educational CS pr
 
 ### Active
 
-- [ ] Product filtering by category, price, and availability
-- [ ] Newsletter / email collection for restock alerts
-- [ ] Upcoming meetup events display
-- [ ] Sample zine page previews
-- [ ] Learning objectives per educational zine
-- [ ] Customer testimonials and educator endorsements
+- [ ] Professional homepage hero with Rails positioning and CTAs
+- [ ] Core strengths section (Rails, system design, performance, deployment, maintenance)
+- [ ] Featured case studies on homepage (2-3 max)
+- [ ] Professional timeline (condensed)
+- [ ] Engineering page with full stack listing (backend, frontend, infra, tools)
+- [ ] Case study template: context, architecture, challenges, code quality, reflection
+- [ ] 2-3 production case studies written
+- [ ] Resume page at /resume (clean, structured)
+- [ ] Contact page
+- [ ] Site navigation restructure (Home, Engineering, Case Studies, Resume, Contact)
+- [ ] Shop demoted to footer link
+- [ ] Tone: precision over emotion, measurable outcomes, technical clarity
+- [ ] Japanese-language intro section (optional)
 
 ### Out of Scope
 
 - Online payment processing (Stripe, PayPal) — meetup-based fulfillment
-- User accounts / authentication — public shop, no login needed at this scale
-- Inventory tracking / admin dashboard — under 20 products, managed externally
-- Abandoned cart recovery emails — over-engineering for indie shop
-- Real-time chat / live support — FAQ covers common questions
-- Multi-language support — English-only audience
-- Mobile app / PWA — web-first
-- Shipping calculator — not applicable for meetup fulfillment
+- User accounts / authentication — public site
+- Blog / writing section — focus on case studies for now
+- CMS for case studies — hardcoded content, rarely changes
+- Animation / interactive elements — clean and professional
+- Multi-page resume / downloadable PDF — single page for now
+- Portfolio of non-Rails work — Rails focus for Tokyo market
 
 ## Context
 
-**Shipped v1.0** with 5,273 LOC TypeScript/CSS across 61 files.
+**Shipped v1.0** (shop) with 5,273 LOC TypeScript/CSS across 61 files.
 
 **Tech stack:** Next.js 15 + TypeScript + Tailwind CSS + DatoCMS (GraphQL) + Zustand (cart) + Server Actions (checkout) + Supabase (orders) + Resend (email notifications)
 
-**Architecture:**
-- Product data from DatoCMS with cache tags for on-demand revalidation
-- Unified /shop/[slug] route handles both categories and product detail
-- Zustand cart with localStorage persistence, SSR hydration guards
-- Server Action checkout with server-side price re-fetch (fraud prevention)
-- shop-* CSS prefix convention avoids collision with comics page styles
-- Inter font scoped to shop pages via next/font/google
+**Existing architecture:**
+- Shop lives at /shop/* routes (preserved, demoted)
+- Comics pages at /[slug] routes (preserved)
+- shop-* CSS prefix convention for shop styles
+- Inter font scoped to shop pages
 
-**Known technical debt:**
-- DatoCMS schema missing `available` and `category` fields (checkout query workaround in place)
-- No fallback for Safari Private mode / localStorage unavailable
-- Product URL redirects not yet configured in next.config.js
+**Target audience (Tokyo market):**
+- Primary: Engineering managers, Rails tech leads, CTOs at small-to-mid SaaS
+- Secondary: Recruiters, HR
+- Values: testing, code quality, documentation, career stability, precision
+
+**Tone guidelines:**
+- Remove: emotional writing, artistic ambiguity, abstract statements
+- Add: clear outcomes, measurable impact, technical clarity
+- Example: "Built and maintained production Rails applications" not "I love building meaningful software"
 
 ## Constraints
 
 - **Tech stack**: Next.js 15 + TypeScript + Tailwind CSS (locked)
-- **Content source**: DatoCMS for product data (existing integration)
+- **Content source**: DatoCMS for product data; case studies/resume hardcoded
 - **Hosting**: Vercel deployment (existing setup)
 - **Package manager**: pnpm
-- **No payment gateway**: Orders collected via form, fulfilled via meetup
-- **Small catalog**: Under 20 products — keep architecture simple
+- **Shop preserved**: /shop/* routes remain functional, just demoted in nav
+- **Tokyo market**: Professional tone, precision language, optional Japanese
 
 ## Key Decisions
 
@@ -83,11 +105,11 @@ Customers can browse the product catalog and submit orders for educational CS pr
 | Order form + meetup checkout | Simplest fulfillment model, no payment integration | ✓ Good — shipped fast, validates demand |
 | DatoCMS for product data | Existing integration, webhook revalidation | ✓ Good — proven pattern, cache tags work well |
 | Zustand for cart state | Lightweight, built-in persist middleware | ✓ Good — simple API, localStorage sync works |
-| Supabase for order storage | Already configured, service role for server inserts | ✓ Good — reliable, CC-XXXX reference format |
 | Unified [slug] route | Handles categories and products in one route | ✓ Good — avoids Next.js dynamic segment conflicts |
 | shop-* CSS prefix convention | Prevents collision with comics page styles | ✓ Good — clean separation of concerns |
-| Fire-and-forget Resend email | Email failure never blocks order submission | ✓ Good — resilient checkout flow |
-| No user accounts | Public shop, no login needed at this scale | — Pending review for v1.1 |
+| Portfolio as primary site purpose | Tokyo market values engineering competence over creative identity | — Pending |
+| Case studies hardcoded (no CMS) | Content rarely changes, avoids CMS overhead | — Pending |
+| Shop demoted to footer | Portfolio is primary; shop is supporting layer | — Pending |
 
 ---
-*Last updated: 2026-03-04 after v1.0 milestone*
+*Last updated: 2026-03-04 after v2.0 milestone start*

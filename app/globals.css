@@ -1293,3 +1293,535 @@
   text-align: center;
   margin-top: 2rem;
 }
+/* =========================================
+   PORTFOLIO SECTION STYLES
+   Prefix: portfolio-* (parallel to shop-*)
+   NOT for use on shop or comics pages
+   ========================================= */
+
+:root {
+  --portfolio-color-text: #0f172a;
+  --portfolio-color-text-muted: #475569;
+  --portfolio-color-accent: #1e40af;
+  --portfolio-color-bg: #ffffff;
+  --portfolio-color-border: #e2e8f0;
+  --portfolio-color-nav-bg: #0f172a;
+  --portfolio-color-nav-text: #f8fafc;
+  --portfolio-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.portfolio-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.portfolio-nav-header {
+  background: var(--portfolio-color-nav-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.portfolio-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3.5rem;
+  font-family: var(--portfolio-font);
+}
+
+.portfolio-nav-brand-link {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--portfolio-color-nav-text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.portfolio-nav-list {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.portfolio-nav-link {
+  font-size: 0.875rem;
+  color: rgba(248, 250, 252, 0.75);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+
+.portfolio-nav-link:hover {
+  color: var(--portfolio-color-nav-text);
+}
+
+.portfolio-footer {
+  border-top: 1px solid var(--portfolio-color-border);
+  padding: 2rem 0;
+  margin-top: auto;
+  font-family: var(--portfolio-font);
+}
+
+.portfolio-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portfolio-footer-links {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.portfolio-footer-link {
+  font-size: 0.875rem;
+  color: var(--portfolio-color-text-muted);
+  text-decoration: none;
+}
+
+.portfolio-footer-link:hover {
+  color: var(--portfolio-color-text);
+}
+
+.portfolio-footer-copy {
+  font-size: 0.8rem;
+  color: var(--portfolio-color-text-muted);
+  margin: 0;
+}
+
+.portfolio-page {
+  min-height: 100vh;
+  font-family: var(--portfolio-font);
+  color: var(--portfolio-color-text);
+  background: var(--portfolio-color-bg);
+}
+
+.portfolio-section {
+  padding: 4rem 0;
+}
+
+.portfolio-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.portfolio-button-primary,
+.portfolio-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.portfolio-button-primary {
+  background-color: var(--portfolio-color-text);
+  color: #ffffff;
+}
+
+.portfolio-button-secondary {
+  background-color: #ffffff;
+  color: var(--portfolio-color-text);
+  border-color: var(--portfolio-color-border);
+}
+
+.portfolio-heading-2 {
+  font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+  margin: 0 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.portfolio-heading-3 {
+  font-size: 1rem;
+  margin: 0 0 0.4rem;
+}
+
+.portfolio-strengths-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-strength-card {
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.portfolio-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-card {
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background-color: #ffffff;
+}
+
+.portfolio-link {
+  color: var(--portfolio-color-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.portfolio-link:hover {
+  text-decoration: underline;
+}
+
+.portfolio-timeline-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.portfolio-timeline-item {
+  border-left: 2px solid var(--portfolio-color-border);
+  padding-left: 0.9rem;
+}
+
+.portfolio-timeline-period {
+  margin: 0 0 0.35rem;
+  color: var(--portfolio-color-text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.portfolio-heading-1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--portfolio-color-text);
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.portfolio-text-muted {
+  color: var(--portfolio-color-text-muted);
+  line-height: 1.6;
+}
+
+.resume-summary {
+  max-width: 60ch;
+}
+
+.resume-section {
+  padding-top: 1.25rem;
+}
+
+.resume-experience-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.resume-experience-item {
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.resume-experience-header {
+  margin-bottom: 0.75rem;
+}
+
+.resume-period {
+  margin: 0 0 0.35rem;
+  color: var(--portfolio-color-text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resume-bullet-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+  color: var(--portfolio-color-text-muted);
+  line-height: 1.55;
+}
+
+.resume-skills-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.resume-chip-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resume-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-section-tight {
+  padding-top: 0;
+}
+
+.portfolio-engineering-category-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-engineering-category {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.portfolio-engineering-category-title {
+  margin-bottom: 0;
+}
+
+.portfolio-engineering-category-summary {
+  margin: 0;
+}
+
+.portfolio-engineering-capability-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.portfolio-engineering-capability-item {
+  border-top: 1px solid var(--portfolio-color-border);
+  padding-top: 0.9rem;
+}
+
+.portfolio-engineering-capability-capability {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.portfolio-engineering-capability-note {
+  margin: 0.4rem 0 0;
+}
+
+.portfolio-engineering-quality-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-engineering-quality-label {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-engineering-quality-body {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.portfolio-case-study-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-case-study-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.portfolio-case-study-title {
+  margin-bottom: 0.2rem;
+}
+
+.portfolio-case-study-label {
+  margin: 0.5rem 0 0.1rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-case-study-body {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .portfolio-strengths-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .portfolio-engineering-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-engineering-quality-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resume-skills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-case-study-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.portfolio-contact-intro {
+  max-width: 65ch;
+}
+
+.portfolio-contact-form {
+  margin-top: 1.5rem;
+  max-width: 720px;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.portfolio-contact-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.portfolio-contact-summary {
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.portfolio-contact-success {
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  color: #14532d;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.portfolio-contact-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.portfolio-contact-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--portfolio-color-text);
+}
+
+.portfolio-contact-input,
+.portfolio-contact-textarea {
+  width: 100%;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: var(--portfolio-color-text);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  line-height: 1.4;
+}
+
+.portfolio-contact-input:focus,
+.portfolio-contact-textarea:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+  border-color: #3b82f6;
+}
+
+.portfolio-contact-textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.portfolio-contact-error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #b91c1c;
+}
+
+.portfolio-contact-submit {
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: var(--portfolio-color-text);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.portfolio-contact-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .portfolio-contact-form {
+    padding: 1rem;
+  }
+
+  .portfolio-contact-submit {
+    width: 100%;
+  }
+}

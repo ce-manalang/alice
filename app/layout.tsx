@@ -2,8 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google"
-import Navigation from "@/app/components/Navigation"
-import Footer from "@/app/components/Footer"
 
 export const metadata: Metadata = {
   title: {
@@ -70,11 +68,9 @@ export default function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body style={{ margin: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Navigation />
         <main style={{ flex: 1 }}>
           {children}
         </main>
-        <Footer />
       </body>
     </html>
   )
