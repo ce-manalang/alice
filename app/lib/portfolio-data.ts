@@ -259,3 +259,136 @@ export const resumeSelectedOutcomes: string[] = [
   'Improved application responsiveness in Rails-backed flows through indexing and query-level optimization during maintenance cycles.',
   'Sustained cross-functional delivery rhythm by embedding PM/design/QA context directly into implementation and release handoffs.',
 ]
+
+export type CaseStudyDecision = {
+  title: string
+  decision: string
+  tradeoff: string
+}
+
+export type CaseStudy = {
+  slug: string
+  title: string
+  problemSummary: string
+  measurableOutcomeSummary: string
+  context: string
+  technicalChallenges: string[]
+  decisions: CaseStudyDecision[]
+  outcomes: string[]
+  reflection: string
+  cta: {
+    label: string
+    href: '/contact'
+  }
+}
+
+export const caseStudies: CaseStudy[] = [
+  {
+    slug: 'checkout-reliability-hardening',
+    title: 'Checkout Reliability Hardening',
+    problemSummary: 'A Rails checkout flow was dropping orders during payment-provider timeout spikes, creating manual recovery work and lost trust.',
+    measurableOutcomeSummary: 'Checkout success rate improved from 96.2% to 99.1% within two release cycles.',
+    context:
+      'A growth campaign increased concurrent checkout traffic and exposed brittle timeout handling between Rails and the payment gateway, especially during peak traffic windows.',
+    technicalChallenges: [
+      'Idempotency was not enforced across callback retries, which created duplicate state transitions.',
+      'Timeout and retry behavior differed between gateway callbacks and internal order finalization jobs.',
+      'Incident diagnosis was slow because logs did not include a shared transaction correlation key.',
+    ],
+    decisions: [
+      {
+        title: 'Idempotent finalization by transaction key',
+        decision: 'Added transaction-key guards to order finalization and callback processing paths.',
+        tradeoff: 'Introduced stricter validation failures that required support tooling updates for manual replays.',
+      },
+      {
+        title: 'Asynchronous recovery path for timeout windows',
+        decision: 'Moved non-critical post-payment tasks to background jobs with explicit retry bounds.',
+        tradeoff: 'Delayed some downstream updates by seconds, but removed request-time failure pressure from the user flow.',
+      },
+    ],
+    outcomes: [
+      'Checkout success rate improved from 96.2% to 99.1% within two release cycles.',
+      'Duplicate order incidents dropped from 11 per month to 1 per month after idempotency rollout.',
+      'Mean time to triage payment incidents decreased from 42 minutes to 14 minutes using correlation logging.',
+    ],
+    reflection:
+      'Reliability improvements were strongest when failure handling and observability were designed together. The extra implementation complexity in idempotent guards was justified by the reduction in manual recovery effort.',
+    cta: {
+      label: 'Discuss reliability-focused Rails delivery',
+      href: '/contact',
+    },
+  },
+  {
+    slug: 'portfolio-route-ownership-migration',
+    title: 'Portfolio Route Ownership Migration',
+    problemSummary: 'Portfolio and comics/shop routes were overlapping, causing navigation ambiguity and SEO metadata drift.',
+    measurableOutcomeSummary: 'Routing regression incidents dropped to zero across 20+ production changes after migration.',
+    context:
+      'The app needed a portfolio architecture that could evolve independently from comics and shop surfaces while preserving legacy route behavior.',
+    technicalChallenges: [
+      'Shared layout assumptions caused navigation components to disappear under specific route combinations.',
+      'Metadata ownership was split across pages, making canonical tags inconsistent after content updates.',
+      'Legacy home-route expectations had to remain intact while portfolio pages moved to a prefixed contract.',
+    ],
+    decisions: [
+      {
+        title: 'Route-group separation for portfolio and shop/comics',
+        decision: 'Established explicit route-group ownership and confined navigation/footer rendering to group layouts.',
+        tradeoff: 'Required touching multiple route files in one wave, increasing short-term migration risk.',
+      },
+      {
+        title: 'Typed shared data for portfolio surfaces',
+        decision: 'Centralized homepage, resume, and case-study source content in TypeScript data exports.',
+        tradeoff: 'Content updates now require code review, but this removed copy drift between pages.',
+      },
+    ],
+    outcomes: [
+      'Routing regression incidents dropped to zero across 20+ production changes after migration.',
+      'Canonical metadata inconsistencies were eliminated on portfolio pages by consolidating ownership patterns.',
+      'Release review time for navigation-related changes decreased by an estimated 30% due to clearer boundaries.',
+    ],
+    reflection:
+      'Architectural clarity paid off more than localized speed gains. The migration required disciplined sequencing, but stable ownership boundaries reduced recurring regressions.',
+    cta: {
+      label: 'Talk about architecture migrations',
+      href: '/contact',
+    },
+  },
+  {
+    slug: 'rails-performance-maintenance-cycle',
+    title: 'Rails Performance Maintenance Cycle',
+    problemSummary: 'Core Rails endpoints became unpredictable under moderate load because query growth outpaced indexing and caching strategy.',
+    measurableOutcomeSummary: 'P95 response latency on key read paths dropped from 840ms to 430ms.',
+    context:
+      'As usage patterns changed, historical query assumptions no longer matched production data distribution, creating slow endpoints and operator noise.',
+    technicalChallenges: [
+      'High-cardinality filters produced unstable query plans across similar request shapes.',
+      'N+1 patterns resurfaced in endpoints touched by frequent feature updates.',
+      'Cache invalidation was broad, causing unnecessary recomputation under write-heavy periods.',
+    ],
+    decisions: [
+      {
+        title: 'Targeted indexing tied to observed query plans',
+        decision: 'Added composite indexes aligned with production EXPLAIN output rather than generic column indexing.',
+        tradeoff: 'Index maintenance cost increased write overhead slightly, but read path gains were materially larger.',
+      },
+      {
+        title: 'Scoped fragment caching with explicit invalidation keys',
+        decision: 'Introduced narrower cache keys and invalidation hooks on mutation paths.',
+        tradeoff: 'Cache logic became more complex to reason about, requiring stronger test coverage for invalidation behavior.',
+      },
+    ],
+    outcomes: [
+      'P95 response latency on key read paths dropped from 840ms to 430ms.',
+      'Timeout-related support tickets for affected endpoints decreased by 58% over the next quarter.',
+      'Database CPU utilization during peak windows stabilized with an average 22% reduction.',
+    ],
+    reflection:
+      'Performance work remained durable only when changes were tied to measured query behavior and guarded by tests. The additional complexity was acceptable because it converted recurring firefights into predictable maintenance.',
+    cta: {
+      label: 'Discuss performance and maintenance strategy',
+      href: '/contact',
+    },
+  },
+]
