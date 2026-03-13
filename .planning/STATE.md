@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
 status: executing
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-03-13T09:02:40.400Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-13T09:07:10.854Z"
 last_activity: 2026-03-13 — 06-03 completed (contact backend action + Resend delivery)
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
   percent: 86
 ---
 
@@ -86,6 +86,8 @@ Recent decisions affecting current work:
 - [Phase 06]: Enforced strict detail-page sequence (Context, Technical Challenges, Decisions, Outcomes, Reflection) with final CTA to /contact.
 - [Phase 06-case-studies-contact]: Used explicit contact action states with value preservation for retry-safe UI handling.
 - [Phase 06-case-studies-contact]: Adopted dedicated CONTACT_NOTIFICATION_EMAIL env var and contact-specific template for separation from shop mail flow.
+- [Phase 06-case-studies-contact]: Case-study index ordering centralized in getPublishedCaseStudies for cross-page consistency.
+- [Phase 06-case-studies-contact]: Homepage featured case-study links are generated from canonical slugs to prevent URL drift.
 
 ### Blockers/Concerns
 
@@ -117,12 +119,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P07 | 17 min | 2 tasks | 4 files |
 | Phase 06-case-studies-contact P01 | 2min | 2 tasks | 3 files |
 | Phase 06-case-studies-contact P03 | 3min | 2 tasks | 4 files |
+| Phase 06-case-studies-contact P02 | 11min | 2 tasks | 4 files |
 
 ## Session Continuity
 
 **Last Action:** Completed 06-03 execution with task-level commits and summary/state updates.
 
-**Stopped At:** Completed 06-03-PLAN.md
+**Stopped At:** Completed 06-02-PLAN.md
 
 ---
 
