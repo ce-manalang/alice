@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ContactForm } from './contact-form'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -15,7 +16,10 @@ export default function ContactPage() {
       <section className="portfolio-section">
         <div className="portfolio-container">
           <h1 className="portfolio-heading-1">Contact</h1>
-          <p className="portfolio-text-muted">Contact form coming in Phase 6.</p>
+          <p className="portfolio-text-muted portfolio-contact-intro">
+            Share your project context and response goals. I typically reply within 1 business day.
+          </p>
+          <ContactForm />
         </div>
       </section>
     </div>

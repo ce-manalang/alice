@@ -1712,3 +1712,116 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.portfolio-contact-intro {
+  max-width: 65ch;
+}
+
+.portfolio-contact-form {
+  margin-top: 1.5rem;
+  max-width: 720px;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.portfolio-contact-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.portfolio-contact-summary {
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.portfolio-contact-success {
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  color: #14532d;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.portfolio-contact-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.portfolio-contact-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--portfolio-color-text);
+}
+
+.portfolio-contact-input,
+.portfolio-contact-textarea {
+  width: 100%;
+  border: 1px solid var(--portfolio-color-border);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: var(--portfolio-color-text);
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  line-height: 1.4;
+}
+
+.portfolio-contact-input:focus,
+.portfolio-contact-textarea:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+  border-color: #3b82f6;
+}
+
+.portfolio-contact-textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.portfolio-contact-error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #b91c1c;
+}
+
+.portfolio-contact-submit {
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  background: var(--portfolio-color-text);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.portfolio-contact-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .portfolio-contact-form {
+    padding: 1rem;
+  }
+
+  .portfolio-contact-submit {
+    width: 100%;
+  }
+}
