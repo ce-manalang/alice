@@ -8,7 +8,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-3 (shipped 2026-03-04)
-- 🚧 **v2.0 Portfolio** — Phases 4-6 (in progress)
+- ✅ **v2.0 Portfolio** — Phases 4-6 (shipped 2026-03-13)
 
 ## Phases
 
@@ -23,7 +23,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 
 </details>
 
-### 🚧 v2.0 Portfolio (In Progress)
+### ✅ v2.0 Portfolio (Complete)
 
 **Milestone Goal:** Transform centimentalcomics.com into a Rails-focused portfolio with case studies, engineering page, resume, and contact — optimized for Tokyo hiring culture.
 
@@ -31,7 +31,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 
 - [x] **Phase 4: Portfolio Foundation** - Route groups, navigation architecture, SEO baseline — the structural prerequisite for all portfolio content
 - [x] **Phase 5: Core Portfolio Pages** - Homepage, engineering stack, and resume pages fully built with professional tone and content
-- [ ] **Phase 6: Case Studies + Contact** - Case study pages with written content and contact form backed by Resend
+- [x] **Phase 6: Case Studies + Contact** - Case study pages with written content and contact form backed by Resend
 
 #### Phase Details
 
@@ -83,8 +83,8 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 | 3. Checkout & Order Form | v1.0 | 2/2 | Complete | 2026-03-03 |
 | 4. Portfolio Foundation | v2.0 | 3/3 | Complete | 2026-03-05 |
 | 5. Core Portfolio Pages | v2.0 | 5/5 | Complete | 2026-03-11 |
-| 6. Case Studies + Contact | v2.0 | 1/4 | In Progress | - |
+| 6. Case Studies + Contact | v2.0 | 4/4 | Complete | 2026-03-13 |
 
 ---
 
-_Last updated: 2026-03-13 — Phase 6 Plan 01 completed (case-study data and dynamic slug route)_
+_Last updated: 2026-03-13 — Phase 6 Plan 04 completed; v2.0 Portfolio milestone accepted_

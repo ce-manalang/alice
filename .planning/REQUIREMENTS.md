@@ -88,13 +88,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HOME-04 | Phase 5 | Complete (verified 2026-03-11) |
 | ENG-01 | Phase 5 | Complete (verified 2026-03-11) |
 | ENG-02 | Phase 5 | Complete (verified 2026-03-11) |
-| CASE-01 | Phase 6 | Complete |
-| CASE-02 | Phase 6 | Complete |
-| CASE-03 | Phase 6 | Complete |
+| CASE-01 | Phase 6 | Complete (verified 2026-03-13) |
+| CASE-02 | Phase 6 | Complete (verified 2026-03-13) |
+| CASE-03 | Phase 6 | Complete (verified 2026-03-13) |
 | RESM-01 | Phase 5 | Complete (verified 2026-03-11) |
 | RESM-02 | Phase 5 | Complete (verified 2026-03-11) |
-| CTCT-01 | Phase 6 | Complete |
-| CTCT-02 | Phase 6 | Complete |
+| CTCT-01 | Phase 6 | Complete (verified 2026-03-13) |
+| CTCT-02 | Phase 6 | Complete (verified 2026-03-13) |
 | SITE-01 | Phase 4 | Complete |
 | SITE-02 | Phase 4 | Complete |
 | SITE-03 | Phase 4 | Complete |
@@ -108,4 +108,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-11 — Phase 5 requirements accepted after successful 05-07 verification rerun*
+*Last updated: 2026-03-13 — Phase 6 verification accepted (CASE-01/02/03, CTCT-01/02)*
