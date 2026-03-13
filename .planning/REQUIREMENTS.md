@@ -32,8 +32,8 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 
 ### Contact
 
-- [ ] **CTCT-01**: Visitor can submit contact form with name, email, and message
-- [ ] **CTCT-02**: Contact form sends email notification to site owner via Resend
+- [x] **CTCT-01**: Visitor can submit contact form with name, email, and message
+- [x] **CTCT-02**: Contact form sends email notification to site owner via Resend
 
 ### Site Structure
 
@@ -93,8 +93,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CASE-03 | Phase 6 | Complete |
 | RESM-01 | Phase 5 | Complete (verified 2026-03-11) |
 | RESM-02 | Phase 5 | Complete (verified 2026-03-11) |
-| CTCT-01 | Phase 6 | Pending |
-| CTCT-02 | Phase 6 | Pending |
+| CTCT-01 | Phase 6 | Complete |
+| CTCT-02 | Phase 6 | Complete |
 | SITE-01 | Phase 4 | Complete |
 | SITE-02 | Phase 4 | Complete |
 | SITE-03 | Phase 4 | Complete |

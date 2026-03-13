@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
-status: in_progress
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-13T08:58:34.330Z"
-last_activity: 2026-03-13 — 06-01 completed (case study data + dynamic slug route)
+status: executing
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-03-13T09:02:40.400Z"
+last_activity: 2026-03-13 — 06-03 completed (contact backend action + Resend delivery)
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 14
-  completed_plans: 11
-  percent: 79
+  completed_plans: 12
+  percent: 86
 ---
 
 # Project State: Centimentalcomics
@@ -36,11 +36,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Milestone:** v2.0 Portfolio
 **Phase:** 6 of 6 (Case Studies + Contact) — in progress
-**Plan:** 01 of 04 (completed)
-**Status:** 06-01 executed and committed; ready for 06-02
-**Last activity:** 2026-03-13 — 06-01 completed (case study data + dynamic slug route)
+**Plan:** 03 of 04 (completed)
+**Status:** 06-03 executed and committed; ready for 06-04
+**Last activity:** 2026-03-13 — 06-03 completed (contact backend action + Resend delivery)
 
-Progress: [████████░░] 79%
+Progress: [█████████░] 86%
 
 ---
 
@@ -84,6 +84,8 @@ Recent decisions affecting current work:
 - [Phase 05-07 verification rerun]: Human rerun approved all route ownership, navigation contract, and HOME/ENG/RESM requirement gates; Phase 5 accepted complete.
 - [Phase 06]: Centralized case-study canonical content in app/lib/portfolio-data.ts and resolved slug pages from that single source.
 - [Phase 06]: Enforced strict detail-page sequence (Context, Technical Challenges, Decisions, Outcomes, Reflection) with final CTA to /contact.
+- [Phase 06-case-studies-contact]: Used explicit contact action states with value preservation for retry-safe UI handling.
+- [Phase 06-case-studies-contact]: Adopted dedicated CONTACT_NOTIFICATION_EMAIL env var and contact-specific template for separation from shop mail flow.
 
 ### Blockers/Concerns
 
@@ -114,12 +116,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P06 | 8 min | 2 tasks | 0 files |
 | Phase 05-core-portfolio-pages P07 | 17 min | 2 tasks | 4 files |
 | Phase 06-case-studies-contact P01 | 2min | 2 tasks | 3 files |
+| Phase 06-case-studies-contact P03 | 3min | 2 tasks | 4 files |
 
 ## Session Continuity
 
-**Last Action:** Completed 06-01 execution with task-level commits and summary/state updates.
+**Last Action:** Completed 06-03 execution with task-level commits and summary/state updates.
 
-**Stopped At:** Completed 06-01-PLAN.md
+**Stopped At:** Completed 06-03-PLAN.md
 
 ---
 
