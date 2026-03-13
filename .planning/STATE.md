@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Portfolio
-status: completed
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-12T10:34:19.227Z"
-last_activity: 2026-03-11 — 05-07 completed (human rerun passed; Phase 5 accepted)
+status: in_progress
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-13T08:58:34.330Z"
+last_activity: 2026-03-13 — 06-01 completed (case study data + dynamic slug route)
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_plans: 14
+  completed_plans: 11
+  percent: 79
 ---
 
 # Project State: Centimentalcomics
 
 **Project:** Centimentalcomics Rails Portfolio (Tokyo Market)
-**Updated:** 2026-03-04
-**Status:** Phase 5 complete
+**Updated:** 2026-03-13
+**Status:** Phase 6 in progress
 
 ---
 
@@ -35,12 +35,12 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 ## Current Position
 
 **Milestone:** v2.0 Portfolio
-**Phase:** 6 of 6 (Case Studies + Contact) — ready to start
-**Plan:** 00 of ? (planning not started)
-**Status:** Phase 5 accepted after successful human rerun; ready for Phase 6 planning/execution
-**Last activity:** 2026-03-11 — 05-07 completed (human rerun passed; Phase 5 accepted)
+**Phase:** 6 of 6 (Case Studies + Contact) — in progress
+**Plan:** 01 of 04 (completed)
+**Status:** 06-01 executed and committed; ready for 06-02
+**Last activity:** 2026-03-13 — 06-01 completed (case study data + dynamic slug route)
 
-Progress: [██████████] 100%
+Progress: [████████░░] 79%
 
 ---
 
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 05-core-portfolio-pages]: Gap-closure plan 05-06 completed as verification-only because root/portfolio routing contract was already compliant.
 - [Phase 05-core-portfolio-pages]: Retained atomic task-level commits as explicit validation checkpoints despite zero code diffs.
 - [Phase 05-07 verification rerun]: Human rerun approved all route ownership, navigation contract, and HOME/ENG/RESM requirement gates; Phase 5 accepted complete.
+- [Phase 06]: Centralized case-study canonical content in app/lib/portfolio-data.ts and resolved slug pages from that single source.
+- [Phase 06]: Enforced strict detail-page sequence (Context, Technical Challenges, Decisions, Outcomes, Reflection) with final CTA to /contact.
 
 ### Blockers/Concerns
 
@@ -111,12 +113,13 @@ Recent decisions affecting current work:
 | Phase 05-core-portfolio-pages P04 | 65min | 2 tasks | 3 files |
 | Phase 05-core-portfolio-pages P06 | 8 min | 2 tasks | 0 files |
 | Phase 05-core-portfolio-pages P07 | 17 min | 2 tasks | 4 files |
+| Phase 06-case-studies-contact P01 | 2min | 2 tasks | 3 files |
 
 ## Session Continuity
 
-**Last Action:** Completed 05-07 human verification rerun closure and synchronized planning artifacts.
+**Last Action:** Completed 06-01 execution with task-level commits and summary/state updates.
 
-**Stopped At:** Phase 6 context gathered
+**Stopped At:** Completed 06-01-PLAN.md
 
 ---
 

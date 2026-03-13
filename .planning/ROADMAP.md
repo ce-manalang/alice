@@ -70,7 +70,7 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
   3. 2-3 production case studies are written and published, each with a real project context, concrete technical decisions, and honest reflection (no vague promotional claims)
   4. Contact form submits successfully with name, email, and message — visitor sees a confirmation on success
   5. Submitted contact form triggers an email notification delivered to the site owner via Resend
-**Plans**: TBD
+**Plans**: 06-01 (case-study data + slug route), 06-02 (case-study index), 06-03 (contact backend + email), 06-04 (contact UI + verification)
 
 ---
 
@@ -83,8 +83,8 @@ Full details: [milestones/v1.0-ROADMAP.md](./milestones/v1.0-ROADMAP.md)
 | 3. Checkout & Order Form | v1.0 | 2/2 | Complete | 2026-03-03 |
 | 4. Portfolio Foundation | v2.0 | 3/3 | Complete | 2026-03-05 |
 | 5. Core Portfolio Pages | v2.0 | 5/5 | Complete | 2026-03-11 |
-| 6. Case Studies + Contact | v2.0 | 0/? | Not started | - |
+| 6. Case Studies + Contact | v2.0 | 1/4 | In Progress | - |
 
 ---
 
-_Last updated: 2026-03-11 — Phase 5 completed after successful 05-07 human verification rerun_
+_Last updated: 2026-03-13 — Phase 6 Plan 01 completed (case-study data and dynamic slug route)_

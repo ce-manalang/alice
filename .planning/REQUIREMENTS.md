@@ -22,8 +22,8 @@ Requirements for portfolio milestone. Each maps to roadmap phases.
 ### Case Studies
 
 - [ ] **CASE-01**: Visitor can browse case studies index page showing all available case studies
-- [ ] **CASE-02**: Visitor can view individual case study with structured sections: context, technical challenges, and reflection
-- [ ] **CASE-03**: 2-3 production case studies written with specific technical outcomes (not vague/promotional)
+- [x] **CASE-02**: Visitor can view individual case study with structured sections: context, technical challenges, and reflection
+- [x] **CASE-03**: 2-3 production case studies written with specific technical outcomes (not vague/promotional)
 
 ### Resume
 
@@ -89,8 +89,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ENG-01 | Phase 5 | Complete (verified 2026-03-11) |
 | ENG-02 | Phase 5 | Complete (verified 2026-03-11) |
 | CASE-01 | Phase 6 | Pending |
-| CASE-02 | Phase 6 | Pending |
-| CASE-03 | Phase 6 | Pending |
+| CASE-02 | Phase 6 | Complete |
+| CASE-03 | Phase 6 | Complete |
 | RESM-01 | Phase 5 | Complete (verified 2026-03-11) |
 | RESM-02 | Phase 5 | Complete (verified 2026-03-11) |
 | CTCT-01 | Phase 6 | Pending |
