@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { featuredCaseStudies, professionalTimeline } from "@/app/lib/portfolio-data"
+import { getPublishedCaseStudies, professionalTimeline } from "@/app/lib/portfolio-data"
 
 export const metadata: Metadata = {
   title: "Portfolio Home",
@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 }
 
 export default function PortfolioHomePage() {
+  const featuredStudies = getPublishedCaseStudies().slice(0, 3)
+
   return (
     <main className="portfolio-page">
       <section id="hero" className="portfolio-section">
@@ -65,12 +67,12 @@ export default function PortfolioHomePage() {
           <h2 className="portfolio-heading-2">Featured Case Studies</h2>
           <p className="portfolio-text-muted">Selected production projects and technical outcomes.</p>
           <div className="portfolio-grid">
-            {featuredCaseStudies.map((caseStudy) => (
-              <article className="portfolio-card" key={caseStudy.title}>
+            {featuredStudies.map((caseStudy) => (
+              <article className="portfolio-card" key={caseStudy.slug}>
                 <h3 className="portfolio-heading-3">{caseStudy.title}</h3>
-                <p className="portfolio-text-muted">{caseStudy.description}</p>
-                <Link className="portfolio-link" href={caseStudy.href}>
-                  {caseStudy.linkLabel}
+                <p className="portfolio-text-muted">{caseStudy.problemSummary}</p>
+                <Link className="portfolio-link" href={`/case-studies/${caseStudy.slug}`}>
+                  Read case study
                 </Link>
               </article>
             ))}
