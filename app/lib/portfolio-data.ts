@@ -1,7 +1,7 @@
 export type FeaturedCaseStudy = {
   title: string
   description: string
-  href: string
+  href: `/case-studies/${string}`
   linkLabel: string
 }
 
@@ -41,27 +41,6 @@ export type ResumeSkillGroup = {
   category: string
   items: string[]
 }
-
-export const featuredCaseStudies: FeaturedCaseStudy[] = [
-  {
-    title: 'Commerce Platform Delivery',
-    description: 'Built and maintained Rails commerce flows with reliable checkout, fulfillment coordination, and production support.',
-    href: '/case-studies',
-    linkLabel: 'View case studies',
-  },
-  {
-    title: 'Portfolio Architecture Migration',
-    description: 'Implemented route-group architecture and metadata groundwork to separate portfolio and shop concerns safely.',
-    href: '/case-studies',
-    linkLabel: 'View case studies',
-  },
-  {
-    title: 'Long-Term Application Operations',
-    description: 'Stabilized production behavior through incident-driven fixes, performance tuning, and maintenance discipline.',
-    href: '/case-studies',
-    linkLabel: 'View case studies',
-  },
-]
 
 export const professionalTimeline: TimelineEntry[] = [
   {
@@ -392,6 +371,31 @@ export const caseStudies: CaseStudy[] = [
     },
   },
 ]
+
+const caseStudyIndexOrder: ReadonlyArray<CaseStudy['slug']> = [
+  'checkout-reliability-hardening',
+  'portfolio-route-ownership-migration',
+  'rails-performance-maintenance-cycle',
+]
+
+export function getPublishedCaseStudies(): CaseStudy[] {
+  const relevanceRank = new Map(caseStudyIndexOrder.map((slug, index) => [slug, index]))
+  return [...caseStudies].sort((a, b) => {
+    const rankA = relevanceRank.get(a.slug) ?? Number.MAX_SAFE_INTEGER
+    const rankB = relevanceRank.get(b.slug) ?? Number.MAX_SAFE_INTEGER
+    if (rankA !== rankB) return rankA - rankB
+    return a.title.localeCompare(b.title)
+  })
+}
+
+export const featuredCaseStudies: FeaturedCaseStudy[] = getPublishedCaseStudies()
+  .slice(0, 3)
+  .map((caseStudy) => ({
+    title: caseStudy.title,
+    description: caseStudy.problemSummary,
+    href: `/case-studies/${caseStudy.slug}`,
+    linkLabel: 'Read case study',
+  }))
 
 export function getCaseStudyBySlug(slug: string): CaseStudy | undefined {
   return caseStudies.find((caseStudy) => caseStudy.slug === slug)

@@ -1658,6 +1658,35 @@
   line-height: 1.55;
 }
 
+.portfolio-case-study-grid {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.portfolio-case-study-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.portfolio-case-study-title {
+  margin-bottom: 0.2rem;
+}
+
+.portfolio-case-study-label {
+  margin: 0.5rem 0 0.1rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--portfolio-color-text-muted);
+}
+
+.portfolio-case-study-body {
+  margin: 0;
+}
+
 @media (min-width: 768px) {
   .portfolio-strengths-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1676,6 +1705,10 @@
   }
 
   .resume-skills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-case-study-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
