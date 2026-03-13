@@ -3,9 +3,18 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import {
-  initialContactActionState,
   submitContactForm,
+  type ContactActionState,
 } from '@/app/(portfolio)/contact/actions'
+
+const initialContactActionState: ContactActionState = {
+  status: 'idle',
+  values: {
+    name: '',
+    email: '',
+    message: '',
+  },
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus()

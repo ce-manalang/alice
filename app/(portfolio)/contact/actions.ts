@@ -26,15 +26,6 @@ export type ContactActionState = {
   fieldErrors?: Partial<Record<keyof ContactFormValues, string>>
 }
 
-export const initialContactActionState: ContactActionState = {
-  status: 'idle',
-  values: {
-    name: '',
-    email: '',
-    message: '',
-  },
-}
-
 function getFormValues(formData: FormData): ContactFormValues {
   return {
     name: String(formData.get('name') ?? ''),
@@ -134,6 +125,10 @@ export async function submitContactForm(
   return {
     status: 'success',
     message: 'Thanks. Your message has been sent.',
-    values: initialContactActionState.values,
+    values: {
+      name: '',
+      email: '',
+      message: '',
+    },
   }
 }
